@@ -1,0 +1,271 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Better Auth required models
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions   Session[]
+  accounts   Account[]
+  advertiser Advertiser?
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+// ===================== Vara Ads DSP =====================
+
+model Advertiser {
+  id            String     @id @default(cuid())
+  userId        String     @unique
+  projectName   String
+  websiteUrl    String?
+  contractAddrs String[]
+  chain         Chain      @default(ETHEREUM)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaigns     Campaign[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("advertiser")
+}
+
+model Campaign {
+  id                    String         @id @default(cuid())
+  advertiserId          String
+  name                  String
+  description           String?
+  vertical              Vertical
+  status                CampaignStatus @default(DRAFT)
+  objective             Objective
+  pricingModel          PricingModel   @default(CPM)
+  bidStrategy           BidStrategy    @default(MANUAL)
+  pacing                Pacing         @default(STANDARD)
+  budgetUsdCents        Int
+  dailyCapUsdCents      Int?
+  bidUsdCents           Int
+  frequencyCapPerWallet Int?
+  frequencyCapHours     Int?
+  startDate             DateTime
+  endDate               DateTime?
+  conversionContract    String?
+  conversionEvent       String?
+  conversionWindowDays  Int?
+  brandSafetyKeywords   String[]
+  advertiser            Advertiser     @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  creatives             Creative[]
+  targeting             Targeting?
+  metrics               MetricDaily[]
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  @@index([advertiserId, status])
+  @@map("campaign")
+}
+
+model Creative {
+  id               String         @id @default(cuid())
+  campaignId       String
+  name             String
+  format           CreativeFormat
+  width            Int
+  height           Int
+  assetUrl         String
+  clickUrl         String
+  walletConnectCta Boolean        @default(false)
+  campaign         Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  createdAt        DateTime       @default(now())
+
+  @@index([campaignId])
+  @@map("creative")
+}
+
+model Targeting {
+  id                   String       @id @default(cuid())
+  campaignId           String       @unique
+  chains               Chain[]
+  geos                 String[]
+  deviceTypes          DeviceType[]
+  segmentIds           String[]
+  minWalletAgeDays     Int?
+  minPortfolioUsdCents Int?
+  holdsAnyContract     String[]
+  excludesContracts    String[]
+  campaign             Campaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("targeting")
+}
+
+model WalletSegment {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  chain       Chain?
+  estSize     Int
+  createdAt   DateTime @default(now())
+
+  @@map("wallet_segment")
+}
+
+model MetricDaily {
+  id             String   @id @default(cuid())
+  campaignId     String
+  date           DateTime @db.Date
+  impressions    Int      @default(0)
+  clicks         Int      @default(0)
+  walletConnects Int      @default(0)
+  onChainConvs   Int      @default(0)
+  spendUsdCents  Int      @default(0)
+  campaign       Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, date])
+  @@index([date])
+  @@map("metric_daily")
+}
+
+model AttributionEvent {
+  id            String        @id @default(cuid())
+  campaignId    String
+  walletHash    String
+  eventType     AttrEventType
+  txHash        String?
+  chain         Chain?
+  valueUsdCents Int?
+  occurredAt    DateTime
+
+  @@index([campaignId, occurredAt])
+  @@index([walletHash])
+  @@map("attribution_event")
+}
+
+enum Chain {
+  ETHEREUM
+  POLYGON
+  SOLANA
+  BASE
+  ARBITRUM
+  OPTIMISM
+  BSC
+  AVALANCHE
+}
+
+enum Vertical {
+  TOKEN_LAUNCH
+  NFT_DROP
+  DEFI
+  DAPP_GROWTH
+  OTHER
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ENDED
+}
+
+enum Objective {
+  AWARENESS
+  WALLET_CONNECTS
+  ON_CHAIN_CONVERSION
+  TOKEN_HOLDERS
+}
+
+enum PricingModel {
+  CPM
+  CPC
+  CPA
+}
+
+enum BidStrategy {
+  MANUAL
+  AUTO
+  MAX_CONVERSIONS
+  TARGET_CPA
+}
+
+enum Pacing {
+  STANDARD
+  ACCELERATED
+  EVEN
+}
+
+enum CreativeFormat {
+  BANNER
+  HTML5
+  VIDEO
+  NATIVE
+}
+
+enum DeviceType {
+  DESKTOP
+  MOBILE
+}
+
+enum AttrEventType {
+  IMPRESSION
+  CLICK
+  WALLET_CONNECT
+  ON_CHAIN_CONV
+}
