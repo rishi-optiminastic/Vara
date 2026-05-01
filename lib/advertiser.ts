@@ -1,13 +1,14 @@
+import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import type { Advertiser } from "@prisma/client"
 
-export async function getOrCreateAdvertiser(
+export const getOrCreateAdvertiser = cache(async (
   userId: string,
   fallbackName: string,
-): Promise<Advertiser> {
-  return prisma.advertiser.upsert({
-    where: { userId },
-    create: { userId, projectName: fallbackName || "My Project" },
-    update: {},
+): Promise<Advertiser> => {
+  const existing = await prisma.advertiser.findUnique({ where: { userId } })
+  if (existing) return existing
+  return prisma.advertiser.create({
+    data: { userId, projectName: fallbackName || "My Project" },
   })
-}
+})

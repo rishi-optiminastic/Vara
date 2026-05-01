@@ -115,12 +115,47 @@ model Campaign {
   advertiser            Advertiser     @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
   creatives             Creative[]
   targeting             Targeting?
+  adGroups              AdGroup[]
   metrics               MetricDaily[]
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
   @@index([advertiserId, status])
   @@map("campaign")
+}
+
+model AdGroup {
+  id               String         @id @default(cuid())
+  campaignId       String
+  name             String
+  status           CampaignStatus @default(DRAFT)
+  bidUsdCents      Int
+  pricingModel     PricingModel   @default(CPM)
+  bidStrategy      BidStrategy    @default(MANUAL)
+  dailyCapUsdCents Int?
+  startDate        DateTime?
+  endDate          DateTime?
+  campaign         Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  targeting        AdGroupTargeting?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([campaignId])
+  @@map("ad_group")
+}
+
+model AdGroupTargeting {
+  id                   String       @id @default(cuid())
+  adGroupId            String       @unique
+  chains               Chain[]
+  geos                 String[]
+  deviceTypes          DeviceType[]
+  segmentIds           String[]
+  holdsAnyContract     String[]
+  excludesContracts    String[]
+  adGroup              AdGroup      @relation(fields: [adGroupId], references: [id], onDelete: Cascade)
+
+  @@map("ad_group_targeting")
 }
 
 model Creative {

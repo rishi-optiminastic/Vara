@@ -1,11 +1,12 @@
 import type { Campaign, Targeting } from "@prisma/client"
 import type {
-  CreateCampaignInput,
   UpdateCampaignInput,
   TargetingInput,
-} from "@/features/campaigns/types"
+  CreateCampaignWizardInput,
+} from "@/components/campaigns/types"
 
-interface ListResp { campaigns: (Campaign & { _count: { creatives: number } })[] }
+interface CampaignWithCount extends Campaign { _count: { creatives: number } }
+interface ListResp { campaigns: CampaignWithCount[] }
 interface OneResp { campaign: Campaign & { targeting: Targeting | null } }
 interface TargetingResp { targeting: Targeting }
 
@@ -25,9 +26,7 @@ export async function getCampaign(id: string): Promise<OneResp> {
   return jsonOrThrow(await fetch(`/api/campaigns/${id}`, { cache: "no-store" }))
 }
 
-export async function createCampaign(
-  input: CreateCampaignInput,
-): Promise<OneResp> {
+export async function createCampaignWizard(input: CreateCampaignWizardInput): Promise<OneResp> {
   return jsonOrThrow(
     await fetch("/api/campaigns", {
       method: "POST",

@@ -7,7 +7,7 @@ import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
 
 export default async function OnboardingPage(): Promise<React.JSX.Element> {
   const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect('/sign-in')
+  if (!session) redirect('/')
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
   if (advertiser.onboardedAt) redirect('/dashboard')
 
@@ -18,14 +18,11 @@ export default async function OnboardingPage(): Promise<React.JSX.Element> {
           <span className="text-xl font-medium text-[#2F3037] tracking-tight group-hover:opacity-70 transition-opacity">
             Vara
           </span>
-          <span className="text-[10px] font-medium text-foreground/55 uppercase tracking-[0.12em] border border-foreground/15 rounded-full px-2 py-0.5 bg-white">
-            Web3 DSP
-          </span>
         </Link>
 
         <header className="mb-10 flex items-start gap-5">
           <div className="hidden sm:flex shrink-0 size-12 items-center justify-center rounded-xl bg-white border border-foreground/[0.08] shadow-[0_2px_6px_-1px_rgba(55,50,47,0.06)]">
-            <span className="text-[18px]">🎯</span>
+            <span className="text-[18px]"></span>
           </div>
           <div>
             <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-foreground/50">

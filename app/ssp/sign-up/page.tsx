@@ -41,7 +41,7 @@ export default function SspSignUpPage(): React.JSX.Element {
     setError('')
     setGoogleLoading(true)
     try {
-      await signIn.social({ provider: 'google', callbackURL: '/ssp/onboarding' })
+      await signIn.social({ provider: 'google', callbackURL: '/ssp/dashboard', newUserCallbackURL: '/ssp/onboarding' })
     } catch {
       setError('Google sign-up failed. Please try again.')
       setGoogleLoading(false)

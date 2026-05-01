@@ -27,7 +27,7 @@ export default function DspSignUpPage(): React.JSX.Element {
       if (result.error) {
         setError(result.error.message || 'Failed to create account. Please try again.')
       } else {
-        router.push('/dashboard')
+        router.push('/onboarding')
         router.refresh()
       }
     } catch {
@@ -41,7 +41,7 @@ export default function DspSignUpPage(): React.JSX.Element {
     setError('')
     setGoogleLoading(true)
     try {
-      await signIn.social({ provider: 'google', callbackURL: '/dashboard' })
+      await signIn.social({ provider: 'google', callbackURL: '/dashboard', newUserCallbackURL: '/onboarding' })
     } catch {
       setError('Google sign-up failed. Please try again.')
       setGoogleLoading(false)

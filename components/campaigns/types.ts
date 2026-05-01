@@ -21,33 +21,6 @@ export const PricingModelEnum = z.nativeEnum(PricingModel)
 export const BidStrategyEnum = z.nativeEnum(BidStrategy)
 export const PacingEnum = z.nativeEnum(Pacing)
 
-export const CreateCampaignSchema = z
-  .object({
-    name: z.string().min(2).max(120),
-    description: z.string().max(1000).optional(),
-    vertical: VerticalEnum,
-    objective: ObjectiveEnum,
-    pricingModel: PricingModelEnum.default(PricingModel.CPM),
-    bidStrategy: BidStrategyEnum.default(BidStrategy.MANUAL),
-    pacing: PacingEnum.default(Pacing.STANDARD),
-    budgetUsd: z.number().min(10).max(10_000_000),
-    dailyCapUsd: z.number().min(1).optional(),
-    bidUsd: z.number().min(0.1).max(1000),
-    frequencyCapPerWallet: z.number().int().min(1).max(1000).optional(),
-    frequencyCapHours: z.number().int().min(1).max(720).optional(),
-    startDate: z.coerce.date(),
-    endDate: z.coerce.date().optional(),
-    conversionContract: z.string().optional(),
-    conversionEvent: z.string().optional(),
-    conversionWindowDays: z.number().int().min(1).max(90).optional(),
-    brandSafetyKeywords: z.array(z.string().min(1).max(60)).max(50).default([]),
-  })
-  .refine((d) => !d.endDate || d.endDate > d.startDate, {
-    message: "End date must be after start date",
-    path: ["endDate"],
-  })
-export type CreateCampaignInput = z.infer<typeof CreateCampaignSchema>
-
 export const UpdateCampaignSchema = z.object({
   name: z.string().min(2).max(120).optional(),
   description: z.string().max(1000).optional(),
@@ -82,3 +55,41 @@ export const TargetingSchema = z.object({
   excludesContracts: z.array(z.string()).default([]),
 })
 export type TargetingInput = z.infer<typeof TargetingSchema>
+
+export const AdDraftSchema = z.object({
+  name: z.string().min(1).max(100),
+  format: CreativeFormatEnum,
+  clickUrl: z.string().url("Must be a valid URL"),
+  assetUrl: z.string().url("Must be a valid URL"),
+  walletConnectCta: z.boolean().default(false),
+})
+export type AdDraft = z.infer<typeof AdDraftSchema>
+
+export const CreateCampaignWizardSchema = z
+  .object({
+    name: z.string().min(2).max(120),
+    description: z.string().max(1000).optional(),
+    vertical: VerticalEnum,
+    objective: ObjectiveEnum,
+    status: StatusEnum.default(CampaignStatus.DRAFT),
+    pricingModel: PricingModelEnum.default(PricingModel.CPM),
+    bidStrategy: BidStrategyEnum.default(BidStrategy.MANUAL),
+    pacing: PacingEnum.default(Pacing.STANDARD),
+    budgetUsd: z.number().min(10).max(10_000_000),
+    dailyCapUsd: z.number().min(1).optional(),
+    bidUsd: z.number().min(0.1).max(1000),
+    frequencyCapPerWallet: z.number().int().min(1).max(1000).optional(),
+    frequencyCapHours: z.number().int().min(1).max(720).optional(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    brandSafetyKeywords: z.array(z.string().min(1).max(60)).max(50).default([]),
+    chains: z.array(ChainEnum).default([]),
+    geos: z.array(z.string().length(2)).default([]),
+    deviceTypes: z.array(DeviceTypeEnum).default([]),
+    ads: z.array(AdDraftSchema).max(3).default([]),
+  })
+  .refine((d) => !d.endDate || d.endDate > d.startDate, {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  })
+export type CreateCampaignWizardInput = z.infer<typeof CreateCampaignWizardSchema>

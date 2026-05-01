@@ -56,7 +56,7 @@ function DspSignInForm(): React.JSX.Element {
     setError('')
     setGoogleLoading(true)
     try {
-      await signIn.social({ provider: 'google', callbackURL: callbackUrl })
+      await signIn.social({ provider: 'google', callbackURL: callbackUrl, newUserCallbackURL: '/onboarding' })
     } catch {
       setError('Google sign-in failed. Please try again.')
       setGoogleLoading(false)

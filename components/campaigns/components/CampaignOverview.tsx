@@ -3,15 +3,15 @@ import { centsToUsd, formatCompact } from "@/lib/money"
 import { chainName } from "@/lib/chains"
 import { Card, CardContent } from "@/components/ui/card"
 import {
-  DollarSign,
-  Eye,
-  MousePointer,
-  Wallet,
-  Sparkles,
-  CalendarDays,
-  Target as TargetIcon,
-  Image as ImageIcon,
-} from "lucide-react"
+  SpendIcon,
+  EyeScannerIcon,
+  ClicksIcon,
+  WalletIcon,
+  OnChainIcon,
+  CalendarCheckIcon,
+  CampaignsIcon,
+  GearIcon,
+} from "@/icons"
 
 type CampaignWithRel = Campaign & { targeting: Targeting | null; creatives: Creative[] }
 
@@ -27,9 +27,10 @@ interface Props {
   campaign: CampaignWithRel
   metrics: MetricsSum
   segments: WalletSegment[]
+  rangeDays?: number
 }
 
-export function CampaignOverview({ campaign, metrics, segments }: Props): React.JSX.Element {
+export function CampaignOverview({ campaign, metrics, segments, rangeDays = 30 }: Props): React.JSX.Element {
   const spent = metrics.spendUsdCents
   const budget = campaign.budgetUsdCents
   const spentPct = Math.min(100, Math.round((spent / Math.max(1, budget)) * 100))
@@ -53,20 +54,20 @@ export function CampaignOverview({ campaign, metrics, segments }: Props): React.
     .filter(Boolean) as string[]
 
   const KPIS = [
-    { label: "Spend", value: centsToUsd(spent), icon: DollarSign, tint: "bg-[#FFF3E8] text-[#C2410C]" },
-    { label: "Impressions", value: formatCompact(metrics.impressions), icon: Eye, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
-    { label: "Clicks", value: formatCompact(metrics.clicks), icon: MousePointer, tint: "bg-[#F0E8FF] text-[#6D28D9]" },
-    { label: "Wallet Conn.", value: formatCompact(metrics.walletConnects), icon: Wallet, tint: "bg-[#E8F5E9] text-[#15803D]" },
-    { label: "On-chain Conv.", value: formatCompact(metrics.onChainConvs), icon: Sparkles, tint: "bg-[#FFF7E0] text-[#A16207]" },
+    { label: "Spend", value: centsToUsd(spent), icon: SpendIcon, tint: "bg-[#FFF3E8] text-[#C2410C]" },
+    { label: "Impressions", value: formatCompact(metrics.impressions), icon: EyeScannerIcon, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
+    { label: "Clicks", value: formatCompact(metrics.clicks), icon: ClicksIcon, tint: "bg-[#F0E8FF] text-[#6D28D9]" },
+    { label: "Wallet Conn.", value: formatCompact(metrics.walletConnects), icon: WalletIcon, tint: "bg-[#E8F5E9] text-[#15803D]" },
+    { label: "On-chain Conv.", value: formatCompact(metrics.onChainConvs), icon: OnChainIcon, tint: "bg-[#FFF7E0] text-[#A16207]" },
   ]
 
   return (
     <div className="flex flex-col gap-3">
-      <KpiStrip kpis={KPIS} />
+      <KpiStrip kpis={KPIS} rangeDays={rangeDays} />
 
       <div className="grid gap-3 lg:grid-cols-2">
         <PacingCard
-          icon={DollarSign}
+          icon={SpendIcon}
           label="Budget pacing"
           primary={`${centsToUsd(spent)} of ${centsToUsd(budget)}`}
           sub={`${centsToUsd(remaining)} remaining · ${spentPct}% spent`}
@@ -76,7 +77,7 @@ export function CampaignOverview({ campaign, metrics, segments }: Props): React.
           rightValue={cpm > 0 ? centsToUsd(Math.round(cpm)) : "—"}
         />
         <PacingCard
-          icon={CalendarDays}
+          icon={CalendarCheckIcon}
           label="Schedule pacing"
           primary={daysTotal != null ? `Day ${daysElapsed} of ${daysTotal}` : `${daysElapsed} days running`}
           sub={`Started ${dateLabel(start)}${end ? ` · ends ${dateLabel(end)}` : " · open-ended"}`}
@@ -87,7 +88,7 @@ export function CampaignOverview({ campaign, metrics, segments }: Props): React.
         />
       </div>
 
-      <SectionCard icon={TargetIcon} title="Targeting summary">
+      <SectionCard icon={CampaignsIcon} title="Targeting summary">
         {!campaign.targeting || isEmpty(campaign.targeting) ? (
           <p className="text-[11px] text-muted-foreground">No targeting configured yet.</p>
         ) : (
@@ -108,7 +109,7 @@ export function CampaignOverview({ campaign, metrics, segments }: Props): React.
         )}
       </SectionCard>
 
-      <SectionCard icon={ImageIcon} title="Configuration">
+      <SectionCard icon={GearIcon} title="Configuration">
         <div className="grid grid-cols-2 gap-x-6 gap-y-3 lg:grid-cols-4">
           <Field label="Objective" value={campaign.objective.replace(/_/g, " ").toLowerCase()} capitalize />
           <Field label="Pricing" value={campaign.pricingModel} />
@@ -149,9 +150,15 @@ export function CampaignOverview({ campaign, metrics, segments }: Props): React.
   )
 }
 
-function KpiStrip({ kpis }: { kpis: { label: string; value: string; icon: React.ElementType; tint: string }[] }): React.JSX.Element {
+type Kpi = { label: string; value: string; icon: React.ElementType; tint: string }
+
+function KpiStrip({ kpis, rangeDays }: { kpis: Kpi[]; rangeDays: number }): React.JSX.Element {
   return (
     <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)] overflow-hidden">
+      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.08)] px-3 py-1.5">
+        <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Performance</span>
+        <span className="text-[10px] text-muted-foreground tabular-nums">Last {rangeDays} days</span>
+      </div>
       <div className="grid grid-cols-2 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-[rgba(55,50,47,0.08)]">
         {kpis.map((k) => (
           <div key={k.label} className="px-3 py-3">

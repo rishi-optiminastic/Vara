@@ -150,7 +150,7 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
         <Button
           asChild
           size="sm"
-          className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[0_0_0_2.5px_rgba(255,255,255,0.08)_inset]"
+          className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
         >
           <Link href="/ssp/dashboard/inventory">
             <Sparkles className="size-3" />

@@ -91,7 +91,7 @@ export function StepSite({ values, errors, onChange }: Props): React.JSX.Element
                 onClick={() => onChange({ inventoryCategory: c })}
                 className={`h-10 rounded-md border text-xs font-medium transition-all ${
                   active
-                    ? 'bg-[#37322F] text-white border-[#37322F] shadow-[0_0_0_2.5px_rgba(255,255,255,0.08)_inset]'
+                    ? 'bg-[#37322F] text-white border-[#37322F] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]'
                     : 'bg-white text-[#37322F] border-[#E0DEDB] hover:border-[rgba(55,50,47,0.32)]'
                 }`}
               >

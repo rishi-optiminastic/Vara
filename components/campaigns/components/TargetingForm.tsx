@@ -162,7 +162,7 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
           )}
 
           <div className="flex justify-end pt-2 border-t border-[rgba(55,50,47,0.08)]">
-            <Button type="submit" size="sm" disabled={saving} className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[0_0_0_2.5px_rgba(255,255,255,0.08)_inset]">
+            <Button type="submit" size="sm" disabled={saving} className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]">
               {saving && <Loader2 className="size-3 animate-spin" />}
               Save targeting
             </Button>

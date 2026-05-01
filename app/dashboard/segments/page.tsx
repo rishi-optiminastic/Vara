@@ -1,12 +1,11 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { getCachedSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
 export default async function SegmentsPage(): Promise<React.JSX.Element> {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getCachedSession()
   if (!session) redirect("/sign-in")
   const segments = await prisma.walletSegment.findMany({ orderBy: { name: "asc" } })
 

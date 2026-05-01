@@ -16,6 +16,7 @@
 
 - **Never create a file longer than 250 lines.** If approaching the limit, split into smaller modules before continuing.
 - One component per file. No exceptions.
+- **Exception: `prisma/schema.prisma` has no line limit.** The schema grows with the data model and must not be split.
 
 ### Functions
 
@@ -129,3 +130,4 @@ env.ts                # Type-safe env vars (t3-oss/env-nextjs)
 - Don't create a new Context when Zustand already handles that state
 - Don't write inline styles — use Tailwind classes
 - Don't generate placeholder/TODO code and leave it — finish what you start
+- **Never import icons from `lucide-react`.** All icons must be custom SVG components in `icons/` following the established pattern (18×18 viewBox, `IconProps` type, `fill` + `secondaryfill` at 0.4 opacity). Add new icons to `icons/index.ts` and export them as named exports.

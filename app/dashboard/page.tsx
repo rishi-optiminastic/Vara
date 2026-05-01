@@ -1,33 +1,39 @@
 import Link from "next/link"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { getCachedSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { getOrCreateAdvertiser } from "@/lib/advertiser"
 import { centsToUsd, formatCompact } from "@/lib/money"
 import { chainName } from "@/lib/chains"
+import { parseRange, rangeSinceDate, rangeShortLabel } from "@/lib/dateRange"
 import type { Chain } from "@prisma/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/campaigns/components/StatusBadge"
+import { DateRangeSelector } from "@/components/DateRangeSelector"
 import {
-  Sparkles,
-  TrendingUp,
-  DollarSign,
-  Eye,
-  MousePointer,
-  Activity,
-  ArrowUpRight,
-} from "lucide-react"
+  InsightsIcon,
+  SpendIcon,
+  EyeScannerIcon,
+  ClicksIcon,
+  GaugeIcon,
+  CircleOpenArrowRight,
+  BoxPlusIcon,
+} from "@/icons"
 
-export default async function DashboardPage(): Promise<React.JSX.Element> {
-  const session = await auth.api.getSession({ headers: await headers() })
+interface PageProps {
+  searchParams: Promise<Record<string, string | undefined>>
+}
+
+export default async function DashboardPage({ searchParams }: PageProps): Promise<React.JSX.Element> {
+  const session = await getCachedSession()
   if (!session) redirect("/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
-  const since = new Date()
-  since.setDate(since.getDate() - 30)
+  const params = await searchParams
+  const rangeDays = parseRange(params["range"])
+  const since = rangeSinceDate(rangeDays)
 
   const [agg, activeCount, recent] = await Promise.all([
     prisma.metricDaily.aggregate({
@@ -49,10 +55,10 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
   const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0
 
   const stats = [
-    { label: "Spend (30d)", value: centsToUsd(sums.spendUsdCents ?? 0), icon: DollarSign, tint: "bg-[#FFF3E8] text-[#C2410C]" },
-    { label: "Impressions", value: formatCompact(impressions), icon: Eye, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
-    { label: "CTR", value: `${ctr.toFixed(2)}%`, icon: MousePointer, tint: "bg-[#F0E8FF] text-[#6D28D9]" },
-    { label: "Active", value: String(activeCount), icon: Activity, tint: "bg-[#E8F5E9] text-[#15803D]" },
+    { label: `Spend (${rangeShortLabel(rangeDays)})`, value: centsToUsd(sums.spendUsdCents ?? 0), icon: SpendIcon, tint: "bg-[#FFF3E8] text-[#C2410C]" },
+    { label: "Impressions", value: formatCompact(impressions), icon: EyeScannerIcon, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
+    { label: "CTR", value: `${ctr.toFixed(2)}%`, icon: ClicksIcon, tint: "bg-[#F0E8FF] text-[#6D28D9]" },
+    { label: "Active", value: String(activeCount), icon: GaugeIcon, tint: "bg-[#E8F5E9] text-[#15803D]" },
   ]
 
   return (
@@ -67,12 +73,15 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
           </h1>
           <p className="text-[11px] text-muted-foreground mt-1.5">Live Web3 campaign performance.</p>
         </div>
-        <Button asChild size="sm" className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[0_0_0_2.5px_rgba(255,255,255,0.08)_inset]">
-          <Link href="/dashboard/campaigns/new">
-            <Sparkles className="size-3" />
-            New Campaign
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <DateRangeSelector />
+          <Button asChild size="sm" className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_10px_rgba(55,50,47,0.18)]">
+            <Link href="/dashboard/campaigns/new">
+              <BoxPlusIcon className="size-3" />
+              New Campaign
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
@@ -87,8 +96,8 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
               </div>
               <div className="text-[22px] font-medium tracking-tight tabular-nums text-[#37322F] leading-none">{s.value}</div>
               <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
-                <TrendingUp className="size-3" />
-                <span>last 30 days</span>
+                <InsightsIcon className="size-3" />
+                <span>last {rangeDays} days</span>
               </div>
             </CardContent>
           </Card>
@@ -102,7 +111,7 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
             <p className="text-[10px] text-muted-foreground">Most recently updated</p>
           </div>
           <Button asChild variant="ghost" size="sm" className="h-6 gap-1 text-[10px] hover:bg-[#F0ECE6]">
-            <Link href="/dashboard/campaigns">View all <ArrowUpRight className="size-2.5" /></Link>
+            <Link href="/dashboard/campaigns">View all <CircleOpenArrowRight className="size-2.5" /></Link>
           </Button>
         </div>
         <CardContent className="p-0">
@@ -143,7 +152,7 @@ export default async function DashboardPage(): Promise<React.JSX.Element> {
                     </div>
                   </div>
                   <StatusBadge status={c.status} />
-                  <ArrowUpRight className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <CircleOpenArrowRight className="size-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </li>
               ))}
             </ul>

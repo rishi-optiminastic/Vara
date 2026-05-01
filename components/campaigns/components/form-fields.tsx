@@ -1,7 +1,11 @@
 "use client"
 
+import { useState } from "react"
+import { CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -10,6 +14,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+
+function toDate(str: string): Date | undefined {
+  if (!str) return undefined
+  const parts = str.split("-").map(Number)
+  return new Date(parts[0]!, parts[1]! - 1, parts[2]!)
+}
+
+function toStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
 
 interface SectionProps {
   title: string
@@ -127,6 +141,47 @@ export function TextareaField(p: TextareaProps): React.JSX.Element {
         rows={p.rows ?? 2}
         className="text-xs resize-none"
       />
+      {p.hint && <p className="text-[10px] text-muted-foreground">{p.hint}</p>}
+    </div>
+  )
+}
+
+interface DatePickerProps {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  hint?: string
+  placeholder?: string
+}
+
+export function DatePickerField(p: DatePickerProps): React.JSX.Element {
+  const [open, setOpen] = useState(false)
+  const selected = toDate(p.value)
+  const display = selected
+    ? selected.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : (p.placeholder ?? "Pick a date")
+
+  return (
+    <div className="space-y-1">
+      <Label className="text-[10px] uppercase tracking-widest">{p.label}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={`flex h-8 w-full items-center gap-2 rounded-md border border-input bg-background px-2.5 text-xs transition-colors hover:bg-accent hover:text-accent-foreground ${!selected ? "text-muted-foreground" : "text-[#37322F]"}`}
+          >
+            <CalendarIcon className="size-3 shrink-0 text-muted-foreground" />
+            {display}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="single"
+            selected={selected}
+            onSelect={(d) => { p.onChange(d ? toStr(d) : ""); setOpen(false) }}
+          />
+        </PopoverContent>
+      </Popover>
       {p.hint && <p className="text-[10px] text-muted-foreground">{p.hint}</p>}
     </div>
   )
