@@ -1,8 +1,7 @@
 'use client'
 
-import { BusinessType } from '@prisma/client'
 import { Field } from './Field'
-import { BUSINESS_TYPE_LABELS, type OnboardingStep1Input } from './types'
+import { BUSINESS_TYPE_LABELS, BUSINESS_TYPES, type BusinessType, type OnboardingStep1Input } from './types'
 
 type Errors = Partial<Record<keyof OnboardingStep1Input, string>>
 
@@ -12,7 +11,7 @@ interface Props {
   onChange: (patch: Partial<OnboardingStep1Input>) => void
 }
 
-const TYPES: BusinessType[] = ['DEFI', 'NFT', 'GAMING', 'EXCHANGE', 'WALLET', 'OTHER']
+const TYPES: readonly BusinessType[] = BUSINESS_TYPES
 
 export function Step1Account({ values, errors, onChange }: Props): React.JSX.Element {
   return (

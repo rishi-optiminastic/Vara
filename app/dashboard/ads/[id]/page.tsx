@@ -23,7 +23,7 @@ const FORMAT_STYLE: Record<string, string> = {
 export default async function AdDetailPage({ params }: Props): Promise<React.JSX.Element> {
   const { id } = await params
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
   const creative = await prisma.creative.findFirst({

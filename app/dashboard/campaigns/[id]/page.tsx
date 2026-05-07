@@ -25,7 +25,7 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
   const rangeDays = parseRange(sp["range"])
   const since = rangeSinceDate(rangeDays)
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
   const [campaign, segments, agg] = await Promise.all([

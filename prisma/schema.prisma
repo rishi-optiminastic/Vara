@@ -24,6 +24,7 @@ model User {
   sessions   Session[]
   accounts   Account[]
   advertiser Advertiser?
+  publisher  Publisher?
 
   @@map("user")
 }
@@ -84,10 +85,253 @@ model Advertiser {
   chain         Chain      @default(ETHEREUM)
   user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   campaigns     Campaign[]
+  wallet        Wallet?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
   @@map("advertiser")
+}
+
+model Wallet {
+  id                      String              @id @default(cuid())
+  advertiserId            String              @unique
+  balanceUsdcCents        Int                 @default(0)
+  pendingUsdcCents        Int                 @default(0)
+  reservedUsdcCents       Int                 @default(0)
+  totalDepositedUsdcCents Int                 @default(0)
+  totalSpentUsdcCents     Int                 @default(0)
+  advertiser              Advertiser          @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  deposits                Deposit[]
+  transactions            WalletTransaction[]
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  @@map("wallet")
+}
+
+model Deposit {
+  id              String         @id @default(cuid())
+  walletId        String
+  chain           Chain          @default(ETHEREUM)
+  network         DepositNetwork @default(SEPOLIA)
+  txHash          String         @unique
+  fromAddress     String
+  toAddress       String
+  amountUsdcCents Int
+  status          DepositStatus  @default(CONFIRMED)
+  blockNumber     Int?
+  confirmedAt     DateTime?
+  wallet          Wallet         @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdAt       DateTime       @default(now())
+
+  @@index([walletId])
+  @@map("deposit")
+}
+
+model WalletTransaction {
+  id              String         @id @default(cuid())
+  walletId        String
+  type            WalletTxType
+  status          WalletTxStatus @default(COMPLETED)
+  amountUsdcCents Int
+  description     String
+  source          String
+  txHash          String?
+  depositId       String?
+  occurredAt      DateTime       @default(now())
+  wallet          Wallet         @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId, occurredAt])
+  @@map("wallet_transaction")
+}
+
+enum DepositNetwork {
+  MAINNET
+  SEPOLIA
+}
+
+enum DepositStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum WalletTxType {
+  DEPOSIT
+  AD_SPEND
+  REFUND
+  WITHDRAWAL
+}
+
+enum WalletTxStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+// ===================== Vara Ads SSP =====================
+
+model Publisher {
+  id          String            @id @default(cuid())
+  userId      String            @unique
+  siteName    String
+  primaryUrl  String?
+  category    InventoryCategory @default(OTHER)
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  placements  Placement[]
+  wallet      PublisherWallet?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@map("publisher")
+}
+
+model Placement {
+  id                  String             @id @default(cuid())
+  publisherId         String
+  name                String
+  format              AdFormat
+  chains              Chain[]
+  status              PlacementStatus    @default(LIVE)
+  width               Int?
+  height              Int?
+  floorPriceUsdcCents Int                @default(0)
+  publisher           Publisher          @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+  earnings            PublisherEarning[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([publisherId])
+  @@map("placement")
+}
+
+model PublisherWallet {
+  id                      String               @id @default(cuid())
+  publisherId             String               @unique
+  payoutAddress           String?
+  payoutChain             Chain                @default(BASE)
+  payoutNetwork           DepositNetwork       @default(SEPOLIA)
+  revShareBps             Int                  @default(7000)
+  availableUsdcCents      Int                  @default(0)
+  pendingUsdcCents        Int                  @default(0)
+  lifetimeEarnedUsdcCents Int                  @default(0)
+  lifetimePaidUsdcCents   Int                  @default(0)
+  publisher               Publisher            @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+  earnings                PublisherEarning[]
+  payouts                 Payout[]
+  statements              PublisherStatement[]
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+
+  @@map("publisher_wallet")
+}
+
+model PublisherEarning {
+  id                String              @id @default(cuid())
+  publisherWalletId String
+  placementId       String?
+  statementId       String?
+  date              DateTime            @db.Date
+  impressions       Int                 @default(0)
+  clicks            Int                 @default(0)
+  grossUsdcCents    Int                 @default(0)
+  feeUsdcCents      Int                 @default(0)
+  netUsdcCents      Int                 @default(0)
+  status            EarningStatus       @default(PENDING)
+  publisherWallet   PublisherWallet     @relation(fields: [publisherWalletId], references: [id], onDelete: Cascade)
+  placement         Placement?          @relation(fields: [placementId], references: [id], onDelete: SetNull)
+  statement         PublisherStatement? @relation(fields: [statementId], references: [id], onDelete: SetNull)
+  createdAt         DateTime            @default(now())
+
+  @@index([publisherWalletId, date])
+  @@index([statementId])
+  @@map("publisher_earning")
+}
+
+model PublisherStatement {
+  id                String             @id @default(cuid())
+  publisherWalletId String
+  periodStart       DateTime           @db.Date
+  periodEnd         DateTime           @db.Date
+  impressions       Int                @default(0)
+  clicks            Int                @default(0)
+  grossUsdcCents    Int                @default(0)
+  feeUsdcCents      Int                @default(0)
+  netUsdcCents      Int                @default(0)
+  status            StatementStatus    @default(OPEN)
+  publisherWallet   PublisherWallet    @relation(fields: [publisherWalletId], references: [id], onDelete: Cascade)
+  earnings          PublisherEarning[]
+  payouts           Payout[]
+  createdAt         DateTime           @default(now())
+  finalizedAt       DateTime?
+
+  @@index([publisherWalletId, periodStart])
+  @@map("publisher_statement")
+}
+
+model Payout {
+  id                String              @id @default(cuid())
+  publisherWalletId String
+  statementId       String?
+  chain             Chain
+  network           DepositNetwork      @default(SEPOLIA)
+  amountUsdcCents   Int
+  feeUsdcCents      Int                 @default(0)
+  toAddress         String
+  txHash            String?             @unique
+  status            PayoutStatus        @default(PENDING)
+  failureReason     String?
+  initiatedAt       DateTime            @default(now())
+  settledAt         DateTime?
+  publisherWallet   PublisherWallet     @relation(fields: [publisherWalletId], references: [id], onDelete: Cascade)
+  statement         PublisherStatement? @relation(fields: [statementId], references: [id], onDelete: SetNull)
+
+  @@index([publisherWalletId, initiatedAt])
+  @@map("payout")
+}
+
+enum EarningStatus {
+  PENDING
+  CLEARED
+  PAID
+  REVERSED
+}
+
+enum StatementStatus {
+  OPEN
+  FINALIZED
+  PAID
+}
+
+enum PayoutStatus {
+  PENDING
+  SUBMITTED
+  CONFIRMED
+  FAILED
+}
+
+enum PlacementStatus {
+  DRAFT
+  LIVE
+  PAUSED
+}
+
+enum AdFormat {
+  BANNER
+  NATIVE
+  INTERSTITIAL
+  WALLET_CONTEXTUAL
+  VIDEO
+}
+
+enum InventoryCategory {
+  DEFI
+  NFT
+  GAMING
+  NEWS
+  SOCIAL
+  TOOLS
+  OTHER
 }
 
 model Campaign {

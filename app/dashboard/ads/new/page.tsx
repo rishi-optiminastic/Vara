@@ -10,7 +10,7 @@ interface Props {
 
 export default async function NewAdPage({ searchParams }: Props): Promise<React.JSX.Element> {
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
   const { campaign: defaultCampaignId = "" } = await searchParams
 

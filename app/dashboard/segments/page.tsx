@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 
 export default async function SegmentsPage(): Promise<React.JSX.Element> {
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const segments = await prisma.walletSegment.findMany({ orderBy: { name: "asc" } })
 
   return (

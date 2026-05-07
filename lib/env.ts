@@ -10,6 +10,11 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().url(),
     GOOGLE_CLIENT_ID: z.string().min(1),
     GOOGLE_CLIENT_SECRET: z.string().min(1),
+    WALLET_DEPOSIT_RECEIVER_SEPOLIA: z
+      .string()
+      .regex(/^0x[a-fA-F0-9]{40}$/, "Must be a valid 0x… 20-byte address")
+      .optional(),
+    SEPOLIA_RPC_URL: z.string().url().default("https://ethereum-sepolia-rpc.publicnode.com"),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -22,6 +27,8 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    WALLET_DEPOSIT_RECEIVER_SEPOLIA: process.env.WALLET_DEPOSIT_RECEIVER_SEPOLIA,
+    SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

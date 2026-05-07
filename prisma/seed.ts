@@ -1,4 +1,16 @@
-import { PrismaClient, Chain, Vertical, Objective, CampaignStatus, AttrEventType } from "@prisma/client"
+import {
+  PrismaClient,
+  Chain,
+  Vertical,
+  Objective,
+  CampaignStatus,
+  AttrEventType,
+  AdFormat,
+  PlacementStatus,
+  EarningStatus,
+  PayoutStatus,
+  StatementStatus,
+} from "@prisma/client"
 import { createHash } from "node:crypto"
 
 const prisma = new PrismaClient()
@@ -44,6 +56,7 @@ async function main(): Promise<void> {
   const existing = await prisma.campaign.count({ where: { advertiserId: advertiser.id } })
   if (existing > 0) {
     console.log(`Advertiser already has ${existing} campaigns — skipping demo seed.`)
+    await seedPublisherPayouts(firstUser.id, firstUser.name)
     return
   }
 
@@ -100,6 +113,162 @@ async function main(): Promise<void> {
   }
 
   console.log(`Seeded ${demos.length} demo campaigns with 30 days of metrics.`)
+
+  await seedPublisherPayouts(firstUser.id, firstUser.name)
+}
+
+async function seedPublisherPayouts(userId: string, userName: string): Promise<void> {
+  const publisher = await prisma.publisher.upsert({
+    where: { userId },
+    create: { userId, siteName: userName ? `${userName}'s Network` : "Demo Network" },
+    update: {},
+  })
+
+  const placementSpecs: Array<{ name: string; format: AdFormat; chains: Chain[] }> = [
+    { name: "homepage_top", format: AdFormat.BANNER, chains: [Chain.BASE, Chain.ETHEREUM] },
+    { name: "sidebar_native", format: AdFormat.NATIVE, chains: [Chain.POLYGON] },
+    { name: "wallet_connect_modal", format: AdFormat.WALLET_CONTEXTUAL, chains: [Chain.BASE] },
+  ]
+
+  const placements = await Promise.all(
+    placementSpecs.map(spec =>
+      prisma.placement.upsert({
+        where: { id: `seed-${publisher.id}-${spec.name}` },
+        create: {
+          id: `seed-${publisher.id}-${spec.name}`,
+          publisherId: publisher.id,
+          name: spec.name,
+          format: spec.format,
+          chains: spec.chains,
+          status: PlacementStatus.LIVE,
+          floorPriceUsdcCents: 25,
+        },
+        update: {},
+      }),
+    ),
+  )
+
+  const wallet = await prisma.publisherWallet.upsert({
+    where: { publisherId: publisher.id },
+    create: {
+      publisherId: publisher.id,
+      payoutAddress: "0x7a3F4119AAA4D8dBd0e2EAaAaa0123BBBcccDdEeFf21bC",
+      payoutChain: Chain.BASE,
+      revShareBps: 7000,
+    },
+    update: {},
+  })
+
+  const existing = await prisma.publisherEarning.count({ where: { publisherWalletId: wallet.id } })
+  if (existing > 0) {
+    console.log(`Publisher already has ${existing} earnings — skipping.`)
+    return
+  }
+
+  console.log("Seeding publisher earnings, statements, and payouts…")
+
+  const today = new Date()
+  today.setUTCHours(0, 0, 0, 0)
+
+  let totalGross = 0
+  let totalNet = 0
+  let totalImpr = 0
+  let totalClicks = 0
+
+  for (let i = 89; i >= 0; i--) {
+    const date = new Date(today)
+    date.setUTCDate(date.getUTCDate() - i)
+    for (const placement of placements) {
+      const impressions = Math.floor(2_000 + Math.random() * 6_000)
+      const clicks = Math.floor(impressions * (0.015 + Math.random() * 0.03))
+      const grossUsdcCents = Math.floor((impressions / 1_000) * (60 + Math.random() * 80))
+      const netUsdcCents = Math.floor((grossUsdcCents * wallet.revShareBps) / 10_000)
+      const feeUsdcCents = grossUsdcCents - netUsdcCents
+      const status =
+        i < 7 ? EarningStatus.PENDING : i < 30 ? EarningStatus.CLEARED : EarningStatus.PAID
+      await prisma.publisherEarning.create({
+        data: {
+          publisherWalletId: wallet.id,
+          placementId: placement.id,
+          date,
+          impressions,
+          clicks,
+          grossUsdcCents,
+          feeUsdcCents,
+          netUsdcCents,
+          status,
+        },
+      })
+      totalGross += grossUsdcCents
+      totalNet += netUsdcCents
+      totalImpr += impressions
+      totalClicks += clicks
+    }
+  }
+
+  const pendingNet = await prisma.publisherEarning.aggregate({
+    where: { publisherWalletId: wallet.id, status: EarningStatus.PENDING },
+    _sum: { netUsdcCents: true },
+  })
+  const clearedNet = await prisma.publisherEarning.aggregate({
+    where: { publisherWalletId: wallet.id, status: EarningStatus.CLEARED },
+    _sum: { netUsdcCents: true },
+  })
+  const paidNet = await prisma.publisherEarning.aggregate({
+    where: { publisherWalletId: wallet.id, status: EarningStatus.PAID },
+    _sum: { netUsdcCents: true },
+  })
+
+  await prisma.publisherWallet.update({
+    where: { id: wallet.id },
+    data: {
+      pendingUsdcCents: pendingNet._sum.netUsdcCents ?? 0,
+      availableUsdcCents: clearedNet._sum.netUsdcCents ?? 0,
+      lifetimeEarnedUsdcCents: totalNet,
+      lifetimePaidUsdcCents: paidNet._sum.netUsdcCents ?? 0,
+    },
+  })
+
+  for (let m = 0; m < 3; m++) {
+    const periodEnd = new Date(today)
+    periodEnd.setUTCDate(today.getUTCDate() - m * 30 - 1)
+    const periodStart = new Date(periodEnd)
+    periodStart.setUTCDate(periodEnd.getUTCDate() - 29)
+    const status = m === 0 ? StatementStatus.OPEN : StatementStatus.PAID
+    const grossCents = Math.floor(totalGross / 9)
+    const netCents = Math.floor((grossCents * wallet.revShareBps) / 10_000)
+    const stmt = await prisma.publisherStatement.create({
+      data: {
+        publisherWalletId: wallet.id,
+        periodStart,
+        periodEnd,
+        impressions: Math.floor(totalImpr / 9),
+        clicks: Math.floor(totalClicks / 9),
+        grossUsdcCents: grossCents,
+        feeUsdcCents: grossCents - netCents,
+        netUsdcCents: netCents,
+        status,
+        finalizedAt: status === StatementStatus.PAID ? periodEnd : null,
+      },
+    })
+    if (status === StatementStatus.PAID) {
+      await prisma.payout.create({
+        data: {
+          publisherWalletId: wallet.id,
+          statementId: stmt.id,
+          chain: Chain.BASE,
+          amountUsdcCents: netCents,
+          feeUsdcCents: 50,
+          toAddress: wallet.payoutAddress ?? "0x0",
+          txHash: `0x${createHash("sha256").update(`payout-${stmt.id}`).digest("hex").slice(0, 60)}`,
+          status: PayoutStatus.CONFIRMED,
+          settledAt: new Date(periodEnd.getTime() + 24 * 60 * 60 * 1000),
+        },
+      })
+    }
+  }
+
+  console.log("Seeded publisher payout demo data.")
 }
 
 main()

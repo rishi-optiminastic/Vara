@@ -16,7 +16,7 @@ interface Props { params: Promise<{ id: string }> }
 export default async function AdGroupDetailPage({ params }: Props): Promise<React.JSX.Element> {
   const { id } = await params
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
   const adGroup = await prisma.adGroup.findFirst({

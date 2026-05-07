@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { getOrCreatePublisher } from '@/lib/publisher'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,103 +14,57 @@ import {
   Eye,
   Activity,
   ArrowUpRight,
-  Globe,
   Image as ImageIcon,
   Layers,
   Smartphone,
+  Wallet,
+  PlaySquare,
   CheckCircle2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { AdFormat, Payout, Placement, PlacementStatus } from '@prisma/client'
+import { AD_FORMAT_LABELS, CHAIN_LABELS } from '@/components/ssp/inventory/types'
+import { chainName } from '@/lib/chains'
+import { getOrCreatePublisherWallet } from '@/lib/publisherWallet'
+import { centsToUsd, formatCompact } from '@/lib/money'
 
-interface PlacementMock {
-  id: string
-  name: string
-  format: string
-  formatIcon: LucideIcon
-  tint: string
-  ecpm: string
-  impressions: string
-  fillRate: string
-  status: 'LIVE' | 'PAUSED'
-  chains: string[]
+const FORMAT_ICON: Record<AdFormat, LucideIcon> = {
+  BANNER: ImageIcon,
+  NATIVE: Layers,
+  INTERSTITIAL: Smartphone,
+  WALLET_CONTEXTUAL: Wallet,
+  VIDEO: PlaySquare,
 }
 
-const PLACEMENTS: PlacementMock[] = [
-  {
-    id: 'p1',
-    name: 'homepage_top_970x250',
-    format: 'Display',
-    formatIcon: ImageIcon,
-    tint: 'bg-[#EAF1FF] text-[#1E40AF]',
-    ecpm: '$4.82',
-    impressions: '1.2M',
-    fillRate: '96%',
-    status: 'LIVE',
-    chains: ['Base', 'Polygon'],
-  },
-  {
-    id: 'p2',
-    name: 'article_inline_native',
-    format: 'Native',
-    formatIcon: Layers,
-    tint: 'bg-[#F0E8FF] text-[#6D28D9]',
-    ecpm: '$3.41',
-    impressions: '812k',
-    fillRate: '92%',
-    status: 'LIVE',
-    chains: ['Ethereum'],
-  },
-  {
-    id: 'p3',
-    name: 'mobile_interstitial',
-    format: 'Interstitial',
-    formatIcon: Smartphone,
-    tint: 'bg-[#FFF3E8] text-[#C2410C]',
-    ecpm: '$6.14',
-    impressions: '640k',
-    fillRate: '88%',
-    status: 'LIVE',
-    chains: ['Solana'],
-  },
-  {
-    id: 'p4',
-    name: 'sidebar_300x600',
-    format: 'Display',
-    formatIcon: ImageIcon,
-    tint: 'bg-[#EAF1FF] text-[#1E40AF]',
-    ecpm: '$2.20',
-    impressions: '248k',
-    fillRate: '78%',
-    status: 'PAUSED',
-    chains: ['Polygon'],
-  },
-  {
-    id: 'p5',
-    name: 'wallet_contextual_card',
-    format: 'Wallet',
-    formatIcon: Globe,
-    tint: 'bg-[#E8F5E9] text-[#15803D]',
-    ecpm: '$8.90',
-    impressions: '184k',
-    fillRate: '94%',
-    status: 'LIVE',
-    chains: ['Base', 'Arbitrum'],
-  },
-]
-
-interface PayoutMock {
-  wallet: string
-  amount: string
-  chain: string
-  ago: string
+const FORMAT_TINT: Record<AdFormat, string> = {
+  BANNER: 'bg-[#EAF1FF] text-[#1E40AF]',
+  NATIVE: 'bg-[#F0E8FF] text-[#6D28D9]',
+  INTERSTITIAL: 'bg-[#FFF3E8] text-[#C2410C]',
+  WALLET_CONTEXTUAL: 'bg-[#E8F5E9] text-[#15803D]',
+  VIDEO: 'bg-[#FFF1F2] text-[#B91C1C]',
 }
 
-const RECENT_PAYOUTS: PayoutMock[] = [
-  { wallet: '0x7a3f…b21c', amount: '$1,284.40', chain: 'Base', ago: '12s ago' },
-  { wallet: '0xc019…84ee', amount: '$612.07', chain: 'Polygon', ago: '47s ago' },
-  { wallet: '0x4d2b…11af', amount: '$3,902.18', chain: 'Base', ago: '1m ago' },
-  { wallet: '0xa88e…d932', amount: '$248.55', chain: 'Polygon', ago: '2m ago' },
-]
+const STATUS_TINT: Record<PlacementStatus, string> = {
+  LIVE: 'bg-[#E8F5E9] text-[#15803D] border-[#15803D]/20',
+  PAUSED: 'bg-[#FFF3E8] text-[#C2410C] border-[#C2410C]/20',
+  DRAFT: 'bg-[#F0ECE6] text-muted-foreground border-[rgba(55,50,47,0.12)]',
+}
+
+function shortAddress(addr: string): string {
+  if (addr.length <= 14) return addr
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
+
+function timeAgo(d: Date): string {
+  const seconds = Math.max(1, Math.floor((Date.now() - new Date(d).getTime()) / 1000))
+  if (seconds < 60) return `${seconds}s ago`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
 
 interface StatCard {
   label: string
@@ -117,21 +73,65 @@ interface StatCard {
   tint: string
 }
 
-const STATS: StatCard[] = [
-  {
-    label: 'Earnings (30d)',
-    value: '$24,816.42',
-    icon: DollarSign,
-    tint: 'bg-[#FFF3E8] text-[#C2410C]',
-  },
-  { label: 'Impressions', value: '3.1M', icon: Eye, tint: 'bg-[#EAF1FF] text-[#1E40AF]' },
-  { label: 'Fill rate', value: '94.2%', icon: Activity, tint: 'bg-[#E8F5E9] text-[#15803D]' },
-  { label: 'Avg eCPM', value: '$4.71', icon: TrendingUp, tint: 'bg-[#F0E8FF] text-[#6D28D9]' },
-]
-
 export default async function SspDashboardPage(): Promise<React.JSX.Element> {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/ssp/sign-in')
+
+  const publisher = await getOrCreatePublisher(session.user.id, session.user.name)
+  const wallet = await getOrCreatePublisherWallet(publisher.id)
+  const since = new Date()
+  since.setUTCDate(since.getUTCDate() - 30)
+
+  const [placements, recentPayouts, earningsAgg] = await Promise.all([
+    prisma.placement.findMany({
+      where: { publisherId: publisher.id },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    }),
+    prisma.payout.findMany({
+      where: { publisherWalletId: wallet.id },
+      orderBy: { initiatedAt: 'desc' },
+      take: 4,
+    }),
+    prisma.publisherEarning.aggregate({
+      where: { publisherWalletId: wallet.id, date: { gte: since } },
+      _sum: { netUsdcCents: true, impressions: true, clicks: true },
+    }),
+  ])
+
+  const earnings30d = earningsAgg._sum.netUsdcCents ?? 0
+  const impressions30d = earningsAgg._sum.impressions ?? 0
+  const clicks30d = earningsAgg._sum.clicks ?? 0
+  const ctr = impressions30d > 0 ? (clicks30d / impressions30d) * 100 : 0
+  const avgEcpm =
+    impressions30d > 0 ? (earnings30d / 100) * (1000 / impressions30d) : 0
+
+  const STATS: StatCard[] = [
+    {
+      label: 'Net earnings (30d)',
+      value: earnings30d > 0 ? centsToUsd(earnings30d) : '—',
+      icon: DollarSign,
+      tint: 'bg-[#FFF3E8] text-[#C2410C]',
+    },
+    {
+      label: 'Impressions',
+      value: impressions30d > 0 ? formatCompact(impressions30d) : '—',
+      icon: Eye,
+      tint: 'bg-[#EAF1FF] text-[#1E40AF]',
+    },
+    {
+      label: 'CTR',
+      value: impressions30d > 0 ? `${ctr.toFixed(2)}%` : '—',
+      icon: Activity,
+      tint: 'bg-[#E8F5E9] text-[#15803D]',
+    },
+    {
+      label: 'Avg eCPM',
+      value: avgEcpm > 0 ? `$${avgEcpm.toFixed(2)}` : '—',
+      icon: TrendingUp,
+      tint: 'bg-[#F0E8FF] text-[#6D28D9]',
+    },
+  ]
 
   return (
     <div className="flex flex-col gap-3 p-3">
@@ -179,7 +179,7 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
               </div>
               <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
                 <TrendingUp className="size-3" />
-                <span>last 30 days</span>
+                <span>analytics coming soon</span>
               </div>
             </CardContent>
           </Card>
@@ -191,9 +191,7 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
           <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] px-3 py-2">
             <div>
               <h2 className="text-xs font-semibold text-[#37322F]">Top placements</h2>
-              <p className="text-[10px] text-muted-foreground">
-                Live inventory · last 30d performance
-              </p>
+              <p className="text-[10px] text-muted-foreground">Live inventory</p>
             </div>
             <Button
               asChild
@@ -207,68 +205,26 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
             </Button>
           </div>
           <CardContent className="p-0">
-            <ul className="divide-y divide-[rgba(55,50,47,0.08)]">
-              {PLACEMENTS.map(p => {
-                const Icon = p.formatIcon
-                return (
-                  <li
-                    key={p.id}
-                    className="group transition-colors hover:bg-[#FAF8F5]"
+            {placements.length === 0 ? (
+              <div className="px-4 py-8 text-center">
+                <p className="text-[11px] text-muted-foreground">
+                  No placements yet.{' '}
+                  <Link
+                    href="/ssp/dashboard/inventory"
+                    className="underline text-[#37322F] hover:no-underline"
                   >
-                    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-2.5">
-                      <div
-                        className={`flex size-8 items-center justify-center rounded-md ${p.tint} shrink-0`}
-                      >
-                        <Icon className="size-3.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs font-medium text-[#37322F] truncate font-mono">
-                            {p.name}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="h-3.5 px-1 text-[8px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)] text-muted-foreground font-medium shrink-0"
-                          >
-                            {p.format}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted-foreground">
-                          <span className="text-[#37322F]/40">chains:</span>
-                          <div className="flex gap-1">
-                            {p.chains.map(ch => (
-                              <span
-                                key={ch}
-                                className="rounded-full bg-[#F0ECE6] px-1.5 py-0.5 text-[9px] font-medium text-[#37322F]"
-                              >
-                                {ch}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="hidden md:grid grid-cols-3 gap-4 items-center text-right">
-                        <Stat label="eCPM" value={p.ecpm} />
-                        <Stat label="Impr." value={p.impressions} />
-                        <Stat label="Fill" value={p.fillRate} />
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Badge
-                          className={`h-4 px-1.5 text-[8px] uppercase tracking-widest font-medium ${
-                            p.status === 'LIVE'
-                              ? 'bg-[#E8F5E9] text-[#15803D] border-[#15803D]/20'
-                              : 'bg-[#F0ECE6] text-muted-foreground border-[rgba(55,50,47,0.12)]'
-                          }`}
-                          variant="outline"
-                        >
-                          {p.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+                    Create your first
+                  </Link>
+                  .
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-[rgba(55,50,47,0.08)]">
+                {placements.map(p => (
+                  <PlacementRow key={p.id} placement={p} />
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 
@@ -290,25 +246,24 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
             </Button>
           </div>
           <CardContent className="p-0">
-            <ul className="divide-y divide-[rgba(55,50,47,0.08)]">
-              {RECENT_PAYOUTS.map(p => (
-                <li
-                  key={p.wallet + p.ago}
-                  className="px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-[#FAF8F5] transition-colors"
+            {recentPayouts.length === 0 ? (
+              <div className="px-4 py-8 text-center text-[11px] text-muted-foreground">
+                No payouts yet.{' '}
+                <Link
+                  href="/ssp/dashboard/payouts"
+                  className="underline text-[#37322F] hover:no-underline"
                 >
-                  <div className="min-w-0 flex flex-col">
-                    <span className="text-xs font-mono text-[#37322F] truncate">{p.wallet}</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
-                      <CheckCircle2 className="size-2.5 text-[#15803D]" />
-                      {p.chain} · {p.ago}
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono font-medium tabular-nums text-[#37322F] shrink-0">
-                    + {p.amount}
-                  </span>
-                </li>
-              ))}
-            </ul>
+                  Set up your wallet
+                </Link>
+                .
+              </div>
+            ) : (
+              <ul className="divide-y divide-[rgba(55,50,47,0.08)]">
+                {recentPayouts.map(p => (
+                  <PayoutRow key={p.id} payout={p} />
+                ))}
+              </ul>
+            )}
             <div className="px-3 py-2 border-t border-[rgba(55,50,47,0.12)] bg-[#FAF8F5]">
               <span className="text-[10px] text-muted-foreground">USDC · verified on-chain</span>
             </div>
@@ -319,11 +274,89 @@ export default async function SspDashboardPage(): Promise<React.JSX.Element> {
   )
 }
 
+function PlacementRow({ placement }: { placement: Placement }): React.JSX.Element {
+  const Icon = FORMAT_ICON[placement.format]
+  return (
+    <li className="group transition-colors hover:bg-[#FAF8F5]">
+      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-3 px-3 py-2.5">
+        <div
+          className={`flex size-8 items-center justify-center rounded-md ${FORMAT_TINT[placement.format]} shrink-0`}
+        >
+          <Icon className="size-3.5" />
+        </div>
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-medium text-[#37322F] truncate font-mono">
+              {placement.name}
+            </span>
+            <Badge
+              variant="outline"
+              className="h-3.5 px-1 text-[8px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)] text-muted-foreground font-medium shrink-0"
+            >
+              {AD_FORMAT_LABELS[placement.format]}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted-foreground">
+            <span className="text-[#37322F]/40">chains:</span>
+            <div className="flex gap-1 flex-wrap">
+              {placement.chains.map(ch => (
+                <span
+                  key={ch}
+                  className="rounded-full bg-[#F0ECE6] px-1.5 py-0.5 text-[9px] font-medium text-[#37322F]"
+                >
+                  {CHAIN_LABELS[ch]}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="hidden md:grid grid-cols-3 gap-4 items-center text-right">
+          <Stat label="eCPM" value="—" />
+          <Stat label="Impr." value="—" />
+          <Stat label="Fill" value="—" />
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Badge
+            className={`h-4 px-1.5 text-[8px] uppercase tracking-widest font-medium ${STATUS_TINT[placement.status]}`}
+            variant="outline"
+          >
+            {placement.status}
+          </Badge>
+        </div>
+      </div>
+    </li>
+  )
+}
+
 function Stat({ label, value }: { label: string; value: string }): React.JSX.Element {
   return (
     <div className="flex flex-col items-end leading-none">
       <span className="text-[9px] uppercase tracking-widest text-muted-foreground/80">{label}</span>
       <span className="mt-1 text-[11px] font-medium tabular-nums text-[#37322F]">{value}</span>
     </div>
+  )
+}
+
+function PayoutRow({ payout }: { payout: Payout }): React.JSX.Element {
+  const isConfirmed = payout.status === 'CONFIRMED'
+  return (
+    <li className="px-3 py-2.5 flex items-center justify-between gap-3 hover:bg-[#FAF8F5] transition-colors">
+      <div className="min-w-0 flex flex-col">
+        <span className="text-xs font-mono text-[#37322F] truncate">
+          {shortAddress(payout.toAddress)}
+        </span>
+        <span className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
+          {isConfirmed ? (
+            <CheckCircle2 className="size-2.5 text-[#15803D]" />
+          ) : (
+            <span className="size-1.5 rounded-full bg-[#C2410C] animate-pulse" />
+          )}
+          {chainName(payout.chain)} · {timeAgo(payout.initiatedAt)}
+        </span>
+      </div>
+      <span className="text-xs font-mono font-medium tabular-nums text-[#37322F] shrink-0">
+        + {centsToUsd(payout.amountUsdcCents)}
+      </span>
+    </li>
   )
 }

@@ -1,9 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import { ChevronRight, LogOut } from "lucide-react"
 import type { User } from "@prisma/client"
 import { NAV_SECTIONS } from "./DashboardNav"
+import { LogoPicker } from "./LogoPicker"
 
 function initials(name: string): string {
   return name
@@ -25,13 +25,9 @@ interface Props {
 export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSignOut }: Props): React.JSX.Element {
   return (
     <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.12)] bg-[#F7F5F3]">
-      {/* Logo */}
+      {/* Logo + picker */}
       <div className="flex h-11 shrink-0 items-center justify-center border-b border-[rgba(55,50,47,0.12)]">
-        <Link href="/dashboard" title="Varaads">
-          <div className="flex h-6 w-6 items-center justify-center rounded-[6px] bg-[#37322F] text-[#FAFAF8] text-[11px] font-bold shadow-[0_0_0_2px_rgba(255,255,255,0.08)_inset]">
-            V
-          </div>
-        </Link>
+        <LogoPicker />
       </div>
 
       {/* Section icons */}

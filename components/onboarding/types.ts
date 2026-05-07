@@ -1,5 +1,11 @@
 import { z } from 'zod'
-import { BusinessType, Chain } from '@prisma/client'
+import { Chain } from '@prisma/client'
+
+// `BusinessType` is not yet a Prisma enum (the column doesn't exist on
+// `advertiser`), so we keep the values inline here. If the schema ever adds
+// `enum BusinessType { … }`, swap this for `z.nativeEnum(BusinessType)`.
+export const BUSINESS_TYPES = ['DEFI', 'NFT', 'GAMING', 'EXCHANGE', 'WALLET', 'OTHER'] as const
+export type BusinessType = (typeof BUSINESS_TYPES)[number]
 
 const optionalString = (max: number) =>
   z
@@ -26,7 +32,7 @@ const addressEntry = z
     'Enter a valid wallet or contract address',
   )
 
-export const BusinessTypeEnum = z.nativeEnum(BusinessType)
+export const BusinessTypeEnum = z.enum(BUSINESS_TYPES)
 export const ChainEnum = z.nativeEnum(Chain)
 
 export const OnboardingStep1Schema = z.object({

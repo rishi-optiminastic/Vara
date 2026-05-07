@@ -84,3 +84,6 @@ export { default as SearchIcon } from "./search";
 export { default as ChevronLeftIcon } from "./chevron-left";
 export { default as PlayIcon } from "./play";
 export { default as PauseIcon } from "./pause";
+export { default as UsdcIcon } from "./usdc";
+export { default as BankIcon } from "./bank";
+export { default as CardIcon } from "./card";

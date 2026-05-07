@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { signOut } from "@/lib/auth-client"
 import type { User, Advertiser } from "@prisma/client"
-import { BellIcon, SearchIcon } from "@/icons"
+import { BellIcon, SearchIcon, UsdcIcon } from "@/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -21,10 +22,18 @@ function initialSection(pathname: string): string {
 interface Props {
   user: Pick<User, "id" | "name" | "email">
   advertiser: Pick<Advertiser, "id" | "projectName">
+  walletBalanceUsdcCents: number
   children: React.ReactNode
 }
 
-export default function DashboardShell({ user, advertiser, children }: Props): React.JSX.Element {
+function formatUsdc(cents: number): string {
+  return (cents / 100).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+export default function DashboardShell({ user, advertiser, walletBalanceUsdcCents, children }: Props): React.JSX.Element {
   const router = useRouter()
   const pathname = usePathname()
   const [activeSection, setActiveSection] = useState(() => initialSection(pathname))
@@ -35,7 +44,7 @@ export default function DashboardShell({ user, advertiser, children }: Props): R
     if (signingOut) return
     setSigningOut(true)
     await signOut()
-    router.push("/sign-in")
+    router.push("/")
     router.refresh()
   }
 
@@ -79,10 +88,17 @@ export default function DashboardShell({ user, advertiser, children }: Props): R
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            {/* <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">{advertiser.projectName}</span>
-            <Badge variant="outline" className="h-4 px-1.5 text-[9px] font-medium uppercase tracking-[0.12em] bg-white/60 border-[rgba(55,50,47,0.16)]">
-              {section?.label ?? "DSP"}
-            </Badge> */}
+            <Link
+              href="/dashboard/settings?tab=wallet"
+              title="Ad wallet · USDC"
+              className="flex items-center gap-1.5 rounded-md border border-[rgba(55,50,47,0.12)] bg-white px-2 py-1 transition-colors hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FAFAF8]"
+            >
+              <UsdcIcon className="size-3.5" />
+              <span className="text-[11px] font-medium tabular-nums text-[#37322F]">
+                {formatUsdc(walletBalanceUsdcCents)}
+              </span>
+              <span className="text-[9px] uppercase tracking-widest text-muted-foreground">USDC</span>
+            </Link>
             <Button variant="ghost" size="icon" className="h-7 w-7 relative hover:bg-[#F0ECE6]">
               <BellIcon className="size-3.5 text-[#37322F]" />
               <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-[#C2410C] ring-2 ring-[#F7F5F3]" />

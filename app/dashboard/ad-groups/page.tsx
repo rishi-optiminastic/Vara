@@ -13,7 +13,7 @@ import { BoxPlusIcon } from "@/icons"
 
 export default async function AdGroupsPage(): Promise<React.JSX.Element> {
   const session = await getCachedSession()
-  if (!session) redirect("/sign-in")
+  if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
   const adGroups = await prisma.adGroup.findMany({
