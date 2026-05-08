@@ -15,7 +15,20 @@ interface Props {
 export function Web3Provider({ children }: Props): React.JSX.Element {
   // QueryClient is created lazily once per mount so React's StrictMode
   // double-render doesn't share state across instances.
-  const [queryClient] = useState(() => new QueryClient())
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            gcTime: 5 * 60_000,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
+            retry: 1,
+          },
+        },
+      }),
+  )
 
   return (
     <WagmiProvider config={wagmiConfig}>

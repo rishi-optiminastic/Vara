@@ -9,7 +9,7 @@ export default function NewCampaignPage(): React.JSX.Element {
           Campaign
         </h1>
         <p className="text-[10px] text-muted-foreground">
-          Campaign → Budget → Ad Group → Ads → Review
+          5 steps · auto-saves as you go
         </p>
       </div>
       <CampaignForm />

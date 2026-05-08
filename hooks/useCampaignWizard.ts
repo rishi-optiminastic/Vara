@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import type {
   Chain,
@@ -14,6 +14,16 @@ import type {
   Pacing,
 } from "@prisma/client"
 import { createCampaignWizard } from "@/services/campaigns"
+import { getTemplate } from "@/lib/campaignTemplates"
+import { setupChecks, setupScore, type SetupCheck } from "@/lib/campaignSmart"
+import {
+  INITIAL_WIZARD,
+  validateStep,
+  buildPayload,
+  adsValid,
+  geoCount,
+} from "@/lib/campaignWizard"
+import { useWizardAutosave } from "@/hooks/useWizardAutosave"
 
 export interface AdDraftForm {
   id: string
@@ -53,6 +63,12 @@ export interface WizardHook {
   state: WizardState
   error: string
   loading: boolean
+  templateId: string
+  savedAt: number | null
+  saving: boolean
+  checks: SetupCheck[]
+  score: number
+  hasDraft: boolean
   update: (patch: Partial<WizardState>) => void
   next: () => void
   back: () => void
@@ -60,67 +76,25 @@ export interface WizardHook {
   addAd: () => void
   removeAd: (id: string) => void
   updateAd: (id: string, patch: Partial<Omit<AdDraftForm, "id">>) => void
+  applyTemplate: (id: string) => void
+  restoreDraft: () => void
+  discardDraft: () => void
   submit: () => Promise<void>
 }
 
-const today = new Date().toISOString().slice(0, 10)
-
-const INITIAL: WizardState = {
-  name: "", description: "", vertical: "TOKEN_LAUNCH", objective: "AWARENESS", status: "DRAFT",
-  budgetUsd: "1000", dailyCapUsd: "", bidUsd: "2.50",
-  pricingModel: "CPM", bidStrategy: "MANUAL", pacing: "STANDARD",
-  startDate: today, endDate: "",
-  chains: [], geos: "", deviceTypes: [],
-  freqCap: "", freqHours: "24", brandSafety: "",
-  ads: [],
-}
-
-function isValidUrl(url: string): boolean {
-  try { new URL(url); return true } catch { return false }
-}
-
-function validateStep(step: number, s: WizardState): string {
-  if (step === 1 && s.name.trim().length < 2) return "Campaign name must be at least 2 characters"
-  if (step === 2) {
-    if (Number(s.budgetUsd) < 10) return "Budget must be at least $10"
-    if (Number(s.bidUsd) < 0.1) return "Bid must be at least $0.10"
-    if (!s.startDate) return "Start date is required"
-    if (s.endDate && s.endDate <= s.startDate) return "End date must be after start date"
-  }
-  if (step === 4) {
-    for (const ad of s.ads) {
-      if (!ad.clickUrl || !isValidUrl(ad.clickUrl)) return `"${ad.name}" needs a valid Click URL`
-      if (!ad.assetUrl || !isValidUrl(ad.assetUrl)) return `"${ad.name}" needs a valid Asset URL`
-    }
-  }
-  return ""
-}
-
-function buildPayload(s: WizardState): Parameters<typeof createCampaignWizard>[0] {
-  const parseList = (raw: string): string[] => raw.split(",").map((x) => x.trim()).filter(Boolean)
-  const parseGeos = (raw: string): string[] =>
-    raw.split(/[\s,]+/).map((g) => g.trim().toUpperCase()).filter((g) => g.length === 2)
+function buildChecksInput(s: WizardState): Parameters<typeof setupChecks>[0] {
   return {
     name: s.name,
-    description: s.description || undefined,
-    vertical: s.vertical,
-    objective: s.objective,
-    status: s.status,
-    pricingModel: s.pricingModel,
-    bidStrategy: s.bidStrategy,
-    pacing: s.pacing,
-    budgetUsd: Number(s.budgetUsd),
-    dailyCapUsd: s.dailyCapUsd ? Number(s.dailyCapUsd) : undefined,
-    bidUsd: Number(s.bidUsd),
-    startDate: new Date(s.startDate),
-    endDate: s.endDate ? new Date(s.endDate) : undefined,
-    frequencyCapPerWallet: s.freqCap ? Number(s.freqCap) : undefined,
-    frequencyCapHours: s.freqCap && s.freqHours ? Number(s.freqHours) : undefined,
-    brandSafetyKeywords: parseList(s.brandSafety),
-    chains: s.chains,
-    geos: parseGeos(s.geos),
-    deviceTypes: s.deviceTypes,
-    ads: s.ads.map(({ id: _id, ...ad }) => ad),
+    description: s.description,
+    budgetUsd: s.budgetUsd,
+    bidUsd: s.bidUsd,
+    startDate: s.startDate,
+    chainsLen: s.chains.length,
+    geosLen: geoCount(s.geos),
+    deviceLen: s.deviceTypes.length,
+    freqCap: s.freqCap,
+    adsLen: s.ads.length,
+    adsValid: adsValid(s.ads),
   }
 }
 
@@ -128,12 +102,27 @@ export function useCampaignWizard(): WizardHook {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [furthestStep, setFurthestStep] = useState(1)
-  const [state, setState] = useState<WizardState>(INITIAL)
+  const [state, setState] = useState<WizardState>(INITIAL_WIZARD)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [templateId, setTemplateId] = useState("")
+  const [dirty, setDirty] = useState(false)
+  const autosave = useWizardAutosave<WizardState>(state, dirty)
+  const [hasDraft, setHasDraft] = useState(false)
 
-  const update = (patch: Partial<WizardState>): void =>
+  useEffect(() => {
+    setHasDraft(autosave.load() !== null)
+    // run once on mount only — checking persisted draft existence
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const checks = useMemo(() => setupChecks(buildChecksInput(state)), [state])
+  const score = useMemo(() => setupScore(checks), [checks])
+
+  const update = (patch: Partial<WizardState>): void => {
+    setDirty(true)
     setState((s) => ({ ...s, ...patch }))
+  }
 
   const next = (): void => {
     const err = validateStep(step, state)
@@ -158,21 +147,49 @@ export function useCampaignWizard(): WizardHook {
   const addAd = (): void => {
     if (state.ads.length >= 3) return
     const id = Math.random().toString(36).slice(2)
-    const newAd: AdDraftForm = { id, name: `Ad ${state.ads.length + 1}`, format: "BANNER", clickUrl: "", assetUrl: "", walletConnectCta: false }
+    const newAd: AdDraftForm = {
+      id, name: `Ad ${state.ads.length + 1}`, format: "BANNER",
+      clickUrl: "", assetUrl: "", walletConnectCta: false,
+    }
     update({ ads: [...state.ads, newAd] })
   }
 
-  const removeAd = (id: string): void =>
-    update({ ads: state.ads.filter((a) => a.id !== id) })
+  const removeAd = (id: string): void => update({ ads: state.ads.filter((a) => a.id !== id) })
 
   const updateAd = (id: string, patch: Partial<Omit<AdDraftForm, "id">>): void =>
     update({ ads: state.ads.map((a) => (a.id === id ? { ...a, ...patch } : a)) })
+
+  const applyTemplate = (id: string): void => {
+    const t = getTemplate(id)
+    if (!t) return
+    setTemplateId(id)
+    setDirty(true)
+    setState((s) => ({
+      ...s,
+      vertical: t.vertical, objective: t.objective,
+      pricingModel: t.pricingModel, bidStrategy: t.bidStrategy, pacing: t.pacing,
+      budgetUsd: t.budgetUsd, dailyCapUsd: t.dailyCapUsd, bidUsd: t.bidUsd,
+      chains: [...t.chains], geos: t.geos,
+      deviceTypes: [...t.deviceTypes],
+      freqCap: t.freqCap, freqHours: t.freqHours, brandSafety: t.brandSafety,
+    }))
+  }
+
+  const restoreDraft = (): void => {
+    const draft = autosave.load()
+    if (!draft) return
+    setDirty(true)
+    setState(draft)
+  }
+
+  const discardDraft = (): void => autosave.clear()
 
   const submit = async (): Promise<void> => {
     setError("")
     setLoading(true)
     try {
       const { campaign } = await createCampaignWizard(buildPayload(state))
+      autosave.clear()
       router.push(`/dashboard/campaigns/${campaign.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create campaign")
@@ -180,5 +197,11 @@ export function useCampaignWizard(): WizardHook {
     }
   }
 
-  return { step, furthestStep, state, error, loading, update, next, back, goTo, addAd, removeAd, updateAd, submit }
+  return {
+    step, furthestStep, state, error, loading, templateId,
+    savedAt: autosave.savedAt, saving: autosave.saving,
+    checks, score, hasDraft,
+    update, next, back, goTo, addAd, removeAd, updateAd,
+    applyTemplate, restoreDraft, discardDraft, submit,
+  }
 }

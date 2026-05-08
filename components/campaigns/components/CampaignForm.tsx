@@ -1,9 +1,11 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, ArrowLeft, ArrowRight, Sparkles, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCampaignWizard } from "@/hooks/useCampaignWizard"
+import { formatSavedAgo } from "@/hooks/useWizardAutosave"
 import {
   CampaignsIcon,
   SpendIcon,
@@ -94,63 +96,124 @@ function StepProgress({ current, furthest, goTo }: ProgressProps): React.JSX.Ele
   )
 }
 
+interface BannerProps {
+  onRestore: () => void
+  onDiscard: () => void
+}
+
+function DraftBanner({ onRestore, onDiscard }: BannerProps): React.JSX.Element {
+  return (
+    <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(55,50,47,0.15)] bg-[#F0ECE6]/70 px-3 py-2 text-[11px]">
+      <span className="text-[#37322F]">
+        <span className="font-semibold">Unfinished draft found.</span>{" "}
+        <span className="text-muted-foreground">Pick up where you left off?</span>
+      </span>
+      <div className="flex items-center gap-1.5">
+        <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] rounded-full px-3" onClick={onDiscard}>
+          Discard
+        </Button>
+        <Button type="button" size="sm" className="h-6 text-[10px] rounded-full px-3 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520]" onClick={onRestore}>
+          Restore
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+interface SavedTagProps {
+  saving: boolean
+  savedAt: number | null
+}
+
+function SavedTag({ saving, savedAt }: SavedTagProps): React.JSX.Element | null {
+  const [, force] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => force((n) => n + 1), 30_000)
+    return (): void => clearInterval(t)
+  }, [])
+  if (saving) return <span className="text-[10px] text-muted-foreground italic">Saving…</span>
+  if (!savedAt) return null
+  return <span className="text-[10px] text-muted-foreground">Saved · {formatSavedAgo(savedAt)}</span>
+}
+
 export function CampaignForm(): React.JSX.Element {
   const router = useRouter()
-  const { step, furthestStep, state, error, loading, update, next, back, goTo, addAd, removeAd, updateAd, submit } = useCampaignWizard()
-  const adHandlers = { addAd, removeAd, updateAd }
+  const w = useCampaignWizard()
+  const [draftDismissed, setDraftDismissed] = useState(false)
+  const adHandlers = { addAd: w.addAd, removeAd: w.removeAd, updateAd: w.updateAd }
+  const showDraftBanner = w.hasDraft && !draftDismissed
+
+  const handleRestore = (): void => { w.restoreDraft(); setDraftDismissed(true) }
+  const handleDiscard = (): void => { w.discardDraft(); setDraftDismissed(true) }
+
+  const savedLabel =
+    w.saving ? "Saving…" :
+    w.savedAt ? `Saved · ${formatSavedAgo(w.savedAt)}` :
+    ""
 
   return (
-    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
+    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="flex flex-col gap-3 min-w-0">
+        {showDraftBanner && <DraftBanner onRestore={handleRestore} onDiscard={handleDiscard} />}
         <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white/60 p-1 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-          <StepProgress current={step} furthest={furthestStep} goTo={goTo} />
+          <StepProgress current={w.step} furthest={w.furthestStep} goTo={w.goTo} />
         </div>
 
-        {step === 1 && <WizardStepCampaign state={state} update={update} />}
-        {step === 2 && <WizardStepBudget state={state} update={update} />}
-        {step === 3 && <WizardStepTargeting state={state} update={update} />}
-        {step === 4 && <WizardStepAds state={state} handlers={adHandlers} />}
-        {step === 5 && <WizardReview state={state} />}
+        {w.step === 1 && (
+          <WizardStepCampaign
+            state={w.state}
+            templateId={w.templateId}
+            applyTemplate={w.applyTemplate}
+            update={w.update}
+          />
+        )}
+        {w.step === 2 && <WizardStepBudget state={w.state} update={w.update} />}
+        {w.step === 3 && <WizardStepTargeting state={w.state} update={w.update} />}
+        {w.step === 4 && <WizardStepAds state={w.state} handlers={adHandlers} />}
+        {w.step === 5 && <WizardReview state={w.state} />}
 
-        {error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>
+        {w.error && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{w.error}</div>
         )}
 
         <div className="flex items-center justify-between border-t border-[rgba(55,50,47,0.08)] pt-2.5">
-          {step === 1 ? (
-            <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4" onClick={() => router.back()}>
-              Cancel
-            </Button>
-          ) : (
-            <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4 gap-1.5" onClick={back}>
-              <ArrowLeft className="size-3" /> Back
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {w.step === 1 ? (
+              <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4" onClick={() => router.back()}>
+                Cancel
+              </Button>
+            ) : (
+              <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4 gap-1.5" onClick={w.back}>
+                <ArrowLeft className="size-3" /> Back
+              </Button>
+            )}
+            <SavedTag saving={w.saving} savedAt={w.savedAt} />
+          </div>
 
-          {step < 5 ? (
+          {w.step < 5 ? (
             <Button
               size="sm"
               className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
-              onClick={next}
+              onClick={w.next}
             >
-              Continue to {STEPS[step]!.label} <ArrowRight className="size-3" />
+              Continue to {STEPS[w.step]!.label} <ArrowRight className="size-3" />
             </Button>
           ) : (
             <Button
               size="sm"
-              disabled={loading}
+              disabled={w.loading}
               className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
-              onClick={submit}
+              onClick={w.submit}
             >
-              {loading ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
-              {state.status === "ACTIVE" ? "Launch campaign" : "Save as draft"}
+              {w.loading ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}
+              {w.state.status === "ACTIVE" ? "Launch campaign" : "Save as draft"}
             </Button>
           )}
         </div>
       </div>
 
       <aside className="hidden lg:block">
-        <WizardSummary state={state} step={step} />
+        <WizardSummary state={w.state} step={w.step} score={w.score} savedLabel={savedLabel} />
       </aside>
     </div>
   )

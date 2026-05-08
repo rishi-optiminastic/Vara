@@ -87,3 +87,5 @@ export { default as PauseIcon } from "./pause";
 export { default as UsdcIcon } from "./usdc";
 export { default as BankIcon } from "./bank";
 export { default as CardIcon } from "./card";
+export { default as MonitorIcon } from "./monitor";
+export { default as PhoneIcon } from "./phone";

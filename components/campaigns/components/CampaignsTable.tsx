@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { centsToUsd, formatCompact } from "@/lib/money"
-import { chainName } from "@/lib/chains"
 import { Badge } from "@/components/ui/badge"
+import { ChainBadge } from "@/components/ChainBadge"
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { StatusBadge } from "./StatusBadge"
 import { StatusDot } from "./StatusDot"
@@ -92,15 +92,10 @@ export function CampaignsTable({ rows }: Props): React.JSX.Element {
               ) : (
                 <div className="flex flex-wrap gap-1">
                   {c.chains.slice(0, 3).map((ch) => (
-                    <span
-                      key={ch}
-                      className="rounded-full bg-[#F0ECE6] px-1.5 py-0.5 text-[9px] font-medium text-[#37322F]"
-                    >
-                      {chainName(ch)}
-                    </span>
+                    <ChainBadge key={ch} chain={ch} size="sm" showName={false} />
                   ))}
                   {c.chains.length > 3 && (
-                    <span className="text-[9px] text-muted-foreground">+{c.chains.length - 3}</span>
+                    <span className="text-[9px] text-muted-foreground self-center">+{c.chains.length - 3}</span>
                   )}
                 </div>
               )}

@@ -181,11 +181,11 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
     <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="flex items-center gap-1.5">
+            <span className="flex size-4 items-center justify-center rounded-md bg-[#FFE8F0] text-[#BE185D]">
+              <ImageSparkleIcon className="size-2.5" />
+            </span>
             <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Creatives · up to 3</h3>
-            <p className="text-[10px] text-muted-foreground/70 mt-0.5">
-              Skip to add later from the campaign page.
-            </p>
           </div>
           <Button
             type="button"

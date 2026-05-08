@@ -8,6 +8,24 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    // Client router cache: re-entering a page within these windows reuses the
+    // already-rendered RSC payload instead of refetching from the Rust backend.
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
+    // Tree-shake heavy barrel imports — speeds up dev compile and prod bundle.
+    optimizePackageImports: [
+      "@rainbow-me/rainbowkit",
+      "wagmi",
+      "viem",
+      "@tanstack/react-query",
+      "react-hook-form",
+      "date-fns",
+      "lodash",
+    ],
+  },
   async rewrites() {
     return {
       beforeFiles: [

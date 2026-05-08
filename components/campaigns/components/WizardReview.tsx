@@ -1,8 +1,10 @@
 import type { Chain } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
 import { Card, CardContent } from "@/components/ui/card"
-import { chainName } from "@/lib/chains"
 import { FORMAT_LABELS } from "@/lib/creatives"
+import { ChainBadge } from "@/components/ChainBadge"
+import { DeviceBadge } from "@/components/DeviceBadge"
+import { GeoBadge } from "@/components/GeoBadge"
 
 interface Props {
   state: WizardState
@@ -13,6 +15,27 @@ function Row({ label, value }: { label: string; value: string }): React.JSX.Elem
     <div className="flex items-center justify-between py-1">
       <span className="text-[11px] text-muted-foreground">{label}</span>
       <span className="text-[11px] font-medium text-[#37322F] tabular-nums capitalize">{value}</span>
+    </div>
+  )
+}
+
+interface BadgeRowProps {
+  label: string
+  empty: string
+  children: React.ReactNode
+}
+
+function BadgeRow({ label, empty, children }: BadgeRowProps): React.JSX.Element {
+  const arr = Array.isArray(children) ? children : [children]
+  const hasItems = arr.length > 0 && arr.some(Boolean)
+  return (
+    <div className="flex items-start justify-between gap-3 py-1">
+      <span className="text-[11px] text-muted-foreground shrink-0 pt-0.5">{label}</span>
+      {hasItems ? (
+        <div className="flex flex-wrap gap-1 justify-end">{children}</div>
+      ) : (
+        <span className="text-[11px] font-medium text-[#37322F] italic">{empty}</span>
+      )}
     </div>
   )
 }
@@ -59,7 +82,7 @@ export function WizardReview({ state }: Props): React.JSX.Element {
     .map((g) => g.trim().toUpperCase())
     .filter((g) => g.length === 2)
 
-  const chainList = state.chains.map((c) => chainName(c as Chain))
+  const chainList = state.chains as Chain[]
   const isActive = state.status === "ACTIVE"
 
   return (
@@ -91,9 +114,15 @@ export function WizardReview({ state }: Props): React.JSX.Element {
         </Section>
 
         <Section title="Ad Group · Targeting">
-          <Row label="Chains" value={chainList.length ? chainList.join(", ") : "All chains"} />
-          <Row label="Geos" value={geoList.length ? geoList.join(", ") : "Worldwide"} />
-          <Row label="Devices" value={state.deviceTypes.length ? state.deviceTypes.map((d) => d.toLowerCase()).join(", ") : "All devices"} />
+          <BadgeRow label="Chains" empty="All chains">
+            {chainList.map((c) => <ChainBadge key={c} chain={c} size="md" />)}
+          </BadgeRow>
+          <BadgeRow label="Geos" empty="Worldwide">
+            {geoList.map((g) => <GeoBadge key={g} code={g} size="md" />)}
+          </BadgeRow>
+          <BadgeRow label="Devices" empty="All devices">
+            {state.deviceTypes.map((d) => <DeviceBadge key={d} device={d} size="md" />)}
+          </BadgeRow>
           <Row label="Frequency cap" value={state.freqCap ? `${state.freqCap} impr. per ${state.freqHours}h` : "None"} />
           <Row
             label="Placement filters"

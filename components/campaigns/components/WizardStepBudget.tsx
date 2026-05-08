@@ -3,7 +3,11 @@
 import type { BidStrategy, Pacing, PricingModel } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
 import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { TextField, SelectField, DatePickerField } from "./form-fields"
+import { RecommendedBadge } from "./RecommendedBadge"
+import { recommendationsFor } from "@/lib/campaignSmart"
+import { SpendIcon, GaugeIcon, CalendarCheckIcon } from "@/icons"
 
 interface Props {
   state: WizardState
@@ -29,23 +33,98 @@ const PACING_OPTIONS: { value: Pacing; label: string; desc: string }[] = [
   { value: "ACCELERATED", label: "Accelerated", desc: "Spend ASAP — exhaust daily cap fast" },
 ]
 
-function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }): React.JSX.Element {
+interface SectionProps {
+  icon: React.ElementType
+  tint: string
+  title: string
+  badge?: React.ReactNode
+  children: React.ReactNode
+}
+
+function Section({ icon: Icon, tint, title, badge, children }: SectionProps): React.JSX.Element {
   return (
     <div className="space-y-2 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
-      <div>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
-        {desc && <p className="text-[10px] text-muted-foreground/70 mt-0.5">{desc}</p>}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <span className={`flex size-4 items-center justify-center rounded-md ${tint}`}>
+            <Icon className="size-2.5" />
+          </span>
+          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
+        </div>
+        {badge}
       </div>
       {children}
     </div>
   )
 }
 
+const BID_STRATEGY_LABELS: Record<BidStrategy, string> = {
+  MANUAL: "Manual",
+  AUTO: "Auto",
+  MAX_CONVERSIONS: "Max conversions",
+  TARGET_CPA: "Target CPA",
+}
+
+const PACING_LABELS: Record<Pacing, string> = {
+  STANDARD: "Standard",
+  EVEN: "Even",
+  ACCELERATED: "Accelerated",
+}
+
+interface RecRowProps {
+  matches: boolean
+  recLabel: string
+  onApply: () => void
+}
+
+function RecRow({ matches, recLabel, onApply }: RecRowProps): React.JSX.Element {
+  if (matches) {
+    return (
+      <div className="flex items-center gap-1.5 text-[10px] col-span-2 rounded-md border border-[#BBE3C0] bg-[#F0FAF1] px-2 py-1.5 text-[#15803D]">
+        <RecommendedBadge label="Optimized" tone="subtle" />
+        <span className="opacity-80">Matches recommended setup.</span>
+      </div>
+    )
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-2 col-span-2 rounded-md border border-[#E0D4FF] bg-[#F5EFFF] px-2 py-1.5">
+      <RecommendedBadge label="Tip" tone="default" />
+      <span className="text-[10px] text-[#5B21B6]">
+        Try <span className="font-semibold">{recLabel}</span>
+      </span>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        onClick={onApply}
+        className="h-6 text-[10px] rounded-full px-2.5 ml-auto border-[#E0D4FF] bg-white text-[#5B21B6] hover:bg-[#F5EFFF]"
+      >
+        Apply
+      </Button>
+    </div>
+  )
+}
+
 export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
+  const recs = recommendationsFor(state.objective)
+  const biddingMatches =
+    state.pricingModel === recs.pricingModel &&
+    state.bidStrategy === recs.bidStrategy &&
+    state.pacing === recs.pacing
+
+  const recLabel = `${recs.pricingModel} · ${BID_STRATEGY_LABELS[recs.bidStrategy]} · ${PACING_LABELS[recs.pacing]}`
+
+  const applyRecs = (): void =>
+    update({
+      pricingModel: recs.pricingModel,
+      bidStrategy: recs.bidStrategy,
+      pacing: recs.pacing,
+    })
+
   return (
     <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
       <CardContent className="p-4 space-y-3">
-        <Section title="Budget" desc="Total spend limit and optional daily cap.">
+        <Section icon={SpendIcon} tint="bg-[#E8F5E9] text-[#15803D]" title="Budget">
           <div className="grid grid-cols-2 gap-3">
             <TextField
               label="Total budget"
@@ -72,13 +151,20 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
           </div>
         </Section>
 
-        <Section title="Bidding" desc="How you pay and how the engine optimizes spend.">
+        <Section
+          icon={GaugeIcon}
+          tint="bg-[#EAF1FF] text-[#1E40AF]"
+          title="Bidding"
+          badge={biddingMatches ? <RecommendedBadge label="Optimized" tone="subtle" /> : undefined}
+        >
           <div className="grid grid-cols-2 gap-3">
+            <RecRow matches={biddingMatches} recLabel={recLabel} onApply={applyRecs} />
             <SelectField
               label="Pricing model"
               value={state.pricingModel}
               onChange={(v) => update({ pricingModel: v as PricingModel })}
               options={PRICING_MODELS}
+              hint={state.pricingModel === recs.pricingModel ? "Matches recommendation" : `Recommended: ${recs.pricingModel}`}
             />
             <TextField
               label="Bid"
@@ -97,17 +183,19 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               value={state.bidStrategy}
               onChange={(v) => update({ bidStrategy: v as BidStrategy })}
               options={BID_STRATEGIES}
+              hint={state.bidStrategy === recs.bidStrategy ? "Matches recommendation" : `Recommended: ${BID_STRATEGY_LABELS[recs.bidStrategy]}`}
             />
             <SelectField
               label="Pacing"
               value={state.pacing}
               onChange={(v) => update({ pacing: v as Pacing })}
               options={PACING_OPTIONS}
+              hint={state.pacing === recs.pacing ? "Matches recommendation" : `Recommended: ${PACING_LABELS[recs.pacing]}`}
             />
           </div>
         </Section>
 
-        <Section title="Schedule" desc="When the campaign runs. Leave end date blank for open-ended.">
+        <Section icon={CalendarCheckIcon} tint="bg-[#FFF3E8] text-[#C2410C]" title="Schedule">
           <div className="grid grid-cols-2 gap-3">
             <DatePickerField
               label="Start date"
