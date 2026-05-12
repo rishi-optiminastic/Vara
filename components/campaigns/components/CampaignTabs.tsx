@@ -58,18 +58,22 @@ export function CampaignTabs({
         </TabsTrigger>
       </TabsList>
 
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={active}
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -5 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="mt-3"
-        >
-          {panels[active]}
-        </motion.div>
-      </AnimatePresence>
+      <div className="relative mt-3">
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{
+              opacity: { duration: 0.18, ease: "easeOut" },
+              y: { duration: 0.24, ease: [0.32, 0.72, 0, 1] },
+            }}
+          >
+            {panels[active]}
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </Tabs>
   )
 }

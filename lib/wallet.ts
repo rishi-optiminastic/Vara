@@ -1,8 +1,12 @@
 import { cache } from "react"
 import { prisma } from "@/lib/prisma"
 import type { Wallet, WalletTransaction } from "@prisma/client"
+import { reconcileAdvertiserReservations } from "@/lib/walletEscrow"
 
 export const getOrCreateWallet = cache(async (advertiserId: string): Promise<Wallet> => {
+  // Self-heal reservation drift before returning. Cheap: one transaction
+  // that short-circuits when state already matches truth.
+  await reconcileAdvertiserReservations(advertiserId)
   const existing = await prisma.wallet.findUnique({ where: { advertiserId } })
   if (existing) return existing
   return prisma.wallet.create({ data: { advertiserId } })

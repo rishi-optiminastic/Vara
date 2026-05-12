@@ -27,6 +27,7 @@ function shortAddress(addr: string): string {
 
 export function WalletBalanceCard({ wallet, depositAddress }: Props): React.JSX.Element {
   const [open, setOpen] = useState(false)
+  const availableCents = wallet.balanceUsdcCents - wallet.reservedUsdcCents
 
   return (
     <>
@@ -54,7 +55,7 @@ export function WalletBalanceCard({ wallet, depositAddress }: Props): React.JSX.
               <div className="flex items-center gap-2">
                 <UsdcIcon className="size-7" />
                 <div className="text-[36px] font-medium tracking-tight tabular-nums leading-none text-[#37322F]">
-                  {formatUsdc(wallet.balanceUsdcCents)}
+                  {formatUsdc(availableCents)}
                 </div>
                 <span className="text-[14px] text-muted-foreground tracking-tight self-end pb-1">
                   USDC
@@ -62,6 +63,14 @@ export function WalletBalanceCard({ wallet, depositAddress }: Props): React.JSX.
               </div>
               <p className="mt-1.5 text-[11px] text-muted-foreground">
                 Available for ad spend
+                {wallet.reservedUsdcCents > 0 && (
+                  <>
+                    {" · "}
+                    <span className="text-[#37322F]/75">
+                      {formatUsdc(wallet.reservedUsdcCents)} reserved
+                    </span>
+                  </>
+                )}
               </p>
             </div>
             <div className="flex gap-2">
@@ -83,7 +92,7 @@ export function WalletBalanceCard({ wallet, depositAddress }: Props): React.JSX.
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3 border-t border-dashed border-[rgba(55,50,47,0.12)] pt-3 sm:grid-cols-4">
-            <Stat label="Pending" value={formatUsdc(wallet.pendingUsdcCents)} />
+            <Stat label="Balance" value={formatUsdc(wallet.balanceUsdcCents)} />
             <Stat label="Reserved" value={formatUsdc(wallet.reservedUsdcCents)} />
             <Stat label="Total deposited" value={formatUsdc(wallet.totalDepositedUsdcCents)} />
             <Stat label="Total spent" value={formatUsdc(wallet.totalSpentUsdcCents)} />

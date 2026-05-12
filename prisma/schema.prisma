@@ -346,6 +346,8 @@ model Campaign {
   bidStrategy           BidStrategy    @default(MANUAL)
   pacing                Pacing         @default(STANDARD)
   budgetUsdCents        Int
+  reservedUsdcCents     Int            @default(0)
+  spentUsdcCents        Int            @default(0)
   dailyCapUsdCents      Int?
   bidUsdCents           Int
   frequencyCapPerWallet Int?

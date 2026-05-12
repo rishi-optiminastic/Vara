@@ -5,6 +5,12 @@ import { CreateCampaignWizardSchema } from '@/components/campaigns/types'
 import { usdToCents } from '@/lib/money'
 import { FORMAT_DIMS } from '@/lib/creatives'
 import { logger } from '@/lib/logger'
+import { getOrCreateWallet } from '@/lib/wallet'
+import {
+  reserveForCampaign,
+  releaseFromCampaign,
+  InsufficientFundsError,
+} from '@/lib/walletEscrow'
 
 export async function GET(): Promise<NextResponse> {
   const ctx = await requireAdvertiser()
@@ -35,6 +41,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     clickUrl: ad.clickUrl,
     walletConnectCta: ad.walletConnectCta,
   }))
+  const budgetCents = usdToCents(d.budgetUsd)
+  if (d.status === 'ACTIVE') {
+    const wallet = await getOrCreateWallet(ctx.advertiser.id)
+    const available = wallet.balanceUsdcCents - wallet.reservedUsdcCents
+    if (available < budgetCents) {
+      return jsonError(
+        `Insufficient funds to activate. Need $${(budgetCents / 100).toFixed(2)} USDC, available $${(available / 100).toFixed(2)}.`,
+        402,
+      )
+    }
+  }
   try {
     const campaign = await prisma.campaign.create({
       data: {
@@ -47,7 +64,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         pricingModel: d.pricingModel,
         bidStrategy: d.bidStrategy,
         pacing: d.pacing,
-        budgetUsdCents: usdToCents(d.budgetUsd),
+        budgetUsdCents: budgetCents,
         dailyCapUsdCents: d.dailyCapUsd ? usdToCents(d.dailyCapUsd) : null,
         bidUsdCents: usdToCents(d.bidUsd),
         frequencyCapPerWallet: d.frequencyCapPerWallet ?? null,
@@ -65,6 +82,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         ...(adData.length > 0 ? { creatives: { createMany: { data: adData } } } : {}),
       },
     })
+    if (campaign.status === 'ACTIVE') {
+      try {
+        await reserveForCampaign(campaign.id)
+      } catch (err) {
+        await releaseFromCampaign(campaign.id).catch(() => {})
+        if (err instanceof InsufficientFundsError) {
+          return jsonError(err.message, 402)
+        }
+        throw err
+      }
+    }
     return NextResponse.json({ campaign }, { status: 201 })
   } catch (err) {
     logger.error({ err }, 'Failed to create campaign')

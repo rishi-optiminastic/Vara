@@ -14,6 +14,7 @@ import { MetricsPanel } from "@/components/campaigns/components/MetricsPanel"
 import { CampaignTabs } from "@/components/campaigns/components/CampaignTabs"
 import { DateRangeSelector } from "@/components/DateRangeSelector"
 import { CreativeGallery } from "@/components/ads/components/CreativeGallery"
+import { CampaignTabHeader } from "@/components/campaigns/components/CampaignTabHeader"
 import { ChevronLeftIcon } from "@/icons"
 interface PageProps {
   params: Promise<{ id: string }>
@@ -98,8 +99,28 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
           creativeCount={creativeCount}
           overview={<CampaignOverview campaign={campaign} metrics={metrics} segments={segments} rangeDays={rangeDays} />}
           targeting={<TargetingForm campaignId={campaign.id} initial={campaign.targeting} segments={segments} />}
-          creatives={<CreativeGallery creatives={campaign.creatives} newAdHref={`/dashboard/ads/new?campaign=${campaign.id}`} />}
-          reporting={<MetricsPanel campaignId={campaign.id} days={rangeDays} />}
+          creatives={
+            <div className="flex flex-col gap-3">
+              <CampaignTabHeader
+                title="Creatives"
+                description={
+                  creativeCount === 0
+                    ? "No creatives yet. Upload variants to test placements and CTAs."
+                    : `${creativeCount} creative${creativeCount > 1 ? "s" : ""} attached. Upload variants to test placements and CTAs.`
+                }
+              />
+              <CreativeGallery creatives={campaign.creatives} newAdHref={`/dashboard/ads/new?campaign=${campaign.id}`} />
+            </div>
+          }
+          reporting={
+            <div className="flex flex-col gap-3">
+              <CampaignTabHeader
+                title="Reporting"
+                description={`Daily delivery and on-chain attribution for the last ${rangeDays} days. Switch the date range in the header to drill into a different window.`}
+              />
+              <MetricsPanel campaignId={campaign.id} days={rangeDays} />
+            </div>
+          }
         />
     </div>
   )

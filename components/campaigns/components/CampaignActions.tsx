@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { CampaignStatus } from "@prisma/client"
 import { Button } from "@/components/ui/button"
 import { updateCampaign, deleteCampaign } from "@/services/campaigns"
-import { PlayIcon, PauseIcon, TrashIcon, HourglassStartIcon } from "@/icons"
+import { PlayIcon, PauseIcon, TrashIcon, HourglassStartIcon, FilePenIcon } from "@/icons"
 import { toast } from "sonner"
 
 interface Props {
@@ -53,6 +54,17 @@ export function CampaignActions({ id, status }: Props): React.JSX.Element {
 
   return (
     <div className="flex items-center gap-1.5">
+      <Button
+        asChild
+        size="sm"
+        variant="outline"
+        className="h-8 gap-1 text-xs rounded-full px-3.5 bg-white border-[rgba(55,50,47,0.16)]"
+      >
+        <Link href={`/dashboard/campaigns/${id}/edit`}>
+          <FilePenIcon className="size-3" />
+          Edit
+        </Link>
+      </Button>
       {isPaused && (
         <Button size="sm" className="h-8 gap-1 text-xs rounded-full px-3.5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]" disabled={busy} onClick={() => setStatus("ACTIVE")}>
           {busy ? <HourglassStartIcon className="size-3" /> : <PlayIcon className="size-3" />}

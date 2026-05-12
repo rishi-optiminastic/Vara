@@ -63,8 +63,7 @@ interface ChainPillProps {
 
 function ChainPill({ chain, label, active, onClick }: ChainPillProps): React.JSX.Element {
   const Logo = chainBrand(chain).Logo
-  const logoCls = active ? "text-[#FAFAF8]" : chainBrand(chain).fg
-  return <Pill label={label} active={active} onClick={onClick} icon={<Logo className={`size-3.5 ${logoCls}`} />} />
+  return <Pill label={label} active={active} onClick={onClick} icon={<Logo className="size-3.5" />} />
 }
 
 interface SectionProps {

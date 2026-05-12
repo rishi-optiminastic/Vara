@@ -15,6 +15,7 @@ export const env = createEnv({
       .regex(/^0x[a-fA-F0-9]{40}$/, "Must be a valid 0x… 20-byte address")
       .optional(),
     SEPOLIA_RPC_URL: z.string().url().default("https://ethereum-sepolia-rpc.publicnode.com"),
+    INTERNAL_API_TOKEN: z.string().min(8).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url(),
@@ -29,6 +30,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     WALLET_DEPOSIT_RECEIVER_SEPOLIA: process.env.WALLET_DEPOSIT_RECEIVER_SEPOLIA,
     SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL,
+    INTERNAL_API_TOKEN: process.env.INTERNAL_API_TOKEN,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

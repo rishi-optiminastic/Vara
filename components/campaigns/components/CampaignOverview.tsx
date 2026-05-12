@@ -1,6 +1,7 @@
 import type { Campaign, Targeting, Creative, WalletSegment } from "@prisma/client"
 import { centsToUsd, formatCompact } from "@/lib/money"
 import { ChainRow, DeviceRow, GeoRow, ChipRow } from "./TargetingRows"
+import { CampaignTabHeader } from "./CampaignTabHeader"
 import {
   KpiStrip,
   PacingCard,
@@ -71,6 +72,11 @@ export function CampaignOverview({ campaign, metrics, segments, rangeDays = 30 }
 
   return (
     <div className="flex flex-col gap-3">
+      <CampaignTabHeader
+        title="Overview"
+        description="Live KPIs, budget and schedule pacing, plus the configuration driving this campaign."
+      />
+
       <KpiStrip kpis={KPIS} rangeDays={rangeDays} />
 
       <div className="grid gap-3 lg:grid-cols-2">

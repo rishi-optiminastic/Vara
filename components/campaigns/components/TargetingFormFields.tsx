@@ -10,18 +10,31 @@ interface SectionProps {
   tint: string
   title: string
   hint?: string | undefined
+  description?: string
   children: React.ReactNode
 }
 
-export function Section({ icon: Icon, tint, title, hint, children }: SectionProps): React.JSX.Element {
+export function Section({
+  icon: Icon,
+  tint,
+  title,
+  hint,
+  description,
+  children,
+}: SectionProps): React.JSX.Element {
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-baseline gap-2 flex-wrap">
         <span className={`flex size-5 items-center justify-center rounded-md ${tint}`}>
           <Icon className="size-3" />
         </span>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#37322F]">{title}</h3>
+        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#37322F]">
+          {title}
+        </h3>
         {hint && <span className="text-[10px] text-muted-foreground/70">· {hint}</span>}
+        {description && (
+          <span className="text-[10px] text-muted-foreground/65 ml-auto">{description}</span>
+        )}
       </div>
       {children}
     </div>
@@ -65,10 +78,16 @@ interface FieldInputProps {
 export function FieldInput(p: FieldInputProps): React.JSX.Element {
   return (
     <div className="space-y-1">
-      <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">{p.label}</Label>
+      {p.label && (
+        <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+          {p.label}
+        </Label>
+      )}
       <div className="relative">
         {p.prefix && (
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground select-none">{p.prefix}</span>
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground select-none">
+            {p.prefix}
+          </span>
         )}
         <Input
           type={p.type ?? "text"}
@@ -78,7 +97,9 @@ export function FieldInput(p: FieldInputProps): React.JSX.Element {
           className={`h-8 text-xs ${p.prefix ? "pl-6" : ""} ${p.suffix ? "pr-12" : ""}`}
         />
         {p.suffix && (
-          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground uppercase tracking-wider select-none">{p.suffix}</span>
+          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground uppercase tracking-wider select-none">
+            {p.suffix}
+          </span>
         )}
       </div>
     </div>
@@ -91,11 +112,18 @@ interface SegmentListProps {
   onToggle: (id: string) => void
 }
 
-export function SegmentList({ segments, selected, onToggle }: SegmentListProps): React.JSX.Element {
+export function SegmentList({
+  segments,
+  selected,
+  onToggle,
+}: SegmentListProps): React.JSX.Element {
   if (segments.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.18)] bg-[#FFFFFF] py-3 text-center">
-        <p className="text-[11px] text-muted-foreground">No segments seeded yet.</p>
+      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.18)] bg-[#FFFFFF] py-4 px-3 text-center">
+        <p className="text-[11px] text-muted-foreground">
+          No segments seeded yet. You can still target by wallet age, portfolio, or contract
+          holdings below.
+        </p>
       </div>
     )
   }
@@ -123,11 +151,78 @@ export function SegmentList({ segments, selected, onToggle }: SegmentListProps):
                   ~{(s.estSize / 1000).toFixed(1)}k
                 </span>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">{s.description}</p>
+              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                {s.description}
+              </p>
             </div>
           </label>
         )
       })}
+    </div>
+  )
+}
+
+interface AddressTokenInputProps {
+  value: string
+  onChange: (v: string) => void
+  placeholder?: string
+  tone?: "default" | "danger"
+}
+
+function shortAddress(addr: string): string {
+  if (addr.length <= 14) return addr
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
+}
+
+export function AddressTokenInput({
+  value,
+  onChange,
+  placeholder,
+  tone = "default",
+}: AddressTokenInputProps): React.JSX.Element {
+  const tokens = value
+    .split(/[\s,]+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0)
+  const tokenStyle =
+    tone === "danger"
+      ? "bg-[#FFE8E8] text-[#B91C1C] border-[#B91C1C]/15"
+      : "bg-[#F5EFFF] text-[#6D28D9] border-[#6D28D9]/15"
+
+  const removeAt = (idx: number): void => {
+    const next = tokens.filter((_, i) => i !== idx)
+    onChange(next.join(", "))
+  }
+
+  return (
+    <div className="space-y-1.5">
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="h-8 text-xs font-mono"
+      />
+      {tokens.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {tokens.map((t, i) => (
+            <span
+              key={`${t}-${i}`}
+              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-mono tabular-nums ${tokenStyle}`}
+              title={t}
+            >
+              {shortAddress(t)}
+              <button
+                type="button"
+                onClick={() => removeAt(i)}
+                aria-label={`Remove ${t}`}
+                className="opacity-60 hover:opacity-100"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

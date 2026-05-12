@@ -100,22 +100,102 @@ interface SelectProps<T extends string> {
 
 export function SelectField<T extends string>(p: SelectProps<T>): React.JSX.Element {
   const colSpan = p.span === 2 ? "col-span-2" : ""
+  const current = p.options.find((o) => o.value === p.value)
   return (
     <div className={`space-y-1 ${colSpan}`}>
       <Label className="text-[10px] uppercase tracking-widest">{p.label}</Label>
       <Select value={p.value} onValueChange={(v) => p.onChange(v as T)}>
-        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+        <SelectTrigger className="h-8 text-xs">
+          <SelectValue>{current?.label}</SelectValue>
+        </SelectTrigger>
         <SelectContent>
           {p.options.map((o) => (
             <SelectItem key={o.value} value={o.value} className="text-xs">
-              <div className="flex flex-col">
-                <span>{o.label}</span>
-                {o.desc && <span className="text-[10px] text-muted-foreground">{o.desc}</span>}
+              <div className="flex items-center gap-3 w-full">
+                <span className="font-medium">{o.label}</span>
+                {o.desc && (
+                  <span className="ml-auto text-[10px] text-muted-foreground">{o.desc}</span>
+                )}
               </div>
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
+      {p.hint && <p className="text-[10px] text-muted-foreground">{p.hint}</p>}
+    </div>
+  )
+}
+
+interface SegmentedFieldProps<T extends string> {
+  label: string
+  value: T
+  onChange: (v: T) => void
+  options: { value: T; label: string; desc?: string }[]
+  span?: 1 | 2
+  hint?: string
+  columns?: 2 | 3 | 4
+}
+
+const GRID_COLS: Record<2 | 3 | 4, string> = {
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-2 sm:grid-cols-4",
+}
+
+export function SegmentedField<T extends string>(
+  p: SegmentedFieldProps<T>,
+): React.JSX.Element {
+  const colSpan = p.span === 2 ? "col-span-2" : ""
+  const defaultCols: 2 | 3 | 4 = p.options.length === 4 ? 4 : p.options.length === 2 ? 2 : 3
+  const cols = GRID_COLS[p.columns ?? defaultCols]
+
+  return (
+    <div className={`space-y-1.5 ${colSpan}`}>
+      <Label className="text-[10px] uppercase tracking-widest">{p.label}</Label>
+      <div role="radiogroup" aria-label={p.label} className={`grid gap-2 ${cols}`}>
+        {p.options.map((o) => {
+          const active = o.value === p.value
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => p.onChange(o.value)}
+              className={`group relative rounded-md border px-2.5 py-2 text-left transition-all ${
+                active
+                  ? "border-[#37322F] bg-[#FFFFFF] shadow-[0_0_0_3px_rgba(55,50,47,0.06),0_1px_0_rgba(255,255,255,0.6)]"
+                  : "border-[rgba(55,50,47,0.12)] bg-white hover:border-[rgba(55,50,47,0.28)] hover:bg-[#FAF8F5]"
+              }`}
+            >
+              <span
+                className={`absolute right-2 top-2 inline-flex size-3 items-center justify-center rounded-full border transition-colors ${
+                  active
+                    ? "border-[#37322F] bg-[#37322F]"
+                    : "border-[rgba(55,50,47,0.28)] bg-white"
+                }`}
+                aria-hidden
+              >
+                {active && <span className="size-1 rounded-full bg-white" />}
+              </span>
+              <div className="pr-5">
+                <div
+                  className={`text-[11px] font-medium leading-tight ${
+                    active ? "text-[#37322F]" : "text-[#37322F]/85"
+                  }`}
+                >
+                  {o.label}
+                </div>
+                {o.desc && (
+                  <div className="mt-0.5 text-[10px] text-muted-foreground leading-snug">
+                    {o.desc}
+                  </div>
+                )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
       {p.hint && <p className="text-[10px] text-muted-foreground">{p.hint}</p>}
     </div>
   )

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { ImageSparkleIcon } from "@/icons"
 import { FORMAT_DIMS } from "@/lib/creatives"
 import type { CreativeFormat } from "@prisma/client"
@@ -13,15 +14,32 @@ interface Props {
 }
 
 function isValidUrl(url: string): boolean {
-  try { new URL(url); return true } catch { return false }
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
 }
 
-export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = false }: Props): React.JSX.Element {
+export function AdPreview({
+  format,
+  assetUrl,
+  name,
+  walletConnectCta,
+  compact = false,
+}: Props): React.JSX.Element {
   const { width, height } = FORMAT_DIMS[format]
   const ratio = width / height
   const valid = isValidUrl(assetUrl)
   const isVideo = format === "VIDEO"
 
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    setFailed(false)
+  }, [assetUrl])
+
+  const showAsset = valid && !failed
   const sizeLabel = `${width}×${height}`
 
   return (
@@ -29,7 +47,7 @@ export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = 
       className="relative w-full overflow-hidden rounded-md border border-[rgba(55,50,47,0.12)] bg-[#F0ECE6]"
       style={{ aspectRatio: ratio }}
     >
-      {valid ? (
+      {showAsset ? (
         isVideo ? (
           <video
             src={assetUrl}
@@ -38,6 +56,7 @@ export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = 
             loop
             autoPlay
             playsInline
+            onError={() => setFailed(true)}
           />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
@@ -45,16 +64,20 @@ export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = 
             src={assetUrl}
             alt={name}
             className="absolute inset-0 h-full w-full object-cover"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none" }}
+            onError={() => setFailed(true)}
           />
         )
       ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-muted-foreground/60">
-          <ImageSparkleIcon className={compact ? "size-3.5" : "size-5"} />
-          {!compact && <span className="text-[10px]">Asset preview</span>}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-muted-foreground/70">
+          <ImageSparkleIcon className={compact ? "size-4" : "size-5"} />
+          {!compact && (
+            <span className="text-[10px]">
+              {valid ? "Asset failed to load" : "Asset preview"}
+            </span>
+          )}
         </div>
       )}
-      {walletConnectCta && valid && (
+      {walletConnectCta && showAsset && (
         <div className="absolute bottom-1.5 right-1.5 rounded-full bg-[#37322F] px-2 py-0.5 text-[9px] font-semibold text-white shadow-sm">
           Connect Wallet
         </div>

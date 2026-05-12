@@ -4,10 +4,11 @@ import type { BidStrategy, Pacing, PricingModel } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { TextField, SelectField, DatePickerField } from "./form-fields"
+import { TextField, SegmentedField, DatePickerField } from "./form-fields"
 import { RecommendedBadge } from "./RecommendedBadge"
 import { recommendationsFor } from "@/lib/campaignSmart"
 import { SpendIcon, GaugeIcon, CalendarCheckIcon } from "@/icons"
+import { WalletAvailableHint } from "@/components/wallet/WalletAvailableHint"
 
 interface Props {
   state: WizardState
@@ -149,6 +150,7 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               hint="Leave blank for no daily limit"
             />
           </div>
+          <WalletAvailableHint budgetUsd={state.budgetUsd} willActivate />
         </Section>
 
         <Section
@@ -159,13 +161,6 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
         >
           <div className="grid grid-cols-2 gap-3">
             <RecRow matches={biddingMatches} recLabel={recLabel} onApply={applyRecs} />
-            <SelectField
-              label="Pricing model"
-              value={state.pricingModel}
-              onChange={(v) => update({ pricingModel: v as PricingModel })}
-              options={PRICING_MODELS}
-              hint={state.pricingModel === recs.pricingModel ? "Matches recommendation" : `Recommended: ${recs.pricingModel}`}
-            />
             <TextField
               label="Bid"
               value={state.bidUsd}
@@ -178,18 +173,29 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               suffix={state.pricingModel}
               hint="Min $0.10"
             />
-            <SelectField
+            <SegmentedField
+              label="Pricing model"
+              value={state.pricingModel}
+              onChange={(v) => update({ pricingModel: v as PricingModel })}
+              options={PRICING_MODELS}
+              span={2}
+              hint={state.pricingModel === recs.pricingModel ? "Matches recommendation" : `Recommended: ${recs.pricingModel}`}
+            />
+            <SegmentedField
               label="Bid strategy"
               value={state.bidStrategy}
               onChange={(v) => update({ bidStrategy: v as BidStrategy })}
               options={BID_STRATEGIES}
+              span={2}
+              columns={4}
               hint={state.bidStrategy === recs.bidStrategy ? "Matches recommendation" : `Recommended: ${BID_STRATEGY_LABELS[recs.bidStrategy]}`}
             />
-            <SelectField
+            <SegmentedField
               label="Pacing"
               value={state.pacing}
               onChange={(v) => update({ pacing: v as Pacing })}
               options={PACING_OPTIONS}
+              span={2}
               hint={state.pacing === recs.pacing ? "Matches recommendation" : `Recommended: ${PACING_LABELS[recs.pacing]}`}
             />
           </div>

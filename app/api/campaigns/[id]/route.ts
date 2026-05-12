@@ -4,6 +4,11 @@ import { requireAdvertiser, isAuthError, jsonError } from '@/lib/api'
 import { UpdateCampaignSchema } from '@/components/campaigns/types'
 import { usdToCents } from '@/lib/money'
 import { logger } from '@/lib/logger'
+import {
+  reserveForCampaign,
+  releaseFromCampaign,
+  InsufficientFundsError,
+} from '@/lib/walletEscrow'
 
 interface RouteCtx {
   params: Promise<{ id: string }>
@@ -72,6 +77,25 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx): Promise<Nex
         ...(d.brandSafetyKeywords !== undefined && { brandSafetyKeywords: d.brandSafetyKeywords }),
       },
     })
+
+    const prevStatus = exists.status
+    const nextStatus = campaign.status
+    if (prevStatus !== nextStatus) {
+      const becomingActive = nextStatus === 'ACTIVE' && prevStatus !== 'ACTIVE'
+      const leavingActive = prevStatus === 'ACTIVE' && nextStatus !== 'ACTIVE'
+      if (becomingActive) {
+        try {
+          await reserveForCampaign(campaign.id)
+        } catch (err) {
+          await prisma.campaign.update({ where: { id }, data: { status: prevStatus } })
+          if (err instanceof InsufficientFundsError) return jsonError(err.message, 402)
+          throw err
+        }
+      } else if (leavingActive) {
+        await releaseFromCampaign(campaign.id)
+      }
+    }
+
     return NextResponse.json({ campaign })
   } catch (err) {
     logger.error({ err }, 'Failed to update campaign')
@@ -85,6 +109,9 @@ export async function DELETE(_req: NextRequest, { params }: RouteCtx): Promise<N
   const { id } = await params
   const exists = await loadOwned(id, ctx.advertiser.id)
   if (!exists) return jsonError('Not found', 404)
+  if (exists.reservedUsdcCents > 0) {
+    await releaseFromCampaign(id).catch(() => {})
+  }
   await prisma.campaign.delete({ where: { id } })
   return NextResponse.json({ ok: true })
 }

@@ -3,7 +3,7 @@
 import type { BidStrategy, Chain, DeviceType, PricingModel } from "@prisma/client"
 import type { AdGroupFormState } from "@/hooks/useAdGroupForm"
 import { Card, CardContent } from "@/components/ui/card"
-import { TextField, SelectField, DatePickerField } from "@/components/campaigns/components/form-fields"
+import { TextField, SegmentedField, DatePickerField } from "@/components/campaigns/components/form-fields"
 import { CHAINS } from "@/lib/chains"
 
 interface Props {
@@ -88,17 +88,19 @@ export function AdGroupStepSettings({ state, update }: Props): React.JSX.Element
               placeholder="Optional"
               prefix="$"
             />
-            <SelectField
+            <SegmentedField
               label="Pricing model"
               value={state.pricingModel}
               onChange={(v) => update({ pricingModel: v as PricingModel })}
               options={PRICING_MODELS}
+              span={2}
             />
-            <SelectField
+            <SegmentedField
               label="Bid strategy"
               value={state.bidStrategy}
               onChange={(v) => update({ bidStrategy: v as BidStrategy })}
               options={BID_STRATEGIES}
+              span={2}
             />
           </div>
         </Section>
