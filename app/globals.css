@@ -4,14 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Varaads warm cream palette — matches landing page */
-  --background: #F7F5F3;
+  /* Varaads Swiss palette — cream surface, royal-blue accent */
+  --background: #ECEAE2;
   --foreground: #37322F;
   --card: #FFFFFF;
   --card-foreground: #37322F;
   --popover: #FFFFFF;
   --popover-foreground: #37322F;
-  --primary: #37322F;
+  --primary: #1f40cd;
   --primary-foreground: #FAFAF8;
   --secondary: #EFEBE6;
   --secondary-foreground: #37322F;

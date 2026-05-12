@@ -24,14 +24,12 @@ interface Props {
 
 export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSignOut }: Props): React.JSX.Element {
   return (
-    <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.12)] bg-[#FFFFFF]">
-      {/* Logo + picker */}
-      <div className="flex h-11 shrink-0 items-center justify-center border-b border-[rgba(55,50,47,0.12)]">
+    <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.15)] bg-[#ECEAE2]">
+      <div className="flex h-11 shrink-0 items-center justify-center border-b border-[rgba(55,50,47,0.15)]">
         <LogoPicker />
       </div>
 
-      {/* Section icons */}
-      <nav className="flex flex-1 flex-col items-center gap-0.5 overflow-y-auto py-2">
+      <nav className="flex flex-1 flex-col items-center gap-1 overflow-y-auto py-3">
         {NAV_SECTIONS.map((section) => {
           const active = activeSection === section.id
           return (
@@ -40,35 +38,31 @@ export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSig
               type="button"
               title={section.label}
               onClick={() => onSectionClick(section.id)}
-              className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+              className={`relative flex h-9 w-9 items-center justify-center transition-colors ${
                 active
-                  ? "bg-[rgba(55,50,47,0.12)] text-[#37322F]"
-                  : "text-[#37322F]/60 hover:bg-[rgba(55,50,47,0.06)] hover:text-[#37322F]/80"
+                  ? "bg-[#1f40cd] text-white"
+                  : "text-[#1f40cd]/65 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd]"
               }`}
             >
               <section.icon className="size-4" />
-              {active && (
-                <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[#37322F]" />
-              )}
             </button>
           )
         })}
       </nav>
 
-      {/* Footer: panel toggle + user + sign out */}
-      <div className="flex shrink-0 flex-col items-center gap-0.5 border-t border-[rgba(55,50,47,0.12)] py-2">
+      <div className="flex shrink-0 flex-col items-center gap-1 border-t border-[rgba(55,50,47,0.15)] py-3">
         {!panelOpen && (
           <button
             type="button"
             title="Open panel"
             onClick={() => onSectionClick(activeSection)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-[#37322F]/40 hover:bg-[rgba(55,50,47,0.08)] hover:text-[#37322F] transition-colors"
+            className="flex h-7 w-7 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
           >
             <ChevronRight className="size-3.5" />
           </button>
         )}
         <div
-          className="flex h-7 w-7 items-center justify-center rounded-full bg-[#37322F] text-[#FAFAF8] text-[10px] font-semibold cursor-default"
+          className="flex h-7 w-7 items-center justify-center bg-[#1f40cd] text-white text-[10px] font-semibold tracking-[0.06em] cursor-default"
           title={`${user.name ?? ""} · ${user.email ?? ""}`}
         >
           {initials(user.name ?? "U")}
@@ -77,7 +71,7 @@ export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSig
           type="button"
           title="Sign out"
           onClick={onSignOut}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-[#37322F]/40 hover:bg-[rgba(55,50,47,0.08)] hover:text-[#37322F] transition-colors"
+          className="flex h-7 w-7 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
         >
           <LogOut className="size-3.5" />
         </button>

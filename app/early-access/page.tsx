@@ -5,18 +5,15 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
-import { Button } from "@/components/ui/button"
+import { SwissAuthShell } from "@/components/landing/SwissAuthShell"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+  SwissAuthHeader,
+  SwissError,
+  SwissField,
+  SwissInput,
+  SwissSubmit,
+  SwissTextarea,
+} from "@/components/landing/SwissAuthForm"
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -27,21 +24,16 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export default function EarlyAccessPage() {
+export default function EarlyAccessPage(): React.JSX.Element {
   const [submitted, setSubmitted] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      company: "",
-      message: "",
-    },
+    defaultValues: { name: "", email: "", company: "", message: "" },
   })
 
-  async function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues): Promise<void> {
     setServerError(null)
     const res = await fetch("/api/early-access", {
       method: "POST",
@@ -62,140 +54,100 @@ export default function EarlyAccessPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#FFFFFF] flex flex-col items-center px-4 py-10 sm:py-16">
-      <div className="w-full max-w-[520px] flex flex-col gap-8">
-        <div className="flex items-center justify-between gap-4">
+    <SwissAuthShell
+      eyebrow="VARA · BUILT IN PUBLIC · 2025—2026"
+      panelHeading="Request early access"
+      panelBody="Vara is rolling out by team. Share where you'd like to start — DSP, SSP, or both — and we'll match the cadence."
+      panelMeta="NOV 2025 — Q2 2026 · MONTREAL · REMOTE FIRST"
+      backHref="/"
+      backLabel="Back to Vara"
+    >
+      {submitted ? (
+        <div>
+          <SwissAuthHeader
+            eyebrow="EARLY ACCESS · CONFIRMED"
+            title="You're on the list"
+            body="Thanks for your interest. We'll reach out when early access opens."
+          />
           <Link
             href="/"
-            className="text-[#37322F] text-sm font-medium font-sans hover:opacity-80 transition-opacity"
+            className="inline-flex h-12 items-center px-6 bg-[#1f40cd] text-white text-xs font-medium tracking-[0.14em]"
           >
-            ← Back
+            RETURN HOME
           </Link>
-          <div className="text-[#2F3037] text-base font-medium font-sans">Varaads</div>
         </div>
+      ) : (
+        <>
+          <SwissAuthHeader
+            eyebrow="EARLY ACCESS · REQUEST"
+            title="Get in touch"
+            body="Share your details and we'll notify you when spots open."
+          />
 
-        <div className="rounded-[9px] border border-[rgba(55,50,47,0.12)] bg-white shadow-[0px_0px_0px_0.9px_rgba(0,0,0,0.06)] p-6 sm:p-8">
-          {submitted ? (
-            <div className="flex flex-col gap-4 text-center">
-              <h1 className="text-[#49423D] text-2xl sm:text-3xl font-semibold font-sans tracking-tight">
-                You&apos;re on the list
-              </h1>
-              <p className="text-[#605A57] text-sm sm:text-base leading-relaxed font-sans">
-                Thanks for your interest. We&apos;ll reach out when early access opens.
-              </p>
-              <Button
-                asChild
-                className="mt-2 rounded-full bg-[#37322F] hover:bg-[#2A2520] text-white"
-              >
-                <Link href="/">Return home</Link>
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="flex flex-col gap-2 mb-6">
-                <h1 className="text-[#49423D] text-2xl sm:text-3xl font-semibold font-sans tracking-tight">
-                  Request early access
-                </h1>
-                <p className="text-[#605A57] text-sm sm:text-base leading-relaxed font-sans">
-                  Share your details and we&apos;ll notify you when spots open.
-                </p>
-              </div>
+          <SwissError message={serverError} />
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#37322F]">Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Jane Doe"
-                            autoComplete="name"
-                            className="border-[rgba(55,50,47,0.15)] bg-[#F7F5F3]/50"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#37322F]">Work email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="you@company.com"
-                            autoComplete="email"
-                            className="border-[rgba(55,50,47,0.15)] bg-[#F7F5F3]/50"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="company"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#37322F]">Company (optional)</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Acme"
-                            autoComplete="organization"
-                            className="border-[rgba(55,50,47,0.15)] bg-[#F7F5F3]/50"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#37322F]">Anything we should know? (optional)</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Use case, volume, timeline…"
-                            rows={4}
-                            className="border-[rgba(55,50,47,0.15)] bg-[#F7F5F3]/50 resize-y min-h-[100px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <SwissField label="Name">
+              <SwissInput
+                {...form.register("name")}
+                placeholder="Jane Doe"
+                autoComplete="name"
+                invalid={!!form.formState.errors.name}
+              />
+              {form.formState.errors.name && (
+                <p className="text-[11px] text-[#c2410c] mt-1">{form.formState.errors.name.message}</p>
+              )}
+            </SwissField>
 
-                  {serverError ? (
-                    <p className="text-destructive text-sm" role="alert">
-                      {serverError}
-                    </p>
-                  ) : null}
+            <SwissField label="Work email">
+              <SwissInput
+                {...form.register("email")}
+                type="email"
+                placeholder="you@company.com"
+                autoComplete="email"
+                invalid={!!form.formState.errors.email}
+              />
+              {form.formState.errors.email && (
+                <p className="text-[11px] text-[#c2410c] mt-1">{form.formState.errors.email.message}</p>
+              )}
+            </SwissField>
 
-                  <Button
-                    type="submit"
-                    disabled={form.formState.isSubmitting}
-                    className="w-full sm:w-auto rounded-full h-11 px-10 bg-[#37322F] hover:bg-[#2A2520] text-white shadow-[0px_0px_0px_2.5px_rgba(255,255,255,0.08)_inset]"
-                  >
-                    {form.formState.isSubmitting ? "Submitting…" : "Join waitlist"}
-                  </Button>
-                </form>
-              </Form>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+            <SwissField label="Company" hint={<>Optional</>}>
+              <SwissInput
+                {...form.register("company")}
+                placeholder="Acme"
+                autoComplete="organization"
+              />
+            </SwissField>
+
+            <SwissField label="Anything we should know?" hint={<>Optional</>}>
+              <SwissTextarea
+                {...form.register("message")}
+                placeholder="Use case, volume, timeline…"
+                rows={4}
+              />
+            </SwissField>
+
+            <SwissSubmit
+              loading={form.formState.isSubmitting}
+              label="Join waitlist"
+              loadingLabel="Submitting…"
+            />
+          </form>
+
+          <p className="mt-6 text-[11px] tracking-[0.04em] text-[#37322F]/45">
+            By submitting you agree to our{" "}
+            <Link href="/terms" className="underline underline-offset-4">
+              Terms
+            </Link>{" "}
+            &{" "}
+            <Link href="/privacy" className="underline underline-offset-4">
+              Privacy
+            </Link>
+            .
+          </p>
+        </>
+      )}
+    </SwissAuthShell>
   )
 }

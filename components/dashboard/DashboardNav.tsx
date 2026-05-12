@@ -203,25 +203,25 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
   const section = NAV_SECTIONS.find((s) => s.id === sectionId) ?? NAV_SECTIONS[0]!
 
   return (
-    <div className="flex h-full w-44 flex-col overflow-hidden">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[rgba(55,50,47,0.08)] px-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#37322F]">
+    <div className="flex h-full w-48 flex-col overflow-hidden">
+      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[rgba(55,50,47,0.15)] px-3">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#1f40cd]">
           {section.label}
         </span>
         <button
           type="button"
           onClick={onToggle}
-          className="flex h-5 w-5 items-center justify-center rounded text-[#37322F]/40 hover:bg-[rgba(55,50,47,0.08)] hover:text-[#37322F] transition-colors"
+          className="flex h-5 w-5 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
           title="Close panel"
         >
           <ChevronLeft className="size-3" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto py-1.5 ">
+      <div className="flex-1 overflow-y-auto py-2">
         {section.groups.map((group, gi) => (
-          <div key={gi} className={gi > 0 ? "mt-2" : ""}>
+          <div key={gi} className={gi > 0 ? "mt-3" : ""}>
             {group.label && (
-              <p className="px-3 pb-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#37322F]/40">
+              <p className="px-3 pb-1 text-[9px] font-medium uppercase tracking-[0.16em] text-[#37322F]/45">
                 {group.label}
               </p>
             )}
@@ -232,13 +232,13 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-[12px] rounded-md mx-1.5 transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 text-[12px] transition-colors ${
                     active
-                      ? "bg-[rgba(55,50,47,0.08)] text-[#37322F] font-medium"
-                      : "text-[#37322F]/70 hover:bg-[rgba(55,50,47,0.05)] hover:text-[#37322F]"
+                      ? "bg-[#1f40cd] text-white font-medium"
+                      : "text-[#37322F]/75 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd]"
                   }`}
                 >
-                  <Icon className="size-3.5 shrink-0 opacity-70" />
+                  <Icon className={`size-3.5 shrink-0 ${active ? "opacity-100" : "opacity-65"}`} />
                   {item.label}
                 </Link>
               )

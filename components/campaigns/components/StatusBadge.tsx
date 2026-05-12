@@ -1,24 +1,25 @@
 import { CampaignStatus } from "@prisma/client"
-import { Badge } from "@/components/ui/badge"
 
-const VARIANT: Record<CampaignStatus, "default" | "secondary" | "outline" | "destructive"> = {
-  DRAFT: "outline",
-  ACTIVE: "default",
-  PAUSED: "secondary",
-  ENDED: "outline",
+const STYLE: Record<CampaignStatus, string> = {
+  DRAFT: "border border-dashed border-[#37322F]/35 text-[#37322F]/65",
+  ACTIVE: "bg-[#1f40cd] text-white",
+  PAUSED: "border border-[#c2410c] text-[#c2410c]",
+  ENDED: "border border-[#37322F]/25 text-[#37322F]/55",
 }
 
 const LABEL: Record<CampaignStatus, string> = {
-  DRAFT: "Draft",
-  ACTIVE: "Active",
-  PAUSED: "Paused",
-  ENDED: "Ended",
+  DRAFT: "DRAFT",
+  ACTIVE: "ACTIVE",
+  PAUSED: "PAUSED",
+  ENDED: "ENDED",
 }
 
 export function StatusBadge({ status }: { status: CampaignStatus }): React.JSX.Element {
   return (
-    <Badge variant={VARIANT[status]} className="h-4 px-1.5 text-[9px] uppercase tracking-wider">
+    <span
+      className={`inline-flex h-5 items-center px-2 text-[10px] font-medium tracking-[0.14em] ${STYLE[status]}`}
+    >
       {LABEL[status]}
-    </Badge>
+    </span>
   )
 }

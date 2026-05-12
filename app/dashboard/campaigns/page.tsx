@@ -107,37 +107,41 @@ export default async function CampaignsListPage({ searchParams }: PageProps): Pr
   })
 
   return (
-    <div className="flex flex-col gap-3 p-3">
-      <div className="flex items-center justify-between gap-2 border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+    <div className="flex flex-col gap-6 p-6">
+      <div className="flex items-end justify-between gap-3 border-b border-[#37322F]/15 pb-5">
         <div className="shrink-0">
-          <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
-            <span className="font-instrument-serif italic font-normal text-[26px]">Campaigns</span>
+          <div className="text-[10px] tracking-[0.16em] text-[#37322F]/55">DASHBOARD · CAMPAIGNS</div>
+          <h1 className="mt-2 text-[#1f40cd] uppercase tracking-[-0.01em] text-2xl md:text-3xl font-medium leading-[0.95]">
+            Campaigns
           </h1>
-          <p className="text-[11px] text-muted-foreground mt-1.5">
-            {campaigns.length === totalCount ? `${totalCount} total` : `${campaigns.length} of ${totalCount}`}
+          <p className="mt-2 text-[12px] text-[#37322F]/65 tracking-[0.04em]">
+            {campaigns.length === totalCount ? `${totalCount} TOTAL` : `${campaigns.length} OF ${totalCount}`}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap justify-end">
+        <div className="flex items-center gap-3 flex-wrap justify-end">
           <CampaignsToolbar totalCount={totalCount} filteredCount={campaigns.length} csvData={csvData} />
-          <Button asChild size="sm" className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]">
-            <Link href="/dashboard/campaigns/new"><BoxPlusIcon className="size-3" />New Campaign</Link>
+          <Button asChild size="sm" className="h-9 rounded-none gap-2 text-[11px] tracking-[0.14em] px-5 bg-[#1f40cd] text-white hover:opacity-90">
+            <Link href="/dashboard/campaigns/new"><BoxPlusIcon className="size-3" />NEW CAMPAIGN</Link>
           </Button>
         </div>
       </div>
 
-      <Card className="gap-0 py-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <CardHeader className="border-b border-[rgba(55,50,47,0.12)] px-3 py-2 flex flex-row items-center justify-between">
-          <CardTitle className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-            All Campaigns
-          </CardTitle>
-          <span className="text-[10px] text-muted-foreground tabular-nums">Last 30 days</span>
+      <Card className="gap-0 py-0 rounded-none border border-[#37322F]/15 shadow-none bg-transparent">
+        <CardHeader className="border-b border-[#37322F]/15 px-5 py-4 flex flex-row items-center justify-between">
+          <div>
+            <div className="text-[10px] tracking-[0.16em] text-[#37322F]/55">PROGRAMME</div>
+            <CardTitle className="mt-1 text-[#1f40cd] tracking-[-0.01em] text-lg font-medium">
+              All campaigns
+            </CardTitle>
+          </div>
+          <span className="text-[10px] tracking-[0.14em] text-[#37322F]/55 tabular-nums">LAST 30 DAYS</span>
         </CardHeader>
 
         <CardContent className="p-0">
           {campaigns.length === 0 ? (
-            <div className="px-3 py-12 text-center text-xs text-muted-foreground">
+            <div className="px-5 py-16 text-center text-[12px] text-[#37322F]/65">
               {totalCount === 0 ? (
-                <>No campaigns yet. <Link href="/dashboard/campaigns/new" className="font-medium text-foreground underline underline-offset-2">Create one</Link>.</>
+                <>No campaigns yet. <Link href="/dashboard/campaigns/new" className="text-[#1f40cd] underline underline-offset-4">Create one</Link>.</>
               ) : (
                 "No campaigns match your filters."
               )}

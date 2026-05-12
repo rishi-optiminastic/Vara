@@ -23,7 +23,12 @@ export const metadata: Metadata = {
   title: "Varaads - Effortless Custom Contract Billing",
   description:
     "Streamline your billing process with seamless automation for every custom contract, tailored by Varaads.",
-    generator: 'v0.app'
+  generator: 'v0.app',
+  icons: {
+    icon: [{ url: "/VaraAd.png", type: "image/png" }],
+    shortcut: "/VaraAd.png",
+    apple: "/VaraAd.png",
+  },
 }
 
 export default function RootLayout({
