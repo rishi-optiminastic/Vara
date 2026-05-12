@@ -57,7 +57,7 @@ function AnalyticsPreview(): React.JSX.Element {
     { label: "Spend", color: "bg-[#E8F5E9] text-[#15803D]" },
   ]
   return (
-    <div className="rounded-xl border border-dashed border-[rgba(55,50,47,0.15)] bg-[#FAFAF8] p-3 space-y-2.5">
+    <div className="rounded-xl border border-dashed border-[rgba(55,50,47,0.15)] bg-[#FFFFFF] p-3 space-y-2.5">
       <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
         Analytics preview · live after launch
       </div>

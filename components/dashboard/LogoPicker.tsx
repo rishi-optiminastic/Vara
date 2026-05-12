@@ -81,8 +81,8 @@ export function LogoPicker(): React.JSX.Element {
                 title={l.label}
                 className={`group relative flex flex-col items-center justify-center gap-1 rounded-lg border p-2 transition-all ${
                   isActive
-                    ? "border-[#37322F] bg-[#FAFAF8] ring-2 ring-[#37322F]/20"
-                    : "border-[rgba(55,50,47,0.12)] bg-white hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FAFAF8]"
+                    ? "border-[#37322F] bg-[#FFFFFF] ring-2 ring-[#37322F]/20"
+                    : "border-[rgba(55,50,47,0.12)] bg-white hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FFFFFF]"
                 }`}
               >
                 <div className="flex h-20 w-full items-center justify-center">

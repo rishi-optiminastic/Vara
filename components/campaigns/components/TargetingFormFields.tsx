@@ -94,7 +94,7 @@ interface SegmentListProps {
 export function SegmentList({ segments, selected, onToggle }: SegmentListProps): React.JSX.Element {
   if (segments.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.18)] bg-[#FAFAF8] py-3 text-center">
+      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.18)] bg-[#FFFFFF] py-3 text-center">
         <p className="text-[11px] text-muted-foreground">No segments seeded yet.</p>
       </div>
     )
@@ -107,7 +107,7 @@ export function SegmentList({ segments, selected, onToggle }: SegmentListProps):
           <label
             key={s.id}
             className={`flex items-start gap-2 rounded-md p-1.5 cursor-pointer transition-colors ${
-              active ? "bg-[#F5EFFF]" : "hover:bg-[#FAFAF8]"
+              active ? "bg-[#F5EFFF]" : "hover:bg-[#FFFFFF]"
             }`}
           >
             <Checkbox checked={active} onCheckedChange={() => onToggle(s.id)} className="mt-0.5" />

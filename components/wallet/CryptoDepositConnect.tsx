@@ -72,7 +72,7 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
   if (!isConnected) {
     return (
       <div className="px-5 py-6 space-y-3">
-        <div className="flex items-start gap-2 rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FAFAF8] p-3 text-[11px] text-muted-foreground">
+        <div className="flex items-start gap-2 rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FFFFFF] p-3 text-[11px] text-muted-foreground">
           <WalletIcon className="size-4 shrink-0 mt-0.5 text-[#37322F]" />
           <div>
             <p className="font-medium text-[#37322F]">Connect your wallet to top up</p>
@@ -119,7 +119,7 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
 
   return (
     <div className="space-y-3 p-5">
-      <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(55,50,47,0.12)] bg-[#FAFAF8] px-3 py-2">
+      <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] px-3 py-2">
         <div className="min-w-0 flex items-center gap-2">
           <WalletIcon className="size-3.5 text-[#37322F] shrink-0" />
           <span className="font-mono text-[11px] text-[#37322F] truncate" title={address}>
@@ -177,7 +177,7 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
         </div>
       </div>
 
-      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FAFAF8] p-2.5 space-y-1 text-[11px]">
+      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FFFFFF] p-2.5 space-y-1 text-[11px]">
         <Row label="To" value={shortAddress(depositAddress)} mono />
         <Row label="Network" value="Sepolia (testnet)" />
         <Row label="Token" value="USDC" />

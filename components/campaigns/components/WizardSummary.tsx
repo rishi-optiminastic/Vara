@@ -52,7 +52,7 @@ function Section({ icon: Icon, title, active, done, tint, children }: SectionPro
     <Card className={`py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)] overflow-hidden transition-all ${
       active ? "ring-1 ring-[#37322F]/20" : !done ? "opacity-70" : ""
     }`}>
-      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.1)] bg-[#FAFAF8] px-2.5 py-1.5">
+      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.1)] bg-[#FFFFFF] px-2.5 py-1.5">
         <div className="flex items-center gap-1.5">
           <span className={`flex size-4 items-center justify-center rounded-md ${tint}`}>
             <Icon className="size-2.5" />
@@ -89,7 +89,7 @@ export function WizardSummary({ state, step, score, savedLabel }: Props): React.
 
   return (
     <div className="sticky top-3 space-y-2">
-      <div className="flex items-center gap-2 rounded-xl border border-[rgba(55,50,47,0.1)] bg-gradient-to-br from-[#F5EFE7] to-[#FAFAF8] px-2 py-1.5">
+      <div className="flex items-center gap-2 rounded-xl border border-[rgba(55,50,47,0.1)] bg-gradient-to-br from-[#F5EFE7] to-[#FFFFFF] px-2 py-1.5">
         <SetupScoreRing score={score} />
         <div className="min-w-0">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-[#37322F]">Setup</div>

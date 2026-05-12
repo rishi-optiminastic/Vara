@@ -57,7 +57,7 @@ function explorerUrl(chain: Payout["chain"], txHash: string): string {
 export function PayoutsLedger({ payouts }: Props): React.JSX.Element {
   return (
     <Card className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FAFAF8]">
+      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FFFFFF]">
         <NavTransactionsIcon className="size-3 text-muted-foreground" />
         <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Payout history
@@ -72,7 +72,7 @@ export function PayoutsLedger({ payouts }: Props): React.JSX.Element {
           payouts.map(p => (
             <div
               key={p.id}
-              className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-[#FAFAF8]/60 transition-colors"
+              className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-[#F7F5F3]/60 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Badge

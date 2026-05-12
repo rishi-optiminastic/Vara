@@ -13,7 +13,8 @@ import { TargetingForm } from "@/components/campaigns/components/TargetingForm"
 import { MetricsPanel } from "@/components/campaigns/components/MetricsPanel"
 import { CampaignTabs } from "@/components/campaigns/components/CampaignTabs"
 import { DateRangeSelector } from "@/components/DateRangeSelector"
-import { ChevronLeftIcon, ImageSparkleIcon } from "@/icons"
+import { CreativeGallery } from "@/components/ads/components/CreativeGallery"
+import { ChevronLeftIcon } from "@/icons"
 interface PageProps {
   params: Promise<{ id: string }>
   searchParams: Promise<Record<string, string | undefined>>
@@ -97,23 +98,10 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
           creativeCount={creativeCount}
           overview={<CampaignOverview campaign={campaign} metrics={metrics} segments={segments} rangeDays={rangeDays} />}
           targeting={<TargetingForm campaignId={campaign.id} initial={campaign.targeting} segments={segments} />}
-          creatives={<CreativesEmpty count={creativeCount} />}
+          creatives={<CreativeGallery creatives={campaign.creatives} newAdHref={`/dashboard/ads/new?campaign=${campaign.id}`} />}
           reporting={<MetricsPanel campaignId={campaign.id} days={rangeDays} />}
         />
     </div>
   )
 }
 
-function CreativesEmpty({ count }: { count: number }): React.JSX.Element {
-  return (
-    <div className="rounded-xl border border-dashed border-[rgba(55,50,47,0.18)] bg-white/50 p-10 text-center">
-      <div className="mx-auto mb-3 flex size-9 items-center justify-center rounded-full bg-[#F0ECE6]">
-        <ImageSparkleIcon className="size-4 text-muted-foreground" />
-      </div>
-      <p className="text-xs font-medium text-[#37322F]">{count === 0 ? "No creatives yet" : `${count} creative${count > 1 ? "s" : ""}`}</p>
-      <p className="text-[11px] text-muted-foreground mt-1">
-        Creative upload is coming soon. The data model is in place.
-      </p>
-    </div>
-  )
-}

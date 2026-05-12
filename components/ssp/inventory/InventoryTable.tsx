@@ -43,7 +43,7 @@ export function InventoryTable({ placements }: Props): React.JSX.Element {
 
   return (
     <Card className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FAFAF8]">
+      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FFFFFF]">
         <AssetsIcon className="size-3 text-muted-foreground" />
         <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Placements
@@ -93,7 +93,7 @@ function PlacementRow({ placement }: { placement: Placement }): React.JSX.Elemen
   }
 
   return (
-    <li className="px-4 py-2.5 hover:bg-[#FAFAF8]/60 transition-colors">
+    <li className="px-4 py-2.5 hover:bg-[#F7F5F3]/60 transition-colors">
       <div className="flex items-center gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 min-w-0">

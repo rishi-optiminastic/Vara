@@ -66,7 +66,7 @@ export function DspStats(): React.JSX.Element {
                 i === 2 ? 'sm:border-r' : ''
               } ${i < 2 ? 'sm:border-b lg:border-b-0' : ''}`}
             >
-              <div className="w-9 h-9 rounded-lg bg-[#F7F5F3] border border-foreground/[0.08] flex items-center justify-center text-[#2F3037]">
+              <div className="w-9 h-9 rounded-lg bg-[#FFFFFF] border border-foreground/[0.08] flex items-center justify-center text-[#2F3037]">
                 {stat.icon}
               </div>
               <div className="text-[#37322F] text-3xl sm:text-4xl font-serif font-normal leading-none tracking-tight">

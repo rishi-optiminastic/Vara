@@ -97,15 +97,17 @@ export default async function AdsPage({ searchParams }: PageProps): Promise<Reac
             <div className="divide-y divide-[rgba(55,50,47,0.07)]">
               {creatives.map((cr) => (
                 <div key={cr.id} className="flex items-center gap-3 px-3 py-2.5 hover:bg-[rgba(55,50,47,0.02)] transition-colors">
-                  <div className="w-18 shrink-0">
-                    <AdPreview
-                      format={cr.format}
-                      assetUrl={cr.assetUrl}
-                      name={cr.name}
-                      walletConnectCta={cr.walletConnectCta}
-                      compact
-                    />
-                  </div>
+                  <Link href={`/dashboard/ads/${cr.id}`} className="w-24 shrink-0 group/preview">
+                    <div className="transition-transform group-hover/preview:scale-[1.02]">
+                      <AdPreview
+                        format={cr.format}
+                        assetUrl={cr.assetUrl}
+                        name={cr.name}
+                        walletConnectCta={cr.walletConnectCta}
+                        compact
+                      />
+                    </div>
+                  </Link>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Link href={`/dashboard/ads/${cr.id}`} className="text-xs font-medium text-[#37322F] hover:underline truncate">

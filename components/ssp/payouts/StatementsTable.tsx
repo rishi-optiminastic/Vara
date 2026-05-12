@@ -30,7 +30,7 @@ function rangeLabel(start: Date, end: Date): string {
 export function StatementsTable({ statements }: Props): React.JSX.Element {
   return (
     <Card className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FAFAF8]">
+      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FFFFFF]">
         <FileCheckIcon className="size-3 text-muted-foreground" />
         <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Statements
@@ -43,7 +43,7 @@ export function StatementsTable({ statements }: Props): React.JSX.Element {
       ) : (
         <ul className="divide-y divide-[rgba(55,50,47,0.06)]">
           {statements.map(s => (
-            <li key={s.id} className="group hover:bg-[#FAFAF8]/60 transition-colors">
+            <li key={s.id} className="group hover:bg-[#F7F5F3]/60 transition-colors">
               <Link
                 href={`/ssp/dashboard/payouts/${s.id}`}
                 className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-center gap-4 px-4 py-2.5"

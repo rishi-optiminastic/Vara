@@ -84,7 +84,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: Props): React.JSX
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] gap-0 p-0 overflow-hidden">
-        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FAFAF8]">
+        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FFFFFF]">
           <div className="flex items-center gap-1.5">
             <FileDownloadIcon className="size-4" />
             <DialogTitle className="text-[13px] font-medium tracking-tight text-[#37322F]">
@@ -136,7 +136,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: Props): React.JSX
                   className={`rounded-md border px-2 py-1.5 text-[10px] font-medium transition-colors ${
                     chain === c.id
                       ? "border-[#37322F] bg-[#37322F] text-white"
-                      : "border-[rgba(55,50,47,0.16)] bg-white text-[#37322F] hover:bg-[#FAFAF8]"
+                      : "border-[rgba(55,50,47,0.16)] bg-white text-[#37322F] hover:bg-[#FFFFFF]"
                   }`}
                   disabled={submitting}
                 >
@@ -160,7 +160,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: Props): React.JSX
           </div>
 
           {amountCents > 0 && !exceedsBalance && (
-            <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FAFAF8] p-2.5 space-y-1 text-[11px]">
+            <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FFFFFF] p-2.5 space-y-1 text-[11px]">
               <Row label="Amount" value={`${formatUsdc(amountCents)} USDC`} />
               <Row label="Network fee" value={`− ${formatUsdc(NETWORK_FEE_USDC_CENTS)} USDC`} />
               <div className="border-t border-[rgba(55,50,47,0.12)] pt-1 mt-1">
@@ -181,7 +181,7 @@ export function WithdrawDialog({ open, onOpenChange, wallet }: Props): React.JSX
           )}
         </div>
 
-        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FAFAF8] flex-row gap-2">
+        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FFFFFF] flex-row gap-2">
           <Badge
             variant="outline"
             className="h-5 px-2 text-[9px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)] text-muted-foreground"

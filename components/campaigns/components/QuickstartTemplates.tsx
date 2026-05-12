@@ -45,7 +45,7 @@ function TemplateCard({ template, active, onClick }: CardProps): React.JSX.Eleme
             key={h}
             className={`rounded-full border px-1.5 py-px text-[8px] font-medium uppercase tracking-wider ${
               active
-                ? "border-[#FAFAF8]/25 text-[#FAFAF8]/85"
+                ? "border-[#FFFFFF]/25 text-[#FAFAF8]/85"
                 : "border-[rgba(55,50,47,0.15)] text-muted-foreground"
             }`}
           >

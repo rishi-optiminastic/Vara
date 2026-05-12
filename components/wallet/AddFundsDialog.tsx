@@ -57,7 +57,7 @@ export function AddFundsDialog({ open, onOpenChange, depositAddress }: Props): R
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[560px] gap-0 p-0 overflow-hidden">
-        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FAFAF8]">
+        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FFFFFF]">
           <div className="flex items-center gap-1.5">
             <UsdcIcon className="size-4" />
             <DialogTitle className="text-[13px] font-medium tracking-tight text-[#37322F]">
@@ -95,7 +95,7 @@ export function AddFundsDialog({ open, onOpenChange, depositAddress }: Props): R
           </div>
         )}
 
-        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FAFAF8]">
+        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FFFFFF]">
           {method ? (
             <Button variant="ghost" className="h-7 text-xs" onClick={() => setSelected(null)}>
               Back
@@ -123,7 +123,7 @@ function MethodTile({
     <button
       type="button"
       onClick={onSelect}
-      className="group flex flex-col gap-2 rounded-md border border-[rgba(55,50,47,0.12)] bg-white px-3 py-2.5 text-left transition-colors hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FAFAF8]"
+      className="group flex flex-col gap-2 rounded-md border border-[rgba(55,50,47,0.12)] bg-white px-3 py-2.5 text-left transition-colors hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FFFFFF]"
     >
       <div className="flex items-center justify-between">
         <div className={`flex h-7 w-7 items-center justify-center rounded-md ${TINTS_BY_ID[method.id]}`}>

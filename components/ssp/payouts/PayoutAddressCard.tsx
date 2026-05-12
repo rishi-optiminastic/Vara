@@ -53,7 +53,7 @@ export function PayoutAddressCard({ wallet }: Props): React.JSX.Element {
       id="payout-address"
       className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]"
     >
-      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] bg-[#FAFAF8] px-4 py-2.5">
+      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] px-4 py-2.5">
         <div className="flex items-center gap-1.5">
           <WalletIcon className="size-3.5" />
           <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -99,7 +99,7 @@ export function PayoutAddressCard({ wallet }: Props): React.JSX.Element {
                     className={`rounded-md border px-2 py-1.5 text-[10px] font-medium transition-colors ${
                       chain === c.id
                         ? "border-[#37322F] bg-[#37322F] text-white"
-                        : "border-[rgba(55,50,47,0.16)] bg-white text-[#37322F] hover:bg-[#FAFAF8]"
+                        : "border-[rgba(55,50,47,0.16)] bg-white text-[#37322F] hover:bg-[#FFFFFF]"
                     }`}
                     disabled={submitting}
                   >

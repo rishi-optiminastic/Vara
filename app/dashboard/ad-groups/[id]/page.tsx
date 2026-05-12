@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { StatusBadge } from "@/components/campaigns/components/StatusBadge"
 import { AdGroupActions } from "@/components/ad-groups/components/AdGroupActions"
+import { CreativeGallery } from "@/components/ads/components/CreativeGallery"
 import { ChevronLeftIcon } from "@/icons"
 
 interface Props { params: Promise<{ id: string }> }
@@ -21,11 +22,24 @@ export default async function AdGroupDetailPage({ params }: Props): Promise<Reac
 
   const adGroup = await prisma.adGroup.findFirst({
     where: { id, campaign: { advertiserId: advertiser.id } },
-    include: { campaign: { select: { id: true, name: true } }, targeting: true },
+    include: {
+      campaign: {
+        select: {
+          id: true,
+          name: true,
+          creatives: {
+            select: { id: true, name: true, format: true, assetUrl: true, walletConnectCta: true, width: true, height: true },
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      },
+      targeting: true,
+    },
   })
   if (!adGroup) notFound()
 
   const t = adGroup.targeting
+  const creatives = adGroup.campaign.creatives
 
   return (
     <div className="flex flex-col gap-3 p-3">
@@ -78,6 +92,24 @@ export default async function AdGroupDetailPage({ params }: Props): Promise<Reac
           </CardContent>
         </Card>
       </div>
+
+      <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+        <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+          <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            Creatives in campaign
+          </h3>
+          <span className="text-[10px] tabular-nums text-muted-foreground">
+            {creatives.length}
+          </span>
+        </div>
+        <CardContent className="p-3.5">
+          <CreativeGallery
+            creatives={creatives}
+            newAdHref={`/dashboard/ads/new?campaign=${adGroup.campaign.id}`}
+            emptyTitle="No ads in this campaign yet"
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 }

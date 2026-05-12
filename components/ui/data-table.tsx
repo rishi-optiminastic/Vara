@@ -37,7 +37,7 @@ export function DataTable<T extends object>({
     <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white/70 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_16px_-8px_rgba(55,50,47,0.08)] overflow-x-auto">
       <Table>
         <TableHeader>
-          <TableRow className="h-8 border-b border-[rgba(55,50,47,0.08)] hover:bg-transparent bg-[#FAFAF8]/80">
+          <TableRow className="h-8 border-b border-[rgba(55,50,47,0.08)] hover:bg-transparent bg-[#F7F5F3]/80">
             {columns.map((col, ci) => (
               <TableHead
                 key={col.id}

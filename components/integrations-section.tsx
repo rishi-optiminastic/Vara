@@ -41,7 +41,7 @@ export default function IntegrationsSection() {
               key={index}
               className="flex flex-col items-center justify-center gap-2 p-4 bg-white rounded-lg shadow-[0px_1px_2px_rgba(0,0,0,0.04)]"
             >
-              <div className="w-10 h-10 rounded-full bg-[#F7F5F3] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-[#FFFFFF] flex items-center justify-center">
                 <img src="/horizon-icon.svg" alt="integration" className="w-6 h-6 object-contain" />
               </div>
               <div className="text-sm text-[#37322F] font-medium">SDK {index + 1}</div>

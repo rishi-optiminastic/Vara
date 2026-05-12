@@ -60,7 +60,7 @@ function StepDot({ step, index, current, furthest, onClick }: DotProps): React.J
       }`}
     >
       <div className={`size-5 shrink-0 rounded-full flex items-center justify-center text-[9px] font-semibold ${
-        active ? "bg-[#FAFAF8]/15 text-[#FAFAF8]" :
+        active ? "bg-[#F7F5F3]/15 text-[#FAFAF8]" :
         done ? "bg-[#37322F] text-[#FAFAF8]" :
         "bg-[rgba(55,50,47,0.06)] text-current"
       }`}>

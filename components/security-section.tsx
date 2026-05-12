@@ -55,9 +55,9 @@ export default function SecuritySection() {
             <h5 className="text-[#37322F] font-semibold">Compliance-ready</h5>
             <div className="text-[#605A57] text-sm mt-2">SOC-ready controls, exportable audit logs, and configurable retention policies to meet finance and regulatory needs.</div>
             <div className="mt-4 flex gap-2">
-              <div className="px-3 py-1 rounded-full bg-[#F7F5F3] text-sm text-[#37322F]">SOC</div>
-              <div className="px-3 py-1 rounded-full bg-[#F7F5F3] text-sm text-[#37322F]">PCI</div>
-              <div className="px-3 py-1 rounded-full bg-[#F7F5F3] text-sm text-[#37322F]">Audit</div>
+              <div className="px-3 py-1 rounded-full bg-[#FFFFFF] text-sm text-[#37322F]">SOC</div>
+              <div className="px-3 py-1 rounded-full bg-[#FFFFFF] text-sm text-[#37322F]">PCI</div>
+              <div className="px-3 py-1 rounded-full bg-[#FFFFFF] text-sm text-[#37322F]">Audit</div>
             </div>
           </div>
         </div>

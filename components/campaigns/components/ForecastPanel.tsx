@@ -59,7 +59,7 @@ export function ForecastPanel({ state }: Props): React.JSX.Element {
   const empty = f.impressions === 0
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] bg-[#FAFAF8] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)] overflow-hidden">
+    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)] overflow-hidden">
       <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.1)] px-3 py-1.5">
         <div className="flex items-center gap-1.5">
           <GaugeIcon className="size-3 text-muted-foreground" />

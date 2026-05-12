@@ -24,7 +24,7 @@ interface Props {
 
 export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSignOut }: Props): React.JSX.Element {
   return (
-    <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.12)] bg-[#F7F5F3]">
+    <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.12)] bg-[#FFFFFF]">
       {/* Logo + picker */}
       <div className="flex h-11 shrink-0 items-center justify-center border-b border-[rgba(55,50,47,0.12)]">
         <LogoPicker />

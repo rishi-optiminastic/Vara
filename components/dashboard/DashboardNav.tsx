@@ -60,15 +60,15 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         items: [
           { label: "Overview", href: "/dashboard", icon: NavOverviewIcon },
-          { label: "Recommendations", href: "#", icon: NavRecommendationsIcon },
+          { label: "Recommendations", href: "/dashboard/recommendations", icon: NavRecommendationsIcon },
         ],
       },
       {
         label: "Insights & reports",
         items: [
           { label: "Insights", href: "/dashboard/analytics", icon: NavInsightsIcon },
-          { label: "Auction insights", href: "#", icon: NavAuctionInsightsIcon },
-          { label: "Search terms", href: "#", icon: NavSearchTermsIcon },
+          { label: "Auction insights", href: "/dashboard/auction-insights", icon: NavAuctionInsightsIcon },
+          { label: "Search terms", href: "/dashboard/search-terms", icon: NavSearchTermsIcon },
           { label: "Channel performance", href: "#", icon: NavChannelPerformanceIcon },
           { label: "Landing pages", href: "#", icon: NavLandingPagesIcon },
           { label: "Report editor", href: "#", icon: NavReportEditorIcon },
@@ -120,8 +120,8 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         items: [
           { label: "Insights", href: "/dashboard/analytics", icon: NavInsightsIcon },
-          { label: "Auction insights", href: "#", icon: NavAuctionInsightsIcon },
-          { label: "Search terms", href: "#", icon: NavSearchTermsIcon },
+          { label: "Auction insights", href: "/dashboard/auction-insights", icon: NavAuctionInsightsIcon },
+          { label: "Search terms", href: "/dashboard/search-terms", icon: NavSearchTermsIcon },
           { label: "Channel performance", href: "#", icon: NavChannelPerformanceIcon },
           { label: "Landing pages", href: "#", icon: NavLandingPagesIcon },
           { label: "Report editor", href: "#", icon: NavReportEditorIcon },

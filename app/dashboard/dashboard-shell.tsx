@@ -91,7 +91,7 @@ export default function DashboardShell({ user, advertiser, walletBalanceUsdcCent
             <Link
               href="/dashboard/settings?tab=wallet"
               title="Ad wallet · USDC"
-              className="flex items-center gap-1.5 rounded-md border border-[rgba(55,50,47,0.12)] bg-white px-2 py-1 transition-colors hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FAFAF8]"
+              className="flex items-center gap-1.5 rounded-md border border-[rgba(55,50,47,0.12)] bg-white px-2 py-1 transition-colors hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FFFFFF]"
             >
               <UsdcIcon className="size-3.5" />
               <span className="text-[11px] font-medium tabular-nums text-[#37322F]">

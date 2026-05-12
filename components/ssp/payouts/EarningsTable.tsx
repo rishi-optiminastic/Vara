@@ -22,7 +22,7 @@ function dateLabel(d: Date): string {
 export function EarningsTable({ earnings }: Props): React.JSX.Element {
   return (
     <Card className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FAFAF8]">
+      <div className="flex items-center gap-1.5 border-b border-[rgba(55,50,47,0.12)] px-4 py-2.5 bg-[#FFFFFF]">
         <InsightsIcon className="size-3 text-muted-foreground" />
         <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
           Daily earnings · last 25
@@ -49,7 +49,7 @@ export function EarningsTable({ earnings }: Props): React.JSX.Element {
             </thead>
             <tbody className="divide-y divide-[rgba(55,50,47,0.06)]">
               {earnings.map(e => (
-                <tr key={e.id} className="hover:bg-[#FAFAF8]/60">
+                <tr key={e.id} className="hover:bg-[#F7F5F3]/60">
                   <td className="px-4 py-2 text-[#37322F] tabular-nums">{dateLabel(e.date)}</td>
                   <td className="px-4 py-2 text-[#37322F] truncate max-w-[160px]">
                     <span className="font-mono">{e.placement?.name ?? "—"}</span>

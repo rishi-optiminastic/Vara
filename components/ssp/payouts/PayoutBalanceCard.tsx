@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import type { PublisherWallet } from "@prisma/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { UsdcIcon, FileDownloadIcon, WalletIcon } from "@/icons"
 import { chainName } from "@/lib/chains"
+import { finalizeStatement } from "@/services/sspPayouts"
 import { WithdrawDialog } from "./WithdrawDialog"
 
 interface Props {
@@ -26,14 +28,32 @@ function shortAddress(addr: string): string {
 }
 
 export function PayoutBalanceCard({ wallet }: Props): React.JSX.Element {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [finalizing, setFinalizing] = useState(false)
+  const [finalizeError, setFinalizeError] = useState<string | null>(null)
   const hasAddress = !!wallet.payoutAddress
   const canWithdraw = hasAddress && wallet.availableUsdcCents > 0
+  const canFinalize = wallet.pendingUsdcCents > 0
+
+  const handleFinalize = async (): Promise<void> => {
+    if (finalizing) return
+    setFinalizing(true)
+    setFinalizeError(null)
+    try {
+      await finalizeStatement()
+      router.refresh()
+    } catch (err) {
+      setFinalizeError(err instanceof Error ? err.message : "Failed to finalize")
+    } finally {
+      setFinalizing(false)
+    }
+  }
 
   return (
     <>
       <Card className="py-0 gap-0 overflow-hidden border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] bg-[#FAFAF8] px-4 py-2.5">
+        <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] px-4 py-2.5">
           <div className="flex items-center gap-1.5">
             <UsdcIcon className="size-4" />
             <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -87,6 +107,17 @@ export function PayoutBalanceCard({ wallet }: Props): React.JSX.Element {
                   </a>
                 </Button>
               )}
+              {canFinalize && (
+                <Button
+                  onClick={handleFinalize}
+                  disabled={finalizing}
+                  variant="outline"
+                  className="h-8 text-xs border-[rgba(55,50,47,0.2)] bg-white"
+                  title="Roll pending earnings into a finalized statement so they become withdrawable"
+                >
+                  {finalizing ? "Finalizing…" : "Finalize period"}
+                </Button>
+              )}
               <Button
                 onClick={() => setOpen(true)}
                 disabled={!canWithdraw}
@@ -97,6 +128,9 @@ export function PayoutBalanceCard({ wallet }: Props): React.JSX.Element {
               </Button>
             </div>
           </div>
+          {finalizeError && (
+            <p className="mt-2 text-[11px] text-[#C2410C]">{finalizeError}</p>
+          )}
 
           <div className="mt-5 grid grid-cols-2 gap-3 border-t border-dashed border-[rgba(55,50,47,0.12)] pt-3 sm:grid-cols-4">
             <Stat label="Pending (clearing)" value={formatUsdc(wallet.pendingUsdcCents)} />

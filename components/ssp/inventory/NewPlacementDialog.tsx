@@ -91,7 +91,7 @@ export function NewPlacementDialog({ open, onOpenChange }: Props): React.JSX.Ele
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[560px] gap-0 p-0 overflow-hidden">
-        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FAFAF8]">
+        <DialogHeader className="border-b border-[rgba(55,50,47,0.12)] px-5 py-3.5 bg-[#FFFFFF]">
           <DialogTitle className="text-[13px] font-medium tracking-tight text-[#37322F]">
             New placement
           </DialogTitle>
@@ -226,7 +226,7 @@ export function NewPlacementDialog({ open, onOpenChange }: Props): React.JSX.Ele
           )}
         </div>
 
-        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FAFAF8]">
+        <DialogFooter className="border-t border-[rgba(55,50,47,0.12)] px-5 py-3 bg-[#FFFFFF]">
           <Button variant="ghost" className="h-7 text-xs" onClick={() => handleClose(false)}>
             Cancel
           </Button>

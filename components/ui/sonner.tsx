@@ -11,7 +11,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "!bg-[#FAFAF8] !border !border-[rgba(55,50,47,0.12)] !text-[#37322F] !shadow-[0_4px_16px_-4px_rgba(55,50,47,0.14),0_0_0_1px_rgba(55,50,47,0.05)] !rounded-xl !p-3.5",
+            "!bg-[#FFFFFF] !border !border-[rgba(55,50,47,0.12)] !text-[#37322F] !shadow-[0_4px_16px_-4px_rgba(55,50,47,0.14),0_0_0_1px_rgba(55,50,47,0.05)] !rounded-xl !p-3.5",
           title: "!text-[#37322F] !font-medium !text-xs",
           description: "!text-[#6B6460] !text-[11px]",
           icon: "!mt-0",
@@ -24,7 +24,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       style={
         {
-          '--normal-bg': '#FAFAF8',
+          '--normal-bg': '#FFFFFF',
           '--normal-border': 'rgba(55,50,47,0.12)',
           '--normal-text': '#37322F',
           '--success-bg': '#F0FDF4',

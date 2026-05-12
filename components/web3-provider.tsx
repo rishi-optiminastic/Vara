@@ -36,7 +36,7 @@ export function Web3Provider({ children }: Props): React.JSX.Element {
         <RainbowKitProvider
           theme={lightTheme({
             accentColor: "#37322F",
-            accentColorForeground: "#FAFAF8",
+            accentColorForeground: "#FFFFFF",
             borderRadius: "medium",
             fontStack: "system",
           })}

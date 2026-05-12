@@ -121,7 +121,7 @@ function FeaturesGrid(): React.JSX.Element {
                 !isLastInRow ? 'lg:border-r' : 'lg:border-r-0'
               }`}
             >
-              <div className="w-9 h-9 rounded-lg bg-[#F7F5F3] border border-foreground/[0.08] flex items-center justify-center text-[#2F3037]">
+              <div className="w-9 h-9 rounded-lg bg-[#FFFFFF] border border-foreground/[0.08] flex items-center justify-center text-[#2F3037]">
                 {f.icon}
               </div>
               <h3 className="text-[#49423D] text-base sm:text-[17px] font-semibold leading-tight font-sans">

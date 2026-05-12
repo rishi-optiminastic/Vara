@@ -107,7 +107,7 @@ interface CardProps {
 
 function AdCard({ ad, onUpdate, onRemove }: CardProps): React.JSX.Element {
   return (
-    <div className="relative rounded-xl border border-[rgba(55,50,47,0.12)] bg-[#FAFAF8] p-4">
+    <div className="relative rounded-xl border border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] p-4">
       <button
         type="button"
         onClick={onRemove}

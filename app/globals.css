@@ -39,7 +39,7 @@
   --sidebar-border: rgba(55, 50, 47, 0.12);
   --sidebar-ring: rgba(55, 50, 47, 0.32);
   /* Updated font variables with explicit fallbacks for deployment */
-  --font-inter: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-inter: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-instrument-serif: "Instrument Serif", ui-serif, serif;
 }
 

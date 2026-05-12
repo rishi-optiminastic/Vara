@@ -62,7 +62,7 @@ export default function EarlyAccessPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#F7F5F3] flex flex-col items-center px-4 py-10 sm:py-16">
+    <div className="min-h-screen w-full bg-[#FFFFFF] flex flex-col items-center px-4 py-10 sm:py-16">
       <div className="w-full max-w-[520px] flex flex-col gap-8">
         <div className="flex items-center justify-between gap-4">
           <Link
