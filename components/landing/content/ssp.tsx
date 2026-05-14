@@ -34,7 +34,7 @@ export const HERO: SwissHeroProps = {
   body: "The Vara SSP gives publishers a transparent auction surface, programmable floors, and wallet-native payouts — with a ledger receipt for every win.",
   primaryCta: { label: "Create account", href: "/ssp/sign-up" },
   secondaryCta: { label: "Sign in", href: "/ssp/sign-in" },
-  meta: "USDC PAYOUTS · DETERMINISTIC FLOORS · FRAUD-SCORED",
+  meta: "",
 }
 
 export const SUMMIT: SwissSummitProps = {

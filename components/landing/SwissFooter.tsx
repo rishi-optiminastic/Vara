@@ -1,6 +1,9 @@
+"use client"
 import Image from "next/image"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import type { JSX } from "react"
+import { AnimatedGrid, AnimatedItem, EASE } from "@/components/landing/AnimatedGrid"
 
 export interface FooterLink {
   label: string
@@ -18,6 +21,13 @@ export interface SwissFooterProps {
   newsletterBody?: string
 }
 
+const STEP_BARS = [
+  { left: "6%", h: "h-7", w: "w-[10%]", delay: 0.04 },
+  { left: "28%", h: "h-10", w: "w-[14%]", delay: 0.12 },
+  { left: "52%", h: "h-6", w: "w-[8%]", delay: 0.08 },
+  { left: "68%", h: "h-12", w: "w-[18%]", delay: 0 },
+]
+
 export function SwissFooter({
   brand,
   brandLogo,
@@ -31,7 +41,13 @@ export function SwissFooter({
   return (
     <footer className="relative w-full">
       <StepBand />
-      <div className="bg-[#1f40cd] text-white px-6 md:px-10 lg:px-14 py-10">
+      <motion.div
+        className="bg-[#1f40cd] text-white px-6 md:px-10 lg:px-14 py-10"
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "0px 0px -40px 0px" }}
+        transition={{ duration: 0.6, delay: 0.32, ease: EASE }}
+      >
         <div className="grid grid-cols-12 gap-x-6 gap-y-6 items-start">
           <div className="col-span-12 lg:col-span-7">
             <h2 className="uppercase tracking-[-0.01em] text-xl md:text-2xl font-medium">
@@ -57,39 +73,36 @@ export function SwissFooter({
           </form>
         </div>
 
-        <div className="mt-8 grid grid-cols-12 gap-x-6 gap-y-6 items-start">
-          <div className="col-span-12 lg:col-span-6 flex items-center gap-4">
+        <AnimatedGrid className="mt-8 grid grid-cols-12 gap-x-6 gap-y-6 items-start">
+          <AnimatedItem className="col-span-12 lg:col-span-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
             {brandLogo ? (
               <Image
                 src={brandLogo.src}
                 alt={brandLogo.alt}
                 width={brandLogo.width}
                 height={brandLogo.height}
-                className="h-16 w-auto"
+                className="h-10 sm:h-14 w-auto flex-shrink-0"
                 priority={false}
               />
             ) : (
               <div className="text-xl font-medium tracking-[-0.01em]">{brand}</div>
             )}
             <div className="flex flex-col">
-              <p className="max-w-[360px] text-[12px] opacity-90">{blurb}</p>
+              <p className="text-[12px] opacity-90">{blurb}</p>
               <div className="mt-2 text-[10px] tracking-[0.14em] opacity-80">{meta}</div>
             </div>
-          </div>
+          </AnimatedItem>
 
           {columns.map((col) => (
-            <FooterColumn
-              key={col.title}
-              title={col.title}
-              links={col.links}
-              className="col-span-6 lg:col-span-3"
-            />
+            <AnimatedItem key={col.title} className="col-span-6 lg:col-span-3">
+              <FooterColumn title={col.title} links={col.links} />
+            </AnimatedItem>
           ))}
-        </div>
+        </AnimatedGrid>
 
         <div className="mt-8 flex flex-col md:flex-row justify-between gap-2 text-[10px] tracking-[0.14em] opacity-80 border-t border-white/15 pt-4">
           <div>{legal.copyright}</div>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-4">
             {legal.links.map((l) => (
               <Link key={l.label} href={l.href}>
                 {l.label}
@@ -97,7 +110,7 @@ export function SwissFooter({
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   )
 }
@@ -105,14 +118,12 @@ export function SwissFooter({
 function FooterColumn({
   title,
   links,
-  className,
 }: {
   title: string
   links: ReadonlyArray<FooterLink>
-  className: string
 }): JSX.Element {
   return (
-    <div className={className}>
+    <div>
       <div className="text-[11px] tracking-[0.14em] opacity-80">{title}</div>
       <ul className="mt-3 space-y-2 text-[13px]">
         {links.map((l) => (
@@ -130,11 +141,25 @@ function FooterColumn({
 function StepBand(): JSX.Element {
   return (
     <div aria-hidden className="relative h-14 w-full overflow-hidden">
-      <div className="absolute left-[6%] top-0 h-7 w-[10%] bg-[#1f40cd]" />
-      <div className="absolute left-[28%] top-0 h-10 w-[14%] bg-[#1f40cd]" />
-      <div className="absolute left-[52%] top-0 h-6 w-[8%] bg-[#1f40cd]" />
-      <div className="absolute left-[68%] top-0 h-12 w-[18%] bg-[#1f40cd]" />
-      <div className="absolute inset-x-0 bottom-0 h-4 bg-[#1f40cd]" />
+      {STEP_BARS.map((bar) => (
+        <motion.div
+          key={bar.left}
+          className={`absolute top-0 ${bar.h} ${bar.w} bg-[#1f40cd]`}
+          style={{ left: bar.left }}
+          initial={{ y: "-100%" }}
+          whileInView={{ y: "0%" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.38, delay: bar.delay, ease: EASE }}
+        />
+      ))}
+      <motion.div
+        className="absolute inset-x-0 bottom-0 h-4 bg-[#1f40cd]"
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        style={{ transformOrigin: "left" }}
+        transition={{ duration: 0.5, delay: 0.18, ease: EASE }}
+      />
     </div>
   )
 }

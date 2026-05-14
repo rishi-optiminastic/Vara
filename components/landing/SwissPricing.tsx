@@ -1,5 +1,6 @@
 import Link from "next/link"
 import type { JSX } from "react"
+import { AnimatedGrid, AnimatedItem } from "@/components/landing/AnimatedGrid"
 
 export interface Tier {
   price: string
@@ -29,7 +30,7 @@ export function SwissPricing({
   footnoteRight,
 }: SwissPricingProps): JSX.Element {
   return (
-    <section id="access" className="relative w-full py-20 border-t border-[#37322F]/15">
+    <section id="access" className="relative w-full py-12 md:py-20 border-t border-[#37322F]/15">
       <div className="grid grid-cols-12 gap-x-6">
         <div className="col-span-12 lg:col-span-7">
           <h2 className="text-[#1f40cd] uppercase tracking-[-0.01em] text-2xl md:text-3xl font-medium">
@@ -39,11 +40,13 @@ export function SwissPricing({
         </div>
       </div>
 
-      <div className="mt-12 grid grid-cols-12 gap-0">
+      <AnimatedGrid className="mt-12 grid grid-cols-12 gap-0">
         {tiers.map((t) => (
-          <TierCard key={t.name} tier={t} />
+          <AnimatedItem key={t.name} className="col-span-12 md:col-span-6 lg:col-span-3">
+            <TierCard tier={t} />
+          </AnimatedItem>
         ))}
-      </div>
+      </AnimatedGrid>
 
       <div className="mt-6 grid grid-cols-12 gap-x-6 text-[11px] tracking-[0.14em] text-[#37322F]/55">
         {footnoteLeft && <div className="col-span-12 md:col-span-6">{footnoteLeft}</div>}
@@ -58,10 +61,10 @@ export function SwissPricing({
 function TierCard({ tier }: { tier: Tier }): JSX.Element {
   const buttonDark = tier.ctaVariant === "dark"
   return (
-    <div className="col-span-12 md:col-span-6 lg:col-span-3 bg-[#1f40cd] text-white p-6 flex flex-col gap-5">
+    <div className="h-full bg-[#1f40cd] text-white p-4 sm:p-6 flex flex-col gap-4 sm:gap-5">
       <div className="flex items-baseline justify-between">
         <div>
-          <div className="text-3xl font-medium tracking-[-0.01em]">{tier.price}</div>
+          <div className="text-2xl sm:text-3xl font-medium tracking-[-0.01em]">{tier.price}</div>
           <div className="text-[10px] tracking-[0.14em] opacity-80 mt-1">{tier.unit}</div>
         </div>
         {tier.recommended && (

@@ -33,9 +33,9 @@ export function SwissAuthShell({
             className="h-12 w-auto brightness-0 invert"
             priority
           />
-          <span className="text-2xl font-medium tracking-tight">
+          {/* <span className="text-2xl font-medium tracking-tight">
             Vara <span className="opacity-70">Ads</span>
-          </span>
+          </span> */}
         </Link>
 
         <div className="relative z-10 max-w-[440px]">
