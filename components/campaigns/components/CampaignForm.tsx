@@ -1,18 +1,11 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, ArrowLeft, ArrowRight, Sparkles, Check } from "lucide-react"
+import { Loader2, ArrowLeft, ArrowRight, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCampaignWizard } from "@/hooks/useCampaignWizard"
 import { formatSavedAgo } from "@/hooks/useWizardAutosave"
-import {
-  CampaignsIcon,
-  SpendIcon,
-  GaugeIcon,
-  ImageSparkleIcon,
-  FileCheckIcon,
-} from "@/icons"
 import { WizardStepCampaign } from "./WizardStepCampaign"
 import { WizardStepBudget } from "./WizardStepBudget"
 import { WizardStepTargeting } from "./WizardStepTargeting"
@@ -22,15 +15,14 @@ import { WizardSummary } from "./WizardSummary"
 
 interface StepDef {
   label: string
-  icon: React.ElementType
 }
 
 const STEPS: StepDef[] = [
-  { label: "Campaign", icon: CampaignsIcon },
-  { label: "Budget", icon: SpendIcon },
-  { label: "Ad Group", icon: GaugeIcon },
-  { label: "Ads", icon: ImageSparkleIcon },
-  { label: "Review", icon: FileCheckIcon },
+  { label: "Campaign" },
+  { label: "Budget" },
+  { label: "Ad Group" },
+  { label: "Ads" },
+  { label: "Review" },
 ]
 
 interface DotProps {
@@ -45,28 +37,37 @@ function StepDot({ step, index, current, furthest, onClick }: DotProps): React.J
   const done = index < current
   const active = index === current
   const reachable = index <= furthest
-  const Icon = step.icon
 
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={!reachable}
-      className={`group flex flex-1 items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors ${
-        active ? "bg-[#37322F] text-[#FAFAF8]" :
-        done ? "text-[#37322F] hover:bg-[#37322F]/[0.06]" :
-        reachable ? "text-muted-foreground hover:bg-[#37322F]/[0.04]" :
-        "text-muted-foreground/50 cursor-not-allowed"
-      }`}
+      className={`flex flex-col items-center gap-1.5 ${!reachable ? "cursor-not-allowed" : "cursor-pointer"}`}
     >
-      <div className={`size-5 shrink-0 rounded-full flex items-center justify-center text-[9px] font-semibold ${
-        active ? "bg-[#F7F5F3]/15 text-[#FAFAF8]" :
-        done ? "bg-[#37322F] text-[#FAFAF8]" :
-        "bg-[rgba(55,50,47,0.06)] text-current"
+      <div className={`size-7 rounded-full flex items-center justify-center transition-all duration-200 ${
+        active
+          ? "bg-[#37322F] text-[#FAFAF8] shadow-[0_0_0_3px_rgba(55,50,47,0.14)]"
+          : done
+          ? "bg-[#37322F] text-[#FAFAF8]"
+          : reachable
+          ? "bg-[rgba(55,50,47,0.08)] text-[#37322F] hover:bg-[rgba(55,50,47,0.15)]"
+          : "bg-[rgba(55,50,47,0.04)] text-muted-foreground/30"
       }`}>
-        {done ? <Check className="size-3" strokeWidth={3} /> : <Icon className="size-3" />}
+        {done ? (
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2 5.5l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : (
+          <span className="text-[10px] font-bold leading-none">{index + 1}</span>
+        )}
       </div>
-      <span className={`text-[11px] truncate ${active || done ? "font-semibold" : "font-medium"}`}>
+      <span className={`text-[10px] whitespace-nowrap transition-colors duration-200 ${
+        active ? "text-[#37322F] font-semibold" :
+        done ? "text-[#37322F] font-medium" :
+        reachable ? "text-muted-foreground font-medium" :
+        "text-muted-foreground/30 font-medium"
+      }`}>
         {step.label}
       </span>
     </button>
@@ -80,17 +81,19 @@ interface ProgressProps {
 }
 
 function StepProgress({ current, furthest, goTo }: ProgressProps): React.JSX.Element {
+  const adj = current - 1
+  const furthAdj = furthest - 1
   return (
-    <div className="flex items-stretch gap-0.5">
+    <div className="flex items-start px-4 py-3">
       {STEPS.map((s, i) => (
-        <StepDot
-          key={s.label}
-          step={s}
-          index={i}
-          current={current - 1}
-          furthest={furthest - 1}
-          onClick={() => goTo(i + 1)}
-        />
+        <Fragment key={s.label}>
+          <StepDot step={s} index={i} current={adj} furthest={furthAdj} onClick={() => goTo(i + 1)} />
+          {i < STEPS.length - 1 && (
+            <div className={`flex-1 h-px mt-[13px] transition-colors duration-300 ${
+              i < adj ? "bg-[#37322F]" : "bg-[rgba(55,50,47,0.12)]"
+            }`} />
+          )}
+        </Fragment>
       ))}
     </div>
   )
@@ -155,7 +158,7 @@ export function CampaignForm(): React.JSX.Element {
     <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="flex flex-col gap-3 min-w-0">
         {showDraftBanner && <DraftBanner onRestore={handleRestore} onDiscard={handleDiscard} />}
-        <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white/60 p-1 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white/60 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
           <StepProgress current={w.step} furthest={w.furthestStep} goTo={w.goTo} />
         </div>
 

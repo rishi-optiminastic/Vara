@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { UsdcIcon, FileDownloadIcon } from "@/icons"
+import { useWalletLive } from "@/hooks/useWalletLive"
 import { AddFundsDialog } from "./AddFundsDialog"
 
 interface Props {
@@ -25,8 +26,9 @@ function shortAddress(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }
 
-export function WalletBalanceCard({ wallet, depositAddress }: Props): React.JSX.Element {
+export function WalletBalanceCard({ wallet: initialWallet, depositAddress }: Props): React.JSX.Element {
   const [open, setOpen] = useState(false)
+  const { wallet } = useWalletLive(initialWallet)
   const availableCents = wallet.balanceUsdcCents - wallet.reservedUsdcCents
 
   return (
