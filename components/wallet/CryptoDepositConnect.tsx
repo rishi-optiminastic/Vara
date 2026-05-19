@@ -2,16 +2,35 @@
 
 import { useEffect, useState } from "react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { parseUnits } from "viem"
-import { useAccount, useChainId, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi"
+import { formatUnits, parseUnits } from "viem"
+import {
+  useAccount,
+  useBalance,
+  useChainId,
+  useReadContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi"
 import { sepolia } from "wagmi/chains"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { CircleCheckIcon, TriangleWarningIcon, UsdcIcon, WalletIcon } from "@/icons"
+import { UsdcIcon, WalletIcon } from "@/icons"
 import { erc20Abi, USDC_DECIMALS, USDC_SEPOLIA_ADDRESS } from "@/lib/usdc"
 import { submitDeposit } from "@/services/wallet"
+import {
+  AccountBadgeRow,
+  NoEthBanner,
+  Row,
+  SendButtonLabel,
+  Stage,
+  USDC_FAUCET_URL,
+  Warn,
+  WrongNetworkBanner,
+  deriveStage,
+  shortAddress,
+} from "./CryptoDepositPieces"
 
 interface Props {
   depositAddress: string | null
@@ -31,6 +50,26 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
     useWriteContract()
   const { isLoading: confirming, isSuccess: confirmed } = useWaitForTransactionReceipt({
     hash: txHash,
+  })
+
+  const wrongNetwork = chainId !== sepolia.id
+  const onCorrectChain = isConnected && !wrongNetwork
+
+  // Pre-flight balance checks so the Send button can be gated before the user
+  // signs a tx that's destined to revert (insufficient ETH for gas, or
+  // insufficient USDC for the transfer amount).
+  const { data: ethBalance } = useBalance({
+    address,
+    chainId: sepolia.id,
+    query: { enabled: onCorrectChain },
+  })
+  const { data: usdcBalanceRaw } = useReadContract({
+    abi: erc20Abi,
+    address: USDC_SEPOLIA_ADDRESS,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    chainId: sepolia.id,
+    query: { enabled: onCorrectChain && !!address },
   })
 
   // Once the tx is confirmed on-chain, push the hash to the backend so the
@@ -89,81 +128,75 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
     )
   }
 
-  const wrongNetwork = chainId !== sepolia.id
   const amountCents = Math.round(parseFloat(amount || "0") * 100)
   const amountValid = amountCents > 0
+  const amountUnits = amountValid ? parseUnits(amount, USDC_DECIMALS) : 0n
+
+  const ethEmpty = ethBalance !== undefined && ethBalance.value === 0n
+  const usdcBalance = usdcBalanceRaw as bigint | undefined
+  const usdcBalancePretty =
+    usdcBalance !== undefined ? formatUnits(usdcBalance, USDC_DECIMALS) : null
+  const insufficientUsdc =
+    usdcBalance !== undefined && amountValid && amountUnits > usdcBalance
+
+  const stage = deriveStage({ serverError, crediting, confirmed, confirming, signing })
+
+  const sendDisabled =
+    !amountValid ||
+    wrongNetwork ||
+    ethEmpty ||
+    insufficientUsdc ||
+    (stage !== "idle" && stage !== "error")
 
   const handleSend = (): void => {
-    if (!amountValid || wrongNetwork) return
+    if (sendDisabled) return
     setServerError(null)
     reset()
     writeContract({
       abi: erc20Abi,
       address: USDC_SEPOLIA_ADDRESS,
       functionName: "transfer",
-      args: [depositAddress as `0x${string}`, parseUnits(amount, USDC_DECIMALS)],
+      args: [depositAddress as `0x${string}`, amountUnits],
     })
   }
 
-  const stage = serverError
-    ? "error"
-    : crediting
-      ? "crediting"
-      : confirmed
-        ? "credited"
-        : confirming
-          ? "confirming"
-          : signing
-            ? "signing"
-            : "idle"
-
   return (
     <div className="space-y-3 p-5">
-      <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] px-3 py-2">
-        <div className="min-w-0 flex items-center gap-2">
-          <WalletIcon className="size-3.5 text-[#37322F] shrink-0" />
-          <span className="font-mono text-[11px] text-[#37322F] truncate" title={address}>
-            {address ? `${address.slice(0, 6)}…${address.slice(-4)}` : ""}
-          </span>
-          <Badge
-            variant="outline"
-            className="h-4 px-1.5 text-[9px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)]"
-          >
-            {wrongNetwork ? "Wrong network" : "Sepolia"}
-          </Badge>
-        </div>
-        <ConnectButton.Custom>
-          {({ openAccountModal }) => (
-            <button
-              type="button"
-              onClick={openAccountModal}
-              className="text-[10px] underline text-[#1E40AF] hover:no-underline"
-            >
-              Manage
-            </button>
-          )}
-        </ConnectButton.Custom>
-      </div>
+      <AccountBadgeRow address={address} wrongNetwork={wrongNetwork} />
 
       {wrongNetwork && (
-        <div className="flex items-center justify-between gap-2 rounded-md border border-[#C2410C]/30 bg-[#FFF3E8] px-3 py-2 text-[11px] text-[#9A3412]">
-          <span>Switch to Sepolia to send testnet USDC.</span>
-          <Button
-            type="button"
-            size="sm"
-            className="h-6 text-[10px] bg-[#37322F] hover:bg-[#37322F]/90 text-white"
-            onClick={() => switchChain({ chainId: sepolia.id })}
-            disabled={switching}
-          >
-            {switching ? "Switching…" : "Switch network"}
-          </Button>
-        </div>
+        <WrongNetworkBanner
+          switching={switching}
+          onSwitch={() => switchChain({ chainId: sepolia.id })}
+        />
       )}
 
+      {onCorrectChain && ethEmpty && <NoEthBanner />}
+
       <div className="space-y-1.5">
-        <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
-          Amount (USDC)
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Amount (USDC)
+          </label>
+          {usdcBalancePretty !== null && (
+            <span className="text-[10px] text-muted-foreground">
+              Balance: <span className="font-mono tabular-nums text-[#37322F]">{usdcBalancePretty}</span>
+              {usdcBalance === 0n && (
+                <>
+                  {" · "}
+                  <a
+                    href={USDC_FAUCET_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-[#1E40AF]"
+                  >
+                    Get USDC
+                  </a>
+                </>
+              )}
+            </span>
+          )}
+        </div>
         <div className="relative">
           <UsdcIcon className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <Input
@@ -175,6 +208,11 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
             disabled={stage !== "idle" && stage !== "error"}
           />
         </div>
+        {insufficientUsdc && (
+          <p className="text-[10px] text-[#991B1B]">
+            Amount exceeds your USDC balance ({usdcBalancePretty}).
+          </p>
+        )}
       </div>
 
       <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.16)] bg-[#FFFFFF] p-2.5 space-y-1 text-[11px]">
@@ -194,82 +232,11 @@ export function CryptoDepositConnect({ depositAddress, onSuccess }: Props): Reac
       <Button
         type="button"
         onClick={handleSend}
-        disabled={!amountValid || wrongNetwork || (stage !== "idle" && stage !== "error")}
+        disabled={sendDisabled}
         className="h-9 w-full text-xs bg-[#37322F] hover:bg-[#37322F]/90 text-white disabled:opacity-50"
       >
-        {stage === "signing" && "Confirm in your wallet…"}
-        {stage === "confirming" && "Waiting for on-chain confirmation…"}
-        {stage === "crediting" && "Crediting your Vara balance…"}
-        {stage === "credited" && (
-          <>
-            <CircleCheckIcon className="size-3" /> Done
-          </>
-        )}
-        {(stage === "idle" || stage === "error") && (
-          <>
-            Send {amount || "0"} USDC <CircleCheckIcon className="size-3" />
-          </>
-        )}
+        <SendButtonLabel stage={stage} amount={amount} />
       </Button>
     </div>
   )
-}
-
-function Row({
-  label,
-  value,
-  mono,
-}: {
-  label: string
-  value: string
-  mono?: boolean
-}): React.JSX.Element {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={`text-[#37322F] ${mono ? "font-mono" : ""}`}>{value}</span>
-    </div>
-  )
-}
-
-function Warn({ children }: { children: React.ReactNode }): React.JSX.Element {
-  return (
-    <div className="flex items-start gap-2 rounded-md border border-[#B91C1C]/30 bg-[#FEF2F2] p-2 text-[11px] text-[#991B1B]">
-      <TriangleWarningIcon className="size-3.5 shrink-0 mt-0.5" />
-      <div>{children}</div>
-    </div>
-  )
-}
-
-function Stage({
-  stage,
-  txHash,
-}: {
-  stage: string
-  txHash: `0x${string}` | undefined
-}): React.JSX.Element | null {
-  if (stage === "idle" || stage === "error") return null
-  return (
-    <div className="rounded-md border border-[rgba(55,50,47,0.12)] bg-white p-2.5 text-[11px] text-muted-foreground">
-      {stage === "signing" && "Open your wallet to confirm the transaction."}
-      {stage === "confirming" && "Broadcast — waiting for Sepolia confirmation…"}
-      {stage === "crediting" && "Confirmed on-chain. Crediting your Vara balance…"}
-      {stage === "credited" && "Done — closing dialog."}
-      {txHash && (
-        <a
-          href={`https://sepolia.etherscan.io/tx/${txHash}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block mt-1 font-mono text-[#1E40AF] underline hover:no-underline"
-        >
-          {txHash.slice(0, 10)}…{txHash.slice(-8)}
-        </a>
-      )}
-    </div>
-  )
-}
-
-function shortAddress(addr: string): string {
-  if (addr.length <= 14) return addr
-  return `${addr.slice(0, 6)}…${addr.slice(-4)}`
 }

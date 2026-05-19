@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { TextField } from "./form-fields"
 import { CHAINS } from "@/lib/chains"
 import { chainBrand } from "@/lib/chainLogos"
+import { GeoTargetingDialog } from "@/components/campaigns/GeoTargetingDialog"
 import {
   BoxIcon,
   HardDriveIcon,
@@ -111,13 +112,13 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
         </Section>
 
         <Section icon={AudiencesIcon} tint="bg-[#FFE8F0] text-[#BE185D]" title="Geos">
-          <TextField
-            label=""
+          <GeoTargetingDialog
             value={state.geos}
-            onChange={(v) => update({ geos: v })}
-            placeholder="US, GB, IN, DE, SG"
-            hint="ISO codes — blank = worldwide"
+            onChange={(geos) => update({ geos })}
           />
+          <p className="text-[10px] text-muted-foreground/60 italic mt-1">
+            Region, country, or state — drill in for fine-grained targeting.
+          </p>
         </Section>
 
         <Section icon={HardDriveIcon} tint="bg-[#F0E8FF] text-[#6D28D9]" title="Devices">

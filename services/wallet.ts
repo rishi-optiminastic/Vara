@@ -14,7 +14,9 @@ async function jsonOrThrow<T>(res: Response): Promise<T> {
 }
 
 export async function getWallet(): Promise<WalletApiResponse> {
-  return jsonOrThrow(await fetch("/api/wallet", { cache: "no-store" }))
+  return jsonOrThrow(
+    await fetch("/api/wallet", { cache: "no-store", credentials: "same-origin" }),
+  )
 }
 
 export async function submitDeposit(txHash: string): Promise<{ wallet: Wallet }> {
@@ -23,6 +25,7 @@ export async function submitDeposit(txHash: string): Promise<{ wallet: Wallet }>
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ txHash, network: "SEPOLIA" }),
+      credentials: "same-origin",
     }),
   )
 }

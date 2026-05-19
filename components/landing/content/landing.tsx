@@ -24,7 +24,7 @@ export const NAV: SwissNavProps = {
 }
 
 export const HERO: SwissHeroProps = {
-  eyebrow: "VARA · BUILT IN PUBLIC · 2025—2026",
+  eyebrow: "",
   title: (
     <>
       Crypto ad exchange

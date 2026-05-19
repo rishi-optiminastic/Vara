@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { FORMAT_LABELS } from "@/lib/creatives"
 import { ChainBadge } from "@/components/ChainBadge"
 import { DeviceBadge } from "@/components/DeviceBadge"
-import { GeoBadge } from "@/components/GeoBadge"
+import { GeoChips } from "@/components/campaigns/GeoChips"
 
 interface Props {
   state: WizardState
@@ -77,11 +77,6 @@ function AnalyticsPreview(): React.JSX.Element {
 }
 
 export function WizardReview({ state }: Props): React.JSX.Element {
-  const geoList = state.geos
-    .split(/[\s,]+/)
-    .map((g) => g.trim().toUpperCase())
-    .filter((g) => g.length === 2)
-
   const chainList = state.chains as Chain[]
   const isActive = state.status === "ACTIVE"
 
@@ -117,9 +112,12 @@ export function WizardReview({ state }: Props): React.JSX.Element {
           <BadgeRow label="Chains" empty="All chains">
             {chainList.map((c) => <ChainBadge key={c} chain={c} size="md" />)}
           </BadgeRow>
-          <BadgeRow label="Geos" empty="Worldwide">
-            {geoList.map((g) => <GeoBadge key={g} code={g} size="md" />)}
-          </BadgeRow>
+          <div className="flex items-start justify-between gap-3 py-1">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground pt-1">Geos</span>
+            <div className="flex-1 flex justify-end">
+              <GeoChips selection={state.geos} size="md" />
+            </div>
+          </div>
           <BadgeRow label="Devices" empty="All devices">
             {state.deviceTypes.map((d) => <DeviceBadge key={d} device={d} size="md" />)}
           </BadgeRow>

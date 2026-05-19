@@ -82,10 +82,7 @@ function readable(v: string): string {
 
 export function WizardSummary({ state, step, score, savedLabel }: Props): React.JSX.Element {
   const chainList = state.chains.map((c) => chainName(c as Chain))
-  const geoCount = state.geos
-    .split(/[\s,]+/)
-    .map((g) => g.trim().toUpperCase())
-    .filter((g) => g.length === 2).length
+  const geoCount = state.geos.regions.length + state.geos.countries.length + state.geos.states.length
 
   return (
     <div className="sticky top-3 space-y-2">

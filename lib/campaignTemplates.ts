@@ -22,7 +22,7 @@ export interface TemplatePreset {
   dailyCapUsd: string
   bidUsd: string
   chains: Chain[]
-  geos: string
+  geos: string[]
   deviceTypes: DeviceType[]
   freqCap: string
   freqHours: string
@@ -45,7 +45,7 @@ export const CAMPAIGN_TEMPLATES: TemplatePreset[] = [
     dailyCapUsd: "500",
     bidUsd: "8.00",
     chains: ["ETHEREUM", "BASE", "ARBITRUM"],
-    geos: "US, GB, SG, DE",
+    geos: ["US", "GB", "SG", "DE"],
     deviceTypes: ["DESKTOP", "MOBILE"],
     freqCap: "5",
     freqHours: "24",
@@ -66,7 +66,7 @@ export const CAMPAIGN_TEMPLATES: TemplatePreset[] = [
     dailyCapUsd: "",
     bidUsd: "4.50",
     chains: ["ETHEREUM", "BASE", "SOLANA"],
-    geos: "US, GB, JP, KR",
+    geos: ["US", "GB", "JP", "KR"],
     deviceTypes: ["DESKTOP", "MOBILE"],
     freqCap: "8",
     freqHours: "12",
@@ -87,7 +87,7 @@ export const CAMPAIGN_TEMPLATES: TemplatePreset[] = [
     dailyCapUsd: "200",
     bidUsd: "1.50",
     chains: ["ARBITRUM", "OPTIMISM", "BASE"],
-    geos: "US, GB, DE, SG, IN",
+    geos: ["US", "GB", "DE", "SG", "IN"],
     deviceTypes: ["DESKTOP"],
     freqCap: "4",
     freqHours: "24",
@@ -108,7 +108,7 @@ export const CAMPAIGN_TEMPLATES: TemplatePreset[] = [
     dailyCapUsd: "100",
     bidUsd: "2.50",
     chains: ["ETHEREUM", "BASE", "POLYGON", "SOLANA"],
-    geos: "",
+    geos: [],
     deviceTypes: ["DESKTOP", "MOBILE"],
     freqCap: "6",
     freqHours: "24",

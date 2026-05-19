@@ -345,3 +345,11 @@
 .badge-active { background: rgba(22,163,74,.09); color: #16a34a; }
 .badge-ending { background: rgba(234,88,12,.09); color: #ea580c; }
 .badge-completed { background: rgba(55,50,47,.07); color: rgba(55,50,47,.5); }
+
+/* ─── RAINBOWKIT × RADIX DIALOG FIX ──────────────────────
+   Radix Dialog (modal={true}) sets pointer-events:none on <body> while
+   open. RainbowKit renders its wallet-picker modal into its own body-level
+   portal; pointer-events is an inherited property, so the picker would
+   inherit `none` and refuse clicks. Force `auto` on RainbowKit's tree so
+   the modal stays interactive when opened from inside a Radix Dialog. */
+[data-rk] { pointer-events: auto; }

@@ -9,6 +9,9 @@ export const getOrCreateAdvertiser = cache(async (
   const existing = await prisma.advertiser.findUnique({ where: { userId } })
   if (existing) return existing
   return prisma.advertiser.create({
-    data: { userId, projectName: fallbackName || "My Project" },
+    // contractAddrs needs an explicit [] — the DB column lacks a default,
+    // so Prisma's array auto-default doesn't kick in and the insert fails
+    // with "Null constraint violation on the fields: (`contractAddrs`)".
+    data: { userId, projectName: fallbackName || "My Project", contractAddrs: [] },
   })
 })

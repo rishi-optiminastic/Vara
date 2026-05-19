@@ -23,6 +23,7 @@ import {
   adsValid,
   geoCount,
 } from "@/lib/campaignWizard"
+import type { GeoSelection } from "@/lib/geo/encoding"
 import { useWizardAutosave } from "@/hooks/useWizardAutosave"
 
 export interface AdDraftForm {
@@ -49,7 +50,7 @@ export interface WizardState {
   startDate: string
   endDate: string
   chains: Chain[]
-  geos: string
+  geos: GeoSelection
   deviceTypes: DeviceType[]
   freqCap: string
   freqHours: string
@@ -169,7 +170,8 @@ export function useCampaignWizard(): WizardHook {
       vertical: t.vertical, objective: t.objective,
       pricingModel: t.pricingModel, bidStrategy: t.bidStrategy, pacing: t.pacing,
       budgetUsd: t.budgetUsd, dailyCapUsd: t.dailyCapUsd, bidUsd: t.bidUsd,
-      chains: [...t.chains], geos: t.geos,
+      chains: [...t.chains],
+      geos: { regions: [], countries: [...t.geos], states: [] },
       deviceTypes: [...t.deviceTypes],
       freqCap: t.freqCap, freqHours: t.freqHours, brandSafety: t.brandSafety,
     }))

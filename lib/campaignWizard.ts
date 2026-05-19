@@ -1,14 +1,18 @@
 import type { AdDraftForm, WizardState } from "@/hooks/useCampaignWizard"
 import type { createCampaignWizard } from "@/services/campaigns"
+import { selectionCount, type GeoSelection } from "@/lib/geo/encoding"
+import { REGIONS } from "@/lib/geo/regions"
 
 const today = new Date().toISOString().slice(0, 10)
+
+const EMPTY_GEOS: GeoSelection = { regions: [], countries: [], states: [] }
 
 export const INITIAL_WIZARD: WizardState = {
   name: "", description: "", vertical: "TOKEN_LAUNCH", objective: "AWARENESS", status: "DRAFT",
   budgetUsd: "1000", dailyCapUsd: "", bidUsd: "2.50",
   pricingModel: "CPM", bidStrategy: "MANUAL", pacing: "STANDARD",
   startDate: today, endDate: "",
-  chains: [], geos: "", deviceTypes: [],
+  chains: [], geos: EMPTY_GEOS, deviceTypes: [],
   freqCap: "", freqHours: "24", brandSafety: "",
   ads: [],
 }
@@ -34,10 +38,27 @@ export function validateStep(step: number, s: WizardState): string {
   return ""
 }
 
+function expandRegions(regions: string[]): string[] {
+  const out = new Set<string>()
+  for (const code of regions) {
+    const r = REGIONS.find((reg) => reg.code === code)
+    if (r) r.countries.forEach((c) => out.add(c))
+  }
+  return [...out]
+}
+
+function geosForApi(sel: GeoSelection): string[] {
+  const countries = new Set<string>(sel.countries)
+  expandRegions(sel.regions).forEach((c) => countries.add(c))
+  for (const s of sel.states) {
+    const parent = s.split("-")[0]
+    if (parent) countries.add(parent)
+  }
+  return [...countries]
+}
+
 export function buildPayload(s: WizardState): Parameters<typeof createCampaignWizard>[0] {
   const parseList = (raw: string): string[] => raw.split(",").map((x) => x.trim()).filter(Boolean)
-  const parseGeos = (raw: string): string[] =>
-    raw.split(/[\s,]+/).map((g) => g.trim().toUpperCase()).filter((g) => g.length === 2)
   return {
     name: s.name,
     description: s.description || undefined,
@@ -56,7 +77,7 @@ export function buildPayload(s: WizardState): Parameters<typeof createCampaignWi
     frequencyCapHours: s.freqCap && s.freqHours ? Number(s.freqHours) : undefined,
     brandSafetyKeywords: parseList(s.brandSafety),
     chains: s.chains,
-    geos: parseGeos(s.geos),
+    geos: geosForApi(s.geos),
     deviceTypes: s.deviceTypes,
     ads: s.ads.map(({ id: _id, ...ad }) => ad),
   }
@@ -67,6 +88,6 @@ export function adsValid(ads: AdDraftForm[]): boolean {
   return ads.every((a) => isValidUrl(a.clickUrl) && isValidUrl(a.assetUrl))
 }
 
-export function geoCount(raw: string): number {
-  return raw.split(/[\s,]+/).map((g) => g.trim().toUpperCase()).filter((g) => g.length === 2).length
+export function geoCount(sel: GeoSelection): number {
+  return selectionCount(sel)
 }
