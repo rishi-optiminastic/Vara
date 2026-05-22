@@ -3,23 +3,13 @@ import { getCachedSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { getOrCreateAdvertiser } from "@/lib/advertiser"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { StatusBadge } from "@/components/campaigns/components/StatusBadge"
-import { AdPreview } from "@/components/ads/components/AdPreview"
+import { AdsTable } from "@/components/dashboard/AdsTable"
+import type { AdRow } from "@/components/dashboard/AdsTable"
 import { BoxPlusIcon } from "@/icons"
-import type { CreativeFormat } from "@prisma/client"
 
 interface PageProps {
   searchParams: Promise<{ campaign?: string }>
-}
-
-const FORMAT_STYLE: Record<CreativeFormat, string> = {
-  BANNER: "bg-[#EAF1FF] text-[#1E40AF]",
-  HTML5: "bg-[#F0E8FF] text-[#6D28D9]",
-  VIDEO: "bg-[#FFF7E0] text-[#A16207]",
-  NATIVE: "bg-[#E8F5E9] text-[#15803D]",
 }
 
 export default async function AdsPage({ searchParams }: PageProps): Promise<React.JSX.Element> {
@@ -36,9 +26,7 @@ export default async function AdsPage({ searchParams }: PageProps): Promise<Reac
         ...(campaignFilter ? { id: campaignFilter } : {}),
       },
     },
-    include: {
-      campaign: { select: { id: true, name: true, status: true } },
-    },
+    include: { campaign: { select: { id: true, name: true, status: true } } },
     orderBy: { createdAt: "desc" },
   })
 
@@ -51,94 +39,76 @@ export default async function AdsPage({ searchParams }: PageProps): Promise<Reac
 
   const newHref = campaignFilter ? `/dashboard/ads/new?campaign=${campaignFilter}` : "/dashboard/ads/new"
 
+  const rows: AdRow[] = creatives.map((cr) => ({
+    id: cr.id,
+    name: cr.name,
+    format: cr.format,
+    width: cr.width,
+    height: cr.height,
+    assetUrl: cr.assetUrl,
+    walletConnectCta: cr.walletConnectCta,
+    campaignId: cr.campaign.id,
+    campaignName: cr.campaign.name,
+    campaignStatus: cr.campaign.status,
+    createdAt: cr.createdAt.toISOString(),
+  }))
+
   return (
-    <div className="flex flex-col gap-3 p-3">
-      <div className="flex items-end justify-between border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <div>
-          <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
-            <span className="font-instrument-serif italic font-normal text-[26px]">Ads</span>
-          </h1>
-          <div className="flex items-center gap-2 mt-1.5">
-            <p className="text-[11px] text-muted-foreground">{creatives.length} total</p>
-            {filterCampaign && (
-              <>
-                <span className="text-[11px] text-muted-foreground">·</span>
-                <span className="text-[11px] text-[#37322F]">
-                  filtered by <span className="font-medium">{filterCampaign.name}</span>
-                </span>
-                <Link href="/dashboard/ads" className="text-[11px] text-muted-foreground hover:text-[#37322F] underline underline-offset-2">
-                  clear
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-        <Button asChild size="sm" className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]">
-          <Link href={newHref}>
-            <BoxPlusIcon className="size-3" />New Ad
-          </Link>
-        </Button>
+    <div className="relative min-h-full">
+      <div aria-hidden className="pointer-events-none absolute inset-0 flex">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex-1 border-l border-dashed border-[rgba(10,10,10,0.08)] first:border-l-0 last:border-r"
+          />
+        ))}
       </div>
 
-      <Card className="gap-0 py-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <CardHeader className="border-b border-[rgba(55,50,47,0.12)] px-3 py-2">
-          <CardTitle className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">All Ads</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {creatives.length === 0 ? (
-            <div className="px-3 py-12 text-center text-xs text-muted-foreground">
-              No ads yet.{" "}
-              <Link href={newHref} className="font-medium text-foreground underline underline-offset-2">
-                Create one
-              </Link>
-              .
-            </div>
-          ) : (
-            <div className="divide-y divide-[rgba(55,50,47,0.07)]">
-              {creatives.map((cr) => (
-                <div key={cr.id} className="flex items-center gap-3 px-3 py-2.5 hover:bg-[rgba(55,50,47,0.02)] transition-colors">
-                  <Link href={`/dashboard/ads/${cr.id}`} className="w-24 shrink-0 group/preview">
-                    <div className="transition-transform group-hover/preview:scale-[1.02]">
-                      <AdPreview
-                        format={cr.format}
-                        assetUrl={cr.assetUrl}
-                        name={cr.name}
-                        walletConnectCta={cr.walletConnectCta}
-                        compact
-                      />
-                    </div>
-                  </Link>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Link href={`/dashboard/ads/${cr.id}`} className="text-xs font-medium text-[#37322F] hover:underline truncate">
-                        {cr.name}
-                      </Link>
-                      <span className={`inline-flex items-center rounded-full px-1.5 py-px text-[9px] font-medium uppercase tracking-wider ${FORMAT_STYLE[cr.format]}`}>
-                        {cr.format.toLowerCase()}
-                      </span>
-                      {cr.walletConnectCta && (
-                        <Badge variant="outline" className="h-4 px-1.5 text-[9px] bg-[#E8F5E9] text-[#15803D] border-[#15803D]/20">
-                          Wallet CTA
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <Link href={`/dashboard/campaigns/${cr.campaign.id}`} className="text-[11px] text-muted-foreground hover:text-[#37322F] hover:underline truncate">
-                        {cr.campaign.name}
-                      </Link>
-                      <span className="text-[11px] text-muted-foreground">·</span>
-                      <StatusBadge status={cr.campaign.status} />
-                    </div>
-                  </div>
-                  <div className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
-                    {cr.width}×{cr.height}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div className="relative z-10 flex flex-col gap-2.5 p-3">
+        <div className="flex items-end justify-between gap-2">
+          <div className="shrink-0 flex items-baseline gap-2 flex-wrap">
+            <h1 className="text-[#0A0A0A] tracking-[-0.02em] text-[20px] font-medium leading-none">
+              Ads
+            </h1>
+            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-muted-foreground tabular-nums">
+              {creatives.length} total
+            </span>
+            {filterCampaign && (
+              <span className="text-[11px] text-[#0A0A0A]/75">
+                · filtered by <span className="font-medium">{filterCampaign.name}</span>
+                <Link
+                  href="/dashboard/ads"
+                  className="ml-1.5 text-[#0A0A0A]/55 hover:text-[#1F40CD] underline underline-offset-4"
+                >
+                  clear
+                </Link>
+              </span>
+            )}
+          </div>
+          <Button
+            asChild
+            size="sm"
+            className="h-8 rounded-full gap-1.5 text-[11px] px-3.5 bg-[#1F40CD] text-white hover:bg-[#1A36B0]"
+          >
+            <Link href={newHref}>
+              <BoxPlusIcon className="size-3" />
+              New ad
+            </Link>
+          </Button>
+        </div>
+
+        {creatives.length === 0 ? (
+          <div className="bg-white rounded-md px-3 py-10 text-center text-[12px] text-muted-foreground">
+            No ads yet.{" "}
+            <Link href={newHref} className="text-[#1F40CD] underline underline-offset-4">
+              Create one
+            </Link>
+            .
+          </div>
+        ) : (
+          <AdsTable rows={rows} />
+        )}
+      </div>
     </div>
   )
 }

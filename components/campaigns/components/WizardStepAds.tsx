@@ -34,7 +34,7 @@ function CreativePreview({ ad }: PreviewProps): React.JSX.Element {
     <div className="space-y-1.5">
       <Label className="text-[10px] uppercase tracking-widest">Preview</Label>
       <div
-        className="relative w-full overflow-hidden rounded-md border border-[rgba(55,50,47,0.12)] bg-[#F0ECE6]"
+        className="relative w-full overflow-hidden rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2]"
         style={{ aspectRatio: ratio }}
       >
         {valid ? (
@@ -63,11 +63,11 @@ function CreativePreview({ ad }: PreviewProps): React.JSX.Element {
           </div>
         )}
         {ad.walletConnectCta && valid && (
-          <div className="absolute bottom-1.5 right-1.5 rounded-full bg-[#37322F] px-2 py-0.5 text-[9px] font-semibold text-white shadow-sm">
+          <div className="absolute bottom-1.5 right-1.5 rounded-full bg-[#0A0A0A] px-2 py-0.5 text-[9px] font-semibold text-white shadow-sm">
             Connect Wallet
           </div>
         )}
-        <div className="absolute top-1.5 left-1.5 rounded-full bg-white/90 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider text-[#37322F] shadow-sm">
+        <div className="absolute top-1.5 left-1.5 rounded-full bg-white/90 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider text-[#0A0A0A] shadow-sm">
           {width}×{height}
         </div>
       </div>
@@ -76,7 +76,7 @@ function CreativePreview({ ad }: PreviewProps): React.JSX.Element {
           href={ad.clickUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-[#37322F] truncate"
+          className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-[#0A0A0A] truncate"
         >
           <CircleOpenArrowRight className="size-2.5 shrink-0" />
           <span className="truncate">{ad.clickUrl}</span>
@@ -107,12 +107,12 @@ interface CardProps {
 
 function AdCard({ ad, onUpdate, onRemove }: CardProps): React.JSX.Element {
   return (
-    <div className="relative rounded-xl border border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] p-4">
+    <div className="relative rounded-xl border border-[rgba(10,10,10,0.12)] bg-[#FFFFFF] p-4">
       <button
         type="button"
         onClick={onRemove}
         aria-label="Remove ad"
-        className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-[rgba(55,50,47,0.08)] text-muted-foreground hover:bg-[rgba(55,50,47,0.16)] transition-colors z-10"
+        className="absolute right-3 top-3 flex size-5 items-center justify-center rounded-full bg-[rgba(10,10,10,0.08)] text-muted-foreground hover:bg-[rgba(10,10,10,0.16)] transition-colors z-10"
       >
         <CircleXmarkIcon className="size-3" />
       </button>
@@ -160,7 +160,7 @@ function AdCard({ ad, onUpdate, onRemove }: CardProps): React.JSX.Element {
               role="switch"
               aria-checked={ad.walletConnectCta}
               onClick={() => onUpdate({ walletConnectCta: !ad.walletConnectCta })}
-              className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${ad.walletConnectCta ? "bg-[#37322F]" : "bg-[rgba(55,50,47,0.2)]"}`}
+              className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${ad.walletConnectCta ? "bg-[#0A0A0A]" : "bg-[rgba(10,10,10,0.2)]"}`}
             >
               <span className={`pointer-events-none inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${ad.walletConnectCta ? "translate-x-3" : "translate-x-0"}`} />
             </button>
@@ -178,11 +178,11 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
   const canAdd = state.ads.length < 3
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="flex size-4 items-center justify-center rounded-md bg-[#FFE8F0] text-[#BE185D]">
+            <span className="flex size-4 items-center justify-center rounded-md bg-[#ECEAE2] text-[#1F40CD]">
               <ImageSparkleIcon className="size-2.5" />
             </span>
             <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Creatives · up to 3</h3>
@@ -193,18 +193,18 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
             variant="outline"
             disabled={!canAdd}
             onClick={addAd}
-            className="h-7 gap-1 text-[11px] rounded-full px-3 border-[rgba(55,50,47,0.2)] shrink-0"
+            className="h-7 gap-1 text-[11px] rounded-full px-3 border-[rgba(10,10,10,0.2)] shrink-0"
           >
             <BoxPlusIcon className="size-3" /> Add ad
           </Button>
         </div>
 
         {state.ads.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-[rgba(55,50,47,0.18)] bg-white/50 py-6 text-center">
-            <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-[#F0ECE6]">
+          <div className="rounded-xl border border-dashed border-[rgba(10,10,10,0.18)] bg-white/50 py-6 text-center">
+            <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-[#ECEAE2]">
               <ImageSparkleIcon className="size-3.5 text-muted-foreground" />
             </div>
-            <p className="text-xs font-medium text-[#37322F]">No ads yet</p>
+            <p className="text-xs font-medium text-[#0A0A0A]">No ads yet</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">Add up to 3 — or skip and add later.</p>
           </div>
         ) : (

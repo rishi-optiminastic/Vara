@@ -27,7 +27,7 @@ interface StatProps {
 
 function Stat({ label, value, hint, tint, valueClass }: StatProps): React.JSX.Element {
   return (
-    <div className={`rounded-md px-2 py-1.5 border border-[rgba(55,50,47,0.06)] ${tint}`}>
+    <div className={`rounded-md px-2 py-1.5 border border-[rgba(10,10,10,0.06)] ${tint}`}>
       <div className="text-[8px] uppercase tracking-widest opacity-70 leading-none">{label}</div>
       <div className={`text-[13px] font-semibold tabular-nums leading-tight mt-0.5 ${valueClass}`}>{value}</div>
       {hint && <div className="text-[9px] opacity-60 leading-none mt-0.5">{hint}</div>}
@@ -36,9 +36,9 @@ function Stat({ label, value, hint, tint, valueClass }: StatProps): React.JSX.El
 }
 
 const CONFIDENCE_LABEL: Record<"low" | "medium" | "high", { label: string; tone: string }> = {
-  low: { label: "Low confidence", tone: "text-amber-700 bg-amber-50 border-amber-200" },
-  medium: { label: "Medium confidence", tone: "text-[#37322F] bg-[#F0ECE6] border-[rgba(55,50,47,0.18)]" },
-  high: { label: "High confidence", tone: "text-emerald-700 bg-emerald-50 border-emerald-200" },
+  low: { label: "Low confidence", tone: "text-[#1F40CD] bg-[#ECEAE2] border-[rgba(10,10,10,0.12)]" },
+  medium: { label: "Medium confidence", tone: "text-[#0A0A0A] bg-[#ECEAE2] border-[rgba(10,10,10,0.18)]" },
+  high: { label: "High confidence", tone: "text-[#1F40CD] bg-[#ECEAE2] border-[rgba(10,10,10,0.12)]" },
 }
 
 export function ForecastPanel({ state }: Props): React.JSX.Element {
@@ -59,8 +59,8 @@ export function ForecastPanel({ state }: Props): React.JSX.Element {
   const empty = f.impressions === 0
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] bg-[#FFFFFF] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)] overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[rgba(55,50,47,0.1)] px-3 py-1.5">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] bg-[#FFFFFF] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)] overflow-hidden">
+      <div className="flex items-center justify-between border-b border-[rgba(10,10,10,0.1)] px-3 py-1.5">
         <div className="flex items-center gap-1.5">
           <GaugeIcon className="size-3 text-muted-foreground" />
           <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Weekly forecast</h3>
@@ -71,7 +71,7 @@ export function ForecastPanel({ state }: Props): React.JSX.Element {
       </div>
       <CardContent className="p-2 space-y-2">
         {empty ? (
-          <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.2)] py-4 text-center text-[10px] text-muted-foreground/70">
+          <div className="rounded-md border border-dashed border-[rgba(10,10,10,0.2)] py-4 text-center text-[10px] text-muted-foreground/70">
             Set a budget and bid to see estimates.
           </div>
         ) : (
@@ -81,29 +81,29 @@ export function ForecastPanel({ state }: Props): React.JSX.Element {
                 label="Impressions"
                 value={fmtNum(f.impressions)}
                 hint="Per week"
-                tint="bg-[#EAF1FF] text-[#1E40AF]"
-                valueClass="text-[#1E3A8A]"
+                tint="bg-[#ECEAE2] text-[#1F40CD]"
+                valueClass="text-[#1F40CD]"
               />
               <Stat
                 label="Reach"
                 value={fmtNum(f.reach)}
                 hint="Unique wallets"
-                tint="bg-[#F0E8FF] text-[#6D28D9]"
-                valueClass="text-[#5B21B6]"
+                tint="bg-[#ECEAE2] text-[#1F40CD]"
+                valueClass="text-[#1F40CD]"
               />
               <Stat
                 label="Clicks"
                 value={fmtNum(f.clicks)}
                 hint={`${f.ctrPct.toFixed(2)}% CTR`}
-                tint="bg-[#FFF3E8] text-[#C2410C]"
-                valueClass="text-[#9A3412]"
+                tint="bg-[#ECEAE2] text-[#1F40CD]"
+                valueClass="text-[#1F40CD]"
               />
               <Stat
                 label="Conversions"
                 value={fmtNum(f.conversions)}
                 hint={f.cpa > 0 ? `~$${f.cpa.toFixed(2)} CPA` : ""}
-                tint="bg-[#E8F5E9] text-[#15803D]"
-                valueClass="text-[#166534]"
+                tint="bg-[#ECEAE2] text-[#1F40CD]"
+                valueClass="text-[#1F40CD]"
               />
             </div>
             <p className="text-[9px] text-muted-foreground/60 italic leading-tight">

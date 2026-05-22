@@ -44,7 +44,7 @@ export function LogoPicker(): React.JSX.Element {
         <button
           type="button"
           title={`Logo: ${active.label} (click to switch)`}
-          className="group flex h-10 w-10 items-center justify-center rounded-lg transition-all hover:bg-[rgba(55,50,47,0.06)] hover:ring-2 hover:ring-[rgba(55,50,47,0.16)]"
+          className="group flex h-10 w-10 items-center justify-center rounded-lg transition-all hover:bg-[rgba(10,10,10,0.06)] hover:ring-2 hover:ring-[rgba(10,10,10,0.16)]"
         >
           <Image
             src={active.src}
@@ -60,7 +60,7 @@ export function LogoPicker(): React.JSX.Element {
         side="right"
         align="start"
         sideOffset={10}
-        className="w-[340px] p-3 border-[rgba(55,50,47,0.12)] bg-white shadow-[0_8px_32px_-8px_rgba(55,50,47,0.2)]"
+        className="w-[340px] p-3 border-[rgba(10,10,10,0.12)] bg-white shadow-[0_8px_32px_-8px_rgba(10,10,10,0.2)]"
       >
         <div className="flex items-center justify-between px-1 pb-2">
           <span className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
@@ -81,8 +81,8 @@ export function LogoPicker(): React.JSX.Element {
                 title={l.label}
                 className={`group relative flex flex-col items-center justify-center gap-1 rounded-lg border p-2 transition-all ${
                   isActive
-                    ? "border-[#37322F] bg-[#FFFFFF] ring-2 ring-[#37322F]/20"
-                    : "border-[rgba(55,50,47,0.12)] bg-white hover:border-[rgba(55,50,47,0.32)] hover:bg-[#FFFFFF]"
+                    ? "border-[#0A0A0A] bg-[#FFFFFF] ring-2 ring-[#0A0A0A]/20"
+                    : "border-[rgba(10,10,10,0.12)] bg-white hover:border-[rgba(10,10,10,0.32)] hover:bg-[#FFFFFF]"
                 }`}
               >
                 <div className="flex h-20 w-full items-center justify-center">
@@ -96,7 +96,7 @@ export function LogoPicker(): React.JSX.Element {
                 </div>
                 <span
                   className={`text-[10px] font-medium ${
-                    isActive ? "text-[#37322F]" : "text-muted-foreground"
+                    isActive ? "text-[#0A0A0A]" : "text-muted-foreground"
                   }`}
                 >
                   {l.label}
@@ -107,7 +107,7 @@ export function LogoPicker(): React.JSX.Element {
         </div>
         <Link
           href="/dashboard"
-          className="block mt-2.5 px-1 text-[10px] text-muted-foreground hover:text-[#37322F]"
+          className="block mt-2.5 px-1 text-[10px] text-muted-foreground hover:text-[#0A0A0A]"
           onClick={() => setOpen(false)}
         >
           Go to dashboard →

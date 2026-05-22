@@ -204,24 +204,27 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
 
   return (
     <div className="flex h-full w-48 flex-col overflow-hidden">
-      <div className="flex h-11 shrink-0 items-center justify-between border-b border-[rgba(55,50,47,0.15)] px-3">
-        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#1f40cd]">
+      <div className="flex h-11 shrink-0 items-center justify-between border-b border-dashed border-[rgba(10,10,10,0.15)] px-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0A0A0A]">
           {section.label}
         </span>
         <button
           type="button"
           onClick={onToggle}
-          className="flex h-5 w-5 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
+          className="flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground hover:bg-[#0A0A0A]/[0.04] hover:text-[#0A0A0A] transition-colors"
           title="Close panel"
         >
           <ChevronLeft className="size-3" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="flex-1 overflow-y-auto px-1.5 py-2">
         {section.groups.map((group, gi) => (
-          <div key={gi} className={gi > 0 ? "mt-3" : ""}>
+          <div
+            key={gi}
+            className={gi > 0 ? "mt-2 border-t border-dashed border-[rgba(10,10,10,0.12)] pt-3" : ""}
+          >
             {group.label && (
-              <p className="px-3 pb-1 text-[9px] font-medium uppercase tracking-[0.16em] text-[#37322F]/45">
+              <p className="px-2 pb-1.5 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-[#0A0A0A]/55">
                 {group.label}
               </p>
             )}
@@ -232,14 +235,18 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
                 <Link
                   key={item.label}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 text-[12px] transition-colors ${
+                  className={`group relative flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] transition-colors ${
                     active
-                      ? "bg-[#1f40cd] text-white font-medium"
-                      : "text-[#37322F]/75 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd]"
+                      ? "bg-[#1F40CD] text-white font-medium shadow-[0_1px_0_rgba(0,0,0,0.05)]"
+                      : "text-[#0A0A0A]/85 hover:bg-[#0A0A0A]/[0.05] hover:text-[#0A0A0A]"
                   }`}
                 >
-                  <Icon className={`size-3.5 shrink-0 ${active ? "opacity-100" : "opacity-65"}`} />
-                  {item.label}
+                  <Icon
+                    className={`size-3.5 shrink-0 transition-opacity ${
+                      active ? "opacity-100" : "opacity-60 group-hover:opacity-90"
+                    }`}
+                  />
+                  <span className="truncate">{item.label}</span>
                 </Link>
               )
             })}

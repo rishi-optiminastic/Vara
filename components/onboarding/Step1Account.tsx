@@ -1,7 +1,13 @@
 'use client'
 
-import { Field } from './Field'
-import { BUSINESS_TYPE_LABELS, BUSINESS_TYPES, type BusinessType, type OnboardingStep1Input } from './types'
+import { FormRow } from './FormRow'
+import { TextInput } from './TextInput'
+import {
+  BUSINESS_TYPE_LABELS,
+  BUSINESS_TYPES,
+  type BusinessType,
+  type OnboardingStep1Input,
+} from './types'
 
 type Errors = Partial<Record<keyof OnboardingStep1Input, string>>
 
@@ -15,81 +21,93 @@ const TYPES: readonly BusinessType[] = BUSINESS_TYPES
 
 export function Step1Account({ values, errors, onChange }: Props): React.JSX.Element {
   return (
-    <div className="flex flex-col gap-4">
-      <Field
-        label="Company / Project name"
-        placeholder="Acme Labs"
-        value={values.projectName}
-        onChange={e => onChange({ projectName: e.target.value })}
-        error={errors.projectName}
-        required
-      />
+    <div className="flex flex-col divide-y divide-[rgba(10,10,10,0.08)]">
+      <Section>
+        <FormRow label="Project name" hint="Shown in dashboards & invoices." required>
+          <TextInput
+            placeholder="Acme Labs"
+            value={values.projectName}
+            onChange={e => onChange({ projectName: e.target.value })}
+            error={errors.projectName}
+          />
+        </FormRow>
 
-      <Field
-        label="Website / dApp URL"
-        placeholder="https://acme.xyz"
-        value={values.websiteUrl ?? ''}
-        onChange={e => onChange({ websiteUrl: e.target.value })}
-        error={errors.websiteUrl}
-        optional
-      />
+        <FormRow label="Website" hint="Helps us verify your brand." optional>
+          <TextInput
+            placeholder="https://acme.xyz"
+            value={values.websiteUrl ?? ''}
+            onChange={e => onChange({ websiteUrl: e.target.value })}
+            error={errors.websiteUrl}
+          />
+        </FormRow>
 
-      <Field
-        label="Contact email"
-        type="email"
-        placeholder="growth@acme.xyz"
-        value={values.contactEmail ?? ''}
-        onChange={e => onChange({ contactEmail: e.target.value })}
-        error={errors.contactEmail}
-        optional
-      />
+        <FormRow label="Contact email" hint="Billing notifications go here." optional>
+          <TextInput
+            type="email"
+            placeholder="growth@acme.xyz"
+            value={values.contactEmail ?? ''}
+            onChange={e => onChange({ contactEmail: e.target.value })}
+            error={errors.contactEmail}
+          />
+        </FormRow>
+      </Section>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Field
-          label="Telegram"
-          prefix="@"
-          placeholder="acmelabs"
-          value={values.telegramHandle ?? ''}
-          onChange={e => onChange({ telegramHandle: e.target.value })}
-          error={errors.telegramHandle}
-          optional
-        />
-        <Field
-          label="Discord"
-          prefix="#"
-          placeholder="acme"
-          value={values.discordHandle ?? ''}
-          onChange={e => onChange({ discordHandle: e.target.value })}
-          error={errors.discordHandle}
-          optional
-        />
-      </div>
+      <Section>
+        <FormRow label="Telegram" hint="For ad-ops handoff." optional>
+          <TextInput
+            prefix="@"
+            placeholder="acmelabs"
+            value={values.telegramHandle ?? ''}
+            onChange={e => onChange({ telegramHandle: e.target.value })}
+            error={errors.telegramHandle}
+          />
+        </FormRow>
 
-      <div className="flex flex-col gap-1.5">
-        <label className="text-[11px] font-medium text-[rgba(55,50,47,0.5)] uppercase tracking-[0.07em]">
-          Business type
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {TYPES.map(t => {
-            const active = values.businessType === t
-            return (
-              <button
-                key={t}
-                type="button"
-                onClick={() => onChange({ businessType: t })}
-                className={`h-10 rounded-md border text-xs font-medium transition-all ${
-                  active
-                    ? 'bg-[#37322F] text-white border-[#37322F] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]'
-                    : 'bg-white text-[#37322F] border-[#E0DEDB] hover:border-[rgba(55,50,47,0.32)]'
-                }`}
-              >
-                {BUSINESS_TYPE_LABELS[t]}
-              </button>
-            )
-          })}
-        </div>
-        {errors.businessType && <p className="text-xs text-red-600">{errors.businessType}</p>}
-      </div>
+        <FormRow label="Discord" optional>
+          <TextInput
+            prefix="#"
+            placeholder="acme"
+            value={values.discordHandle ?? ''}
+            onChange={e => onChange({ discordHandle: e.target.value })}
+            error={errors.discordHandle}
+          />
+        </FormRow>
+      </Section>
+
+      <Section>
+        <FormRow
+          label="Business type"
+          hint="We use this to surface relevant audiences and benchmarks."
+          required
+        >
+          <div className="grid grid-cols-3 gap-1.5">
+            {TYPES.map(t => {
+              const active = values.businessType === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => onChange({ businessType: t })}
+                  className={`h-10 rounded-md border text-xs font-medium transition-colors ${
+                    active
+                      ? 'bg-[#0A0A0A] text-white border-[#0A0A0A]'
+                      : 'bg-white text-[#0A0A0A] border-[rgba(10,10,10,0.12)] hover:border-[#1F40CD] hover:text-[#1F40CD]'
+                  }`}
+                >
+                  {BUSINESS_TYPE_LABELS[t]}
+                </button>
+              )
+            })}
+          </div>
+          {errors.businessType && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.businessType}</p>
+          )}
+        </FormRow>
+      </Section>
     </div>
   )
+}
+
+function Section({ children }: { children: React.ReactNode }): React.JSX.Element {
+  return <div className="flex flex-col gap-5 py-6 first:pt-0 last:pb-0">{children}</div>
 }

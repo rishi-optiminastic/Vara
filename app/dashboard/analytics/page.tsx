@@ -79,8 +79,8 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+      <div className="border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
           <span className="font-instrument-serif italic font-normal text-[26px]">Insights</span>
         </h1>
         <p className="text-[11px] text-muted-foreground mt-1.5">
@@ -90,8 +90,8 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
 
       <InsightsKpis {...totals} />
 
-      <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <div className="border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+        <div className="border-b border-[rgba(10,10,10,0.12)] px-3.5 py-2">
           <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
             Spend trend
           </h3>
@@ -102,23 +102,23 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
       </Card>
 
       <div className="grid gap-3 lg:grid-cols-2">
-        <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-          <div className="border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+        <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+          <div className="border-b border-[rgba(10,10,10,0.12)] px-3.5 py-2">
             <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Top campaigns by spend</h3>
           </div>
           <CardContent className="p-0">
             {topCampaigns.length === 0 ? (
               <p className="px-3.5 py-6 text-center text-[11px] text-muted-foreground">No spend yet</p>
             ) : (
-              <div className="divide-y divide-[rgba(55,50,47,0.07)]">
+              <div className="divide-y divide-[rgba(10,10,10,0.07)]">
                 {topCampaigns.map((c) => (
                   <Link
                     key={c.id}
                     href={`/dashboard/campaigns/${c.id}`}
-                    className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-[rgba(55,50,47,0.02)] transition-colors"
+                    className="flex items-center gap-3 px-3.5 py-2.5 hover:bg-[rgba(10,10,10,0.02)] transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-[#37322F] truncate">{c.name}</div>
+                      <div className="text-xs font-medium text-[#0A0A0A] truncate">{c.name}</div>
                       <div className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground tabular-nums">
                         <StatusBadge status={c.status} />
                         <span>{formatCompact(c.impressions)} impr</span>
@@ -126,7 +126,7 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
                         <span>{formatCompact(c.clicks)} clicks</span>
                       </div>
                     </div>
-                    <div className="text-xs font-medium text-[#37322F] tabular-nums shrink-0">
+                    <div className="text-xs font-medium text-[#0A0A0A] tabular-nums shrink-0">
                       ${centsToUsd(c.spend)}
                     </div>
                   </Link>
@@ -136,8 +136,8 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
           </CardContent>
         </Card>
 
-        <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-          <div className="border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+        <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+          <div className="border-b border-[rgba(10,10,10,0.12)] px-3.5 py-2">
             <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">Spend by vertical</h3>
           </div>
           <CardContent className="p-3.5">
@@ -148,11 +148,11 @@ export default async function InsightsPage(): Promise<React.JSX.Element> {
                 {verticalSpend.map((v) => (
                   <div key={v.vertical}>
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#37322F] capitalize">{v.vertical.replace(/_/g, " ").toLowerCase()}</span>
-                      <span className="font-medium text-[#37322F] tabular-nums">${centsToUsd(v.spend)}</span>
+                      <span className="text-[#0A0A0A] capitalize">{v.vertical.replace(/_/g, " ").toLowerCase()}</span>
+                      <span className="font-medium text-[#0A0A0A] tabular-nums">${centsToUsd(v.spend)}</span>
                     </div>
-                    <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[rgba(55,50,47,0.06)]">
-                      <div className="h-full bg-[#37322F]" style={{ width: `${v.pct}%` }} />
+                    <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[rgba(10,10,10,0.06)]">
+                      <div className="h-full bg-[#0A0A0A]" style={{ width: `${v.pct}%` }} />
                     </div>
                   </div>
                 ))}
@@ -223,18 +223,18 @@ function topByspend(
 function EmptyState(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+      <div className="border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
           <span className="font-instrument-serif italic font-normal text-[26px]">Insights</span>
         </h1>
       </div>
-      <Card className="border-[rgba(55,50,47,0.12)]">
+      <Card className="border-[rgba(10,10,10,0.12)]">
         <CardContent className="py-16 text-center">
-          <p className="text-sm font-medium text-[#37322F]">Nothing to analyze yet</p>
+          <p className="text-sm font-medium text-[#0A0A0A]">Nothing to analyze yet</p>
           <p className="mt-1 text-[11px] text-muted-foreground">
             Create a campaign and run some delivery — performance insights will appear here.
           </p>
-          <Link href="/dashboard/campaigns/new" className="mt-4 inline-block text-[11px] font-medium text-[#37322F] underline underline-offset-2">
+          <Link href="/dashboard/campaigns/new" className="mt-4 inline-block text-[11px] font-medium text-[#0A0A0A] underline underline-offset-2">
             Create your first campaign →
           </Link>
         </CardContent>

@@ -7,6 +7,7 @@ import { TextField } from "./form-fields"
 import { CHAINS } from "@/lib/chains"
 import { chainBrand } from "@/lib/chainLogos"
 import { GeoTargetingDialog } from "@/components/campaigns/GeoTargetingDialog"
+import { WizardSection } from "./WizardSection"
 import {
   BoxIcon,
   HardDriveIcon,
@@ -45,8 +46,8 @@ function Pill({ label, active, onClick, icon }: PillProps): React.JSX.Element {
       onClick={onClick}
       className={`h-7 inline-flex items-center gap-1.5 rounded-full border px-3 text-[11px] font-medium transition-colors ${
         active
-          ? "bg-[#37322F] text-[#FAFAF8] border-[#37322F]"
-          : "bg-white border-[rgba(55,50,47,0.16)] text-[#37322F] hover:bg-[#F0ECE6] hover:border-[rgba(55,50,47,0.3)]"
+          ? "bg-[#1F40CD] text-white border-[#1F40CD]"
+          : "bg-white border-[rgba(10,10,10,0.16)] text-[#0A0A0A] hover:bg-[#ECEAE2] hover:border-[rgba(10,10,10,0.3)]"
       }`}
     >
       {icon}
@@ -64,37 +65,20 @@ interface ChainPillProps {
 
 function ChainPill({ chain, label, active, onClick }: ChainPillProps): React.JSX.Element {
   const Logo = chainBrand(chain).Logo
-  const logoCls = active ? "text-[#FAFAF8]" : chainBrand(chain).fg
+  const logoCls = active ? "text-[#FFFFFF]" : chainBrand(chain).fg
   return <Pill label={label} active={active} onClick={onClick} icon={<Logo className={`size-3.5 ${logoCls}`} />} />
-}
-
-interface SectionProps {
-  icon: React.ElementType
-  tint: string
-  title: string
-  children: React.ReactNode
-}
-
-function Section({ icon: Icon, tint, title, children }: SectionProps): React.JSX.Element {
-  return (
-    <div className="space-y-1.5 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
-      <div className="flex items-center gap-1.5">
-        <span className={`flex size-4 items-center justify-center rounded-md ${tint}`}>
-          <Icon className="size-2.5" />
-        </span>
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</div>
-      </div>
-      {children}
-    </div>
-  )
 }
 
 export function WizardStepTargeting({ state, update }: Props): React.JSX.Element {
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <CardContent className="p-4 space-y-3">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+      <CardContent className="p-5 space-y-5">
 
-        <Section icon={BoxIcon} tint="bg-[#EAF1FF] text-[#1E40AF]" title="Chains">
+        <WizardSection
+          icon={BoxIcon}
+          title="Chains"
+          description="Wallets active on these chains will be eligible to see your ad."
+        >
           <div className="flex flex-wrap gap-1.5">
             {CHAINS.map((c) => (
               <ChainPill
@@ -109,19 +93,24 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
           {state.chains.length === 0 && (
             <p className="text-[10px] text-muted-foreground/60 italic mt-1">All chains targeted</p>
           )}
-        </Section>
+        </WizardSection>
 
-        <Section icon={AudiencesIcon} tint="bg-[#FFE8F0] text-[#BE185D]" title="Geos">
+        <WizardSection
+          icon={AudiencesIcon}
+          title="Geos"
+          description="Region, country, or state — drill in for fine-grained targeting."
+        >
           <GeoTargetingDialog
             value={state.geos}
             onChange={(geos) => update({ geos })}
           />
-          <p className="text-[10px] text-muted-foreground/60 italic mt-1">
-            Region, country, or state — drill in for fine-grained targeting.
-          </p>
-        </Section>
+        </WizardSection>
 
-        <Section icon={HardDriveIcon} tint="bg-[#F0E8FF] text-[#6D28D9]" title="Devices">
+        <WizardSection
+          icon={HardDriveIcon}
+          title="Devices"
+          description="Desktop, mobile, or both."
+        >
           <div className="flex gap-2">
             {DEVICES.map((d) => {
               const Icon = d.value === "DESKTOP" ? MonitorIcon : PhoneIcon
@@ -140,9 +129,13 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
           {state.deviceTypes.length === 0 && (
             <p className="text-[10px] text-muted-foreground/60 italic mt-1">All devices targeted</p>
           )}
-        </Section>
+        </WizardSection>
 
-        <Section icon={HourglassStartIcon} tint="bg-[#FFF3E8] text-[#C2410C]" title="Frequency cap">
+        <WizardSection
+          icon={HourglassStartIcon}
+          title="Frequency cap"
+          description="Limit how often a single wallet sees this campaign."
+        >
           <div className="grid grid-cols-2 gap-3">
             <TextField
               label="Max impressions"
@@ -165,9 +158,13 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
               {...(!state.freqCap ? { hint: "Set impressions first" } : {})}
             />
           </div>
-        </Section>
+        </WizardSection>
 
-        <Section icon={FileBanIcon} tint="bg-[#FFE8E8] text-[#B91C1C]" title="Brand safety">
+        <WizardSection
+          icon={FileBanIcon}
+          title="Brand safety"
+          description="Keywords that disqualify a placement when matched."
+        >
           <TextField
             label=""
             value={state.brandSafety}
@@ -176,7 +173,7 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
             hint="Comma-separated keywords"
             span={2}
           />
-        </Section>
+        </WizardSection>
       </CardContent>
     </Card>
   )

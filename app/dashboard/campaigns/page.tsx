@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma"
 import { getOrCreateAdvertiser } from "@/lib/advertiser"
 import { centsToUsd } from "@/lib/money"
 import type { CampaignStatus, Vertical, Prisma } from "@prisma/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CampaignsToolbar } from "@/components/campaigns/components/CampaignsToolbar"
 import type { CampaignCsvRow } from "@/components/campaigns/components/CampaignsToolbar"
@@ -94,10 +93,18 @@ export default async function CampaignsListPage({ searchParams }: PageProps): Pr
     return {
       id: c.id,
       name: c.name,
+      description: c.description,
       status: c.status,
       vertical: c.vertical,
+      objective: c.objective,
+      pricingModel: c.pricingModel,
+      bidStrategy: c.bidStrategy,
+      pacing: c.pacing,
       budgetUsdCents: c.budgetUsdCents,
+      dailyCapUsdCents: c.dailyCapUsdCents,
       bidUsdCents: c.bidUsdCents,
+      startDate: c.startDate.toISOString(),
+      endDate: c.endDate ? c.endDate.toISOString() : null,
       chains: c.targeting?.chains ?? [],
       creativesCount: c._count.creatives,
       impressions: m?.impressions ?? 0,
@@ -107,50 +114,50 @@ export default async function CampaignsListPage({ searchParams }: PageProps): Pr
   })
 
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <div className="flex items-end justify-between gap-3 border-b border-[#37322F]/15 pb-5">
-        <div className="shrink-0">
-          <div className="text-[10px] tracking-[0.16em] text-[#37322F]/55">DASHBOARD · CAMPAIGNS</div>
-          <h1 className="mt-2 text-[#1f40cd] uppercase tracking-[-0.01em] text-2xl md:text-3xl font-medium leading-[0.95]">
-            Campaigns
-          </h1>
-          <p className="mt-2 text-[12px] text-[#37322F]/65 tracking-[0.04em]">
-            {campaigns.length === totalCount ? `${totalCount} TOTAL` : `${campaigns.length} OF ${totalCount}`}
-          </p>
-        </div>
-        <div className="flex items-center gap-3 flex-wrap justify-end">
-          <CampaignsToolbar totalCount={totalCount} filteredCount={campaigns.length} csvData={csvData} />
-          <Button asChild size="sm" className="h-9 rounded-none gap-2 text-[11px] tracking-[0.14em] px-5 bg-[#1f40cd] text-white hover:opacity-90">
-            <Link href="/dashboard/campaigns/new"><BoxPlusIcon className="size-3" />NEW CAMPAIGN</Link>
-          </Button>
-        </div>
+    <div className="relative min-h-full">
+      {/* Dashed vertical grid lines matching the marketing site's typographic
+          grid. Sits behind the content, only visible in the gutters / above
+          the table — the white table rows sit on top. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 flex">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex-1 border-l border-dashed border-[rgba(10,10,10,0.08)] first:border-l-0 last:border-r"
+          />
+        ))}
       </div>
 
-      <Card className="gap-0 py-0 rounded-none border border-[#37322F]/15 shadow-none bg-transparent">
-        <CardHeader className="border-b border-[#37322F]/15 px-5 py-4 flex flex-row items-center justify-between">
-          <div>
-            <div className="text-[10px] tracking-[0.16em] text-[#37322F]/55">PROGRAMME</div>
-            <CardTitle className="mt-1 text-[#1f40cd] tracking-[-0.01em] text-lg font-medium">
-              All campaigns
-            </CardTitle>
+      <div className="relative z-10 flex flex-col gap-2.5 p-3">
+        <div className="flex items-end justify-between gap-2">
+          <div className="shrink-0 flex items-baseline gap-2">
+            <h1 className="text-[#0A0A0A] tracking-[-0.02em] text-[20px] font-medium leading-none">
+              Campaigns
+            </h1>
+            <span className="text-[10.5px] font-semibold uppercase tracking-widest text-muted-foreground tabular-nums">
+              {campaigns.length === totalCount ? `${totalCount} total` : `${campaigns.length} of ${totalCount}`}
+              <span className="mx-1.5 text-[#0A0A0A]/30">·</span>Last 30 days
+            </span>
           </div>
-          <span className="text-[10px] tracking-[0.14em] text-[#37322F]/55 tabular-nums">LAST 30 DAYS</span>
-        </CardHeader>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            <CampaignsToolbar totalCount={totalCount} filteredCount={campaigns.length} csvData={csvData} />
+            <Button asChild size="sm" className="h-8 rounded-full gap-1.5 text-[11px] px-3.5 bg-[#1F40CD] text-white hover:bg-[#1A36B0]">
+              <Link href="/dashboard/campaigns/new"><BoxPlusIcon className="size-3" />New campaign</Link>
+            </Button>
+          </div>
+        </div>
 
-        <CardContent className="p-0">
-          {campaigns.length === 0 ? (
-            <div className="px-5 py-16 text-center text-[12px] text-[#37322F]/65">
-              {totalCount === 0 ? (
-                <>No campaigns yet. <Link href="/dashboard/campaigns/new" className="text-[#1f40cd] underline underline-offset-4">Create one</Link>.</>
-              ) : (
-                "No campaigns match your filters."
-              )}
-            </div>
-          ) : (
-            <CampaignsTable rows={rows} />
-          )}
-        </CardContent>
-      </Card>
+        {campaigns.length === 0 ? (
+          <div className="bg-white rounded-md px-3 py-10 text-center text-[12px] text-muted-foreground">
+            {totalCount === 0 ? (
+              <>No campaigns yet. <Link href="/dashboard/campaigns/new" className="text-[#1F40CD] underline underline-offset-4">Create one</Link>.</>
+            ) : (
+              "No campaigns match your filters."
+            )}
+          </div>
+        ) : (
+          <CampaignsTable rows={rows} />
+        )}
+      </div>
     </div>
   )
 }

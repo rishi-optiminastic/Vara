@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TextField, SelectField, DatePickerField } from "./form-fields"
 import { RecommendedBadge } from "./RecommendedBadge"
+import { WizardSection } from "./WizardSection"
 import { recommendationsFor } from "@/lib/campaignSmart"
 import { SpendIcon, GaugeIcon, CalendarCheckIcon } from "@/icons"
 
@@ -33,31 +34,6 @@ const PACING_OPTIONS: { value: Pacing; label: string; desc: string }[] = [
   { value: "ACCELERATED", label: "Accelerated", desc: "Spend ASAP — exhaust daily cap fast" },
 ]
 
-interface SectionProps {
-  icon: React.ElementType
-  tint: string
-  title: string
-  badge?: React.ReactNode
-  children: React.ReactNode
-}
-
-function Section({ icon: Icon, tint, title, badge, children }: SectionProps): React.JSX.Element {
-  return (
-    <div className="space-y-2 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <span className={`flex size-4 items-center justify-center rounded-md ${tint}`}>
-            <Icon className="size-2.5" />
-          </span>
-          <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
-        </div>
-        {badge}
-      </div>
-      {children}
-    </div>
-  )
-}
-
 const BID_STRATEGY_LABELS: Record<BidStrategy, string> = {
   MANUAL: "Manual",
   AUTO: "Auto",
@@ -80,16 +56,16 @@ interface RecRowProps {
 function RecRow({ matches, recLabel, onApply }: RecRowProps): React.JSX.Element {
   if (matches) {
     return (
-      <div className="flex items-center gap-1.5 text-[10px] col-span-2 rounded-md border border-[#BBE3C0] bg-[#F0FAF1] px-2 py-1.5 text-[#15803D]">
+      <div className="flex items-center gap-1.5 text-[10px] col-span-2 rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] px-2 py-1.5 text-[#1F40CD]">
         <RecommendedBadge label="Optimized" tone="subtle" />
         <span className="opacity-80">Matches recommended setup.</span>
       </div>
     )
   }
   return (
-    <div className="flex flex-wrap items-center gap-2 col-span-2 rounded-md border border-[#E0D4FF] bg-[#F5EFFF] px-2 py-1.5">
+    <div className="flex flex-wrap items-center gap-2 col-span-2 rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] px-2 py-1.5">
       <RecommendedBadge label="Tip" tone="default" />
-      <span className="text-[10px] text-[#5B21B6]">
+      <span className="text-[10px] text-[#1F40CD]">
         Try <span className="font-semibold">{recLabel}</span>
       </span>
       <Button
@@ -97,7 +73,7 @@ function RecRow({ matches, recLabel, onApply }: RecRowProps): React.JSX.Element 
         size="sm"
         variant="outline"
         onClick={onApply}
-        className="h-6 text-[10px] rounded-full px-2.5 ml-auto border-[#E0D4FF] bg-white text-[#5B21B6] hover:bg-[#F5EFFF]"
+        className="h-6 text-[10px] rounded-full px-2.5 ml-auto border-[rgba(10,10,10,0.12)] bg-white text-[#1F40CD] hover:bg-[#ECEAE2]"
       >
         Apply
       </Button>
@@ -122,9 +98,13 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
     })
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <CardContent className="p-4 space-y-3">
-        <Section icon={SpendIcon} tint="bg-[#E8F5E9] text-[#15803D]" title="Budget">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+      <CardContent className="p-5 space-y-5">
+        <WizardSection
+          icon={SpendIcon}
+          title="Budget"
+          description="Total spend and an optional daily cap."
+        >
           <div className="grid grid-cols-2 gap-3">
             <TextField
               label="Total budget"
@@ -149,13 +129,13 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               hint="Leave blank for no daily limit"
             />
           </div>
-        </Section>
+        </WizardSection>
 
-        <Section
+        <WizardSection
           icon={GaugeIcon}
-          tint="bg-[#EAF1FF] text-[#1E40AF]"
           title="Bidding"
-          badge={biddingMatches ? <RecommendedBadge label="Optimized" tone="subtle" /> : undefined}
+          description="How you pay for delivery and how the engine spends your budget."
+          {...(biddingMatches ? { badge: <RecommendedBadge label="Optimized" tone="subtle" /> } : {})}
         >
           <div className="grid grid-cols-2 gap-3">
             <RecRow matches={biddingMatches} recLabel={recLabel} onApply={applyRecs} />
@@ -193,9 +173,13 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               hint={state.pacing === recs.pacing ? "Matches recommendation" : `Recommended: ${PACING_LABELS[recs.pacing]}`}
             />
           </div>
-        </Section>
+        </WizardSection>
 
-        <Section icon={CalendarCheckIcon} tint="bg-[#FFF3E8] text-[#C2410C]" title="Schedule">
+        <WizardSection
+          icon={CalendarCheckIcon}
+          title="Schedule"
+          description="When the campaign starts and (optionally) ends."
+        >
           <div className="grid grid-cols-2 gap-3">
             <DatePickerField
               label="Start date"
@@ -210,7 +194,7 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
               hint="Leave blank to run indefinitely"
             />
           </div>
-        </Section>
+        </WizardSection>
       </CardContent>
     </Card>
   )

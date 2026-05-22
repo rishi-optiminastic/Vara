@@ -11,8 +11,8 @@ export default async function SegmentsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+      <div className="border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
           Wallet <span className="font-instrument-serif italic font-normal text-[26px]">Audiences</span>
         </h1>
         <p className="text-[11px] text-muted-foreground mt-1.5">
@@ -21,13 +21,13 @@ export default async function SegmentsPage(): Promise<React.JSX.Element> {
       </div>
 
       {segments.length === 0 ? (
-        <Card className="border-[rgba(55,50,47,0.12)]"><CardContent className="p-8 text-center text-xs text-muted-foreground">
-          No segments seeded. Run <code className="rounded bg-[#F0ECE6] px-1 py-0.5">pnpm db:seed</code> to load defaults.
+        <Card className="border-[rgba(10,10,10,0.12)]"><CardContent className="p-8 text-center text-xs text-muted-foreground">
+          No segments seeded. Run <code className="rounded bg-[#ECEAE2] px-1 py-0.5">pnpm db:seed</code> to load defaults.
         </CardContent></Card>
       ) : (
         <div className="grid gap-2 lg:grid-cols-2">
           {segments.map((s) => (
-            <Card key={s.id} className="py-2.5 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+            <Card key={s.id} className="py-2.5 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
               <CardContent className="px-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs font-semibold">{s.name}</h3>

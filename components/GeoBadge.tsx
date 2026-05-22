@@ -18,7 +18,7 @@ export function GeoBadge({ code, size = "md" }: Props): React.JSX.Element {
   const cls = SIZE_CLASS[size]
   return (
     <span
-      className={`inline-flex items-center rounded-full border border-[rgba(55,50,47,0.1)] bg-[#FFFFFF] text-[#37322F] ${cls.wrap}`}
+      className={`inline-flex items-center rounded-full border border-[rgba(10,10,10,0.12)] bg-white text-[#0A0A0A] ${cls.wrap}`}
       title={countryName(cc)}
     >
       {flag && <span className={`leading-none ${cls.flag}`} aria-hidden>{flag}</span>}

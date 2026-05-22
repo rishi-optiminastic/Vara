@@ -31,9 +31,9 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="flex items-end justify-between border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+      <div className="flex items-end justify-between border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
         <div>
-          <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+          <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
             Account{" "}
             <span className="font-instrument-serif italic font-normal text-[26px]">settings</span>
           </h1>
@@ -43,7 +43,7 @@ export default async function SettingsPage(): Promise<React.JSX.Element> {
         </div>
         <Badge
           variant="outline"
-          className="h-5 px-2 text-[10px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)] text-[#37322F]"
+          className="h-5 px-2 text-[10px] uppercase tracking-widest bg-white/60 border-[rgba(10,10,10,0.16)] text-[#0A0A0A]"
         >
           {advertiser.id.slice(0, 8)}
         </Badge>

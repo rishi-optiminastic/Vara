@@ -33,9 +33,9 @@ interface SectionProps {
 
 export function FormSection({ title, desc, children }: SectionProps): React.JSX.Element {
   return (
-    <div className="space-y-3 border-b border-[rgba(55,50,47,0.08)] pb-4 last:border-b-0 last:pb-0">
+    <div className="space-y-3 border-b border-[rgba(10,10,10,0.08)] pb-4 last:border-b-0 last:pb-0">
       <div>
-        <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#37322F]">{title}</h3>
+        <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#0A0A0A]">{title}</h3>
         {desc && <p className="text-[10px] text-muted-foreground mt-0.5">{desc}</p>}
       </div>
       <div className="grid grid-cols-2 gap-3">{children}</div>
@@ -168,7 +168,7 @@ export function DatePickerField(p: DatePickerProps): React.JSX.Element {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className={`flex h-8 w-full items-center gap-2 rounded-md border border-input bg-background px-2.5 text-xs transition-colors hover:bg-accent hover:text-accent-foreground ${!selected ? "text-muted-foreground" : "text-[#37322F]"}`}
+            className={`flex h-8 w-full items-center gap-2 rounded-md border border-input bg-background px-2.5 text-xs transition-colors hover:bg-accent hover:text-accent-foreground ${!selected ? "text-muted-foreground" : "text-[#0A0A0A]"}`}
           >
             <CalendarIcon className="size-3 shrink-0 text-muted-foreground" />
             {display}

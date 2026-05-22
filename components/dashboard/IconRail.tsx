@@ -24,12 +24,12 @@ interface Props {
 
 export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSignOut }: Props): React.JSX.Element {
   return (
-    <div className="flex h-full w-12 shrink-0 flex-col border-r border-[rgba(55,50,47,0.15)] bg-[#ECEAE2]">
-      <div className="flex h-11 shrink-0 items-center justify-center border-b border-[rgba(55,50,47,0.15)]">
+    <div className="flex h-full w-12 shrink-0 flex-col border-r border-dashed border-[rgba(10,10,10,0.15)] bg-white">
+      <div className="flex h-11 shrink-0 items-center justify-center border-b border-dashed border-[rgba(10,10,10,0.15)]">
         <LogoPicker />
       </div>
 
-      <nav className="flex flex-1 flex-col items-center gap-1 overflow-y-auto py-3">
+      <nav className="flex flex-1 flex-col items-center gap-0.5 overflow-y-auto py-2  ">
         {NAV_SECTIONS.map((section) => {
           const active = activeSection === section.id
           return (
@@ -38,31 +38,38 @@ export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSig
               type="button"
               title={section.label}
               onClick={() => onSectionClick(section.id)}
-              className={`relative flex h-9 w-9 items-center justify-center transition-colors ${
+              className={`group relative flex h-9 w-9 items-center justify-center rounded-md transition-colors ${
                 active
-                  ? "bg-[#1f40cd] text-white"
-                  : "text-[#1f40cd]/65 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd]"
+                  ? "bg-[#1F40CD] text-white shadow-[0_1px_0_rgba(0,0,0,0.06)]"
+                  : "text-[#0A0A0A]/80 hover:bg-[#0A0A0A]/6 hover:text-[#0A0A0A]"
               }`}
             >
-              <section.icon className="size-4" />
+              {active && (
+                <span className="absolute -left-1.75 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#1F40CD]" />
+              )}
+              <section.icon
+                className={`size-4 transition-opacity ${
+                  active ? "opacity-100" : "opacity-75 group-hover:opacity-100"
+                }`}
+              />
             </button>
           )
         })}
       </nav>
 
-      <div className="flex shrink-0 flex-col items-center gap-1 border-t border-[rgba(55,50,47,0.15)] py-3">
+      <div className="flex shrink-0 flex-col items-center gap-1 border-t border-dashed border-[rgba(10,10,10,0.15)] py-3">
         {!panelOpen && (
           <button
             type="button"
             title="Open panel"
             onClick={() => onSectionClick(activeSection)}
-            className="flex h-7 w-7 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-[#0A0A0A]/[0.06] hover:text-[#0A0A0A] transition-colors"
           >
             <ChevronRight className="size-3.5" />
           </button>
         )}
         <div
-          className="flex h-7 w-7 items-center justify-center bg-[#1f40cd] text-white text-[10px] font-semibold tracking-[0.06em] cursor-default"
+          className="flex h-7 w-7 items-center justify-center rounded-full bg-[#1F40CD] text-white text-[10px] font-semibold cursor-default"
           title={`${user.name ?? ""} · ${user.email ?? ""}`}
         >
           {initials(user.name ?? "U")}
@@ -71,7 +78,7 @@ export function IconRail({ user, activeSection, panelOpen, onSectionClick, onSig
           type="button"
           title="Sign out"
           onClick={onSignOut}
-          className="flex h-7 w-7 items-center justify-center text-[#1f40cd]/55 hover:bg-[#1f40cd]/8 hover:text-[#1f40cd] transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-[#0A0A0A]/[0.06] hover:text-[#0A0A0A] transition-colors"
         >
           <LogOut className="size-3.5" />
         </button>

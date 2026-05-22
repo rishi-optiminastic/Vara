@@ -21,6 +21,15 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // The advertiser the user currently has selected in the console. The BE
+  // (be/src/auth.rs, be/src/helpers/advertiser.rs) resolves "which account is
+  // this request acting as?" through this pointer. Today the Advertiser→User
+  // relation is still 1:1, so this just mirrors `advertiser.id`, but the
+  // column exists so we're forward-compatible with the BE's many-accounts
+  // model without another migration.
+  activeAdvertiserId String?     @unique
+  activeAdvertiser   Advertiser? @relation("UserActiveAdvertiser", fields: [activeAdvertiserId], references: [id], onDelete: SetNull)
+
   sessions   Session[]
   accounts   Account[]
   advertiser Advertiser?
@@ -77,17 +86,29 @@ model Verification {
 // ===================== Vara Ads DSP =====================
 
 model Advertiser {
-  id            String     @id @default(cuid())
-  userId        String     @unique
-  projectName   String
-  websiteUrl    String?
-  contractAddrs String[]
-  chain         Chain      @default(ETHEREUM)
-  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  campaigns     Campaign[]
-  wallet        Wallet?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id                   String     @id @default(cuid())
+  userId               String     @unique
+  projectName          String
+  websiteUrl           String?
+  contactEmail         String?
+  telegramHandle       String?
+  discordHandle        String?
+  businessType         String?
+  primaryWalletAddress String?
+  supportedChains      Chain[]    @default([])
+  contractAddrs        String[]
+  tokenContracts       String[]   @default([])
+  nftContracts         String[]   @default([])
+  treasuryWallets      String[]   @default([])
+  campaignWallets      String[]   @default([])
+  chain                Chain      @default(POLYGON)
+  onboardedAt          DateTime?
+  user                 User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeForUser        User?      @relation("UserActiveAdvertiser")
+  campaigns            Campaign[]
+  wallet               Wallet?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
 
   @@map("advertiser")
 }
@@ -346,6 +367,13 @@ model Campaign {
   bidStrategy           BidStrategy    @default(MANUAL)
   pacing                Pacing         @default(STANDARD)
   budgetUsdCents        Int
+  // Escrow tracking owned by be/src/helpers/wallet_escrow.rs:
+  //   reservedUsdcCents = funds locked against this campaign right now
+  //                       (invariant: equals max(0, budget - spent) while ACTIVE)
+  //   spentUsdcCents    = cumulative spend recorded against this campaign
+  // BE writes both via INSERT/UPDATE; FE only ever reads them.
+  reservedUsdcCents     Int            @default(0)
+  spentUsdcCents        Int            @default(0)
   dailyCapUsdCents      Int?
   bidUsdCents           Int
   frequencyCapPerWallet Int?

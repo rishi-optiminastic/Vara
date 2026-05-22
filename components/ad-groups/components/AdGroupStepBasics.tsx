@@ -28,7 +28,7 @@ const STATUS_OPTIONS: StatusOption[] = [
 
 function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }): React.JSX.Element {
   return (
-    <div className="space-y-2 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
+    <div className="space-y-2 border-b border-[rgba(10,10,10,0.07)] pb-3 last:border-0 last:pb-0">
       <div>
         <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
         {desc && <p className="text-[10px] text-muted-foreground/70 mt-0.5">{desc}</p>}
@@ -40,7 +40,7 @@ function Section({ title, desc, children }: { title: string; desc?: string; chil
 
 export function AdGroupStepBasics({ state, update, campaigns }: Props): React.JSX.Element {
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
       <CardContent className="p-4 space-y-3">
         <Section title="Identity" desc="Name this ad group and link it to a campaign.">
           <div className="grid grid-cols-2 gap-3">
@@ -79,11 +79,11 @@ export function AdGroupStepBasics({ state, update, campaigns }: Props): React.JS
                   onClick={() => update({ status: opt.value })}
                   className={`rounded-lg border p-2.5 text-left transition-all ${
                     active
-                      ? "border-[#37322F] bg-[#37322F] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
-                      : "border-[rgba(55,50,47,0.15)] bg-white hover:bg-[#F7F4F1] hover:border-[rgba(55,50,47,0.25)]"
+                      ? "border-[#0A0A0A] bg-[#0A0A0A] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]"
+                      : "border-[rgba(10,10,10,0.15)] bg-white hover:bg-[#ECEAE2] hover:border-[rgba(10,10,10,0.25)]"
                   }`}
                 >
-                  <div className={`text-xs font-semibold ${active ? "text-white" : "text-[#37322F]"}`}>{opt.label}</div>
+                  <div className={`text-xs font-semibold ${active ? "text-white" : "text-[#0A0A0A]"}`}>{opt.label}</div>
                   <div className={`text-[10px] mt-0.5 leading-tight ${active ? "text-white/65" : "text-muted-foreground"}`}>{opt.desc}</div>
                 </button>
               )

@@ -53,16 +53,16 @@ function StepDot({ step, index, current, furthest, onClick }: DotProps): React.J
       onClick={onClick}
       disabled={!reachable}
       className={`group flex flex-1 items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors ${
-        active ? "bg-[#37322F] text-[#FAFAF8]" :
-        done ? "text-[#37322F] hover:bg-[#37322F]/[0.06]" :
-        reachable ? "text-muted-foreground hover:bg-[#37322F]/[0.04]" :
+        active ? "bg-[#1F40CD] text-white" :
+        done ? "text-[#0A0A0A] hover:bg-[#1F40CD]/[0.06]" :
+        reachable ? "text-muted-foreground hover:bg-[#1F40CD]/[0.04]" :
         "text-muted-foreground/50 cursor-not-allowed"
       }`}
     >
       <div className={`size-5 shrink-0 rounded-full flex items-center justify-center text-[9px] font-semibold ${
-        active ? "bg-[#F7F5F3]/15 text-[#FAFAF8]" :
-        done ? "bg-[#37322F] text-[#FAFAF8]" :
-        "bg-[rgba(55,50,47,0.06)] text-current"
+        active ? "bg-[#ECEAE2]/15 text-[#FFFFFF]" :
+        done ? "bg-[#1F40CD] text-white" :
+        "bg-[rgba(10,10,10,0.06)] text-current"
       }`}>
         {done ? <Check className="size-3" strokeWidth={3} /> : <Icon className="size-3" />}
       </div>
@@ -103,8 +103,8 @@ interface BannerProps {
 
 function DraftBanner({ onRestore, onDiscard }: BannerProps): React.JSX.Element {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(55,50,47,0.15)] bg-[#F0ECE6]/70 px-3 py-2 text-[11px]">
-      <span className="text-[#37322F]">
+    <div className="flex items-center justify-between gap-2 rounded-md border border-[rgba(10,10,10,0.15)] bg-[#ECEAE2]/70 px-3 py-2 text-[11px]">
+      <span className="text-[#0A0A0A]">
         <span className="font-semibold">Unfinished draft found.</span>{" "}
         <span className="text-muted-foreground">Pick up where you left off?</span>
       </span>
@@ -112,7 +112,7 @@ function DraftBanner({ onRestore, onDiscard }: BannerProps): React.JSX.Element {
         <Button type="button" size="sm" variant="ghost" className="h-6 text-[10px] rounded-full px-3" onClick={onDiscard}>
           Discard
         </Button>
-        <Button type="button" size="sm" className="h-6 text-[10px] rounded-full px-3 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520]" onClick={onRestore}>
+        <Button type="button" size="sm" className="h-6 text-[10px] rounded-full px-3 bg-[#1F40CD] text-white hover:bg-[#1A36B0]" onClick={onRestore}>
           Restore
         </Button>
       </div>
@@ -155,7 +155,7 @@ export function CampaignForm(): React.JSX.Element {
     <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="flex flex-col gap-3 min-w-0">
         {showDraftBanner && <DraftBanner onRestore={handleRestore} onDiscard={handleDiscard} />}
-        <div className="rounded-xl border border-[rgba(55,50,47,0.12)] bg-white/60 p-1 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <div className="rounded-xl border border-[rgba(10,10,10,0.12)] bg-white/60 p-1 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
           <StepProgress current={w.step} furthest={w.furthestStep} goTo={w.goTo} />
         </div>
 
@@ -173,10 +173,10 @@ export function CampaignForm(): React.JSX.Element {
         {w.step === 5 && <WizardReview state={w.state} />}
 
         {w.error && (
-          <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{w.error}</div>
+          <div className="rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] px-3 py-2 text-xs text-[#1F40CD]">{w.error}</div>
         )}
 
-        <div className="flex items-center justify-between border-t border-[rgba(55,50,47,0.08)] pt-2.5">
+        <div className="flex items-center justify-between border-t border-[rgba(10,10,10,0.08)] pt-2.5">
           <div className="flex items-center gap-2">
             {w.step === 1 ? (
               <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4" onClick={() => router.back()}>
@@ -193,7 +193,7 @@ export function CampaignForm(): React.JSX.Element {
           {w.step < 5 ? (
             <Button
               size="sm"
-              className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
+              className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#1F40CD] text-white hover:bg-[#1A36B0] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]"
               onClick={w.next}
             >
               Continue to {STEPS[w.step]!.label} <ArrowRight className="size-3" />
@@ -202,7 +202,7 @@ export function CampaignForm(): React.JSX.Element {
             <Button
               size="sm"
               disabled={w.loading}
-              className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
+              className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#1F40CD] text-white hover:bg-[#1A36B0] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]"
               onClick={w.submit}
             >
               {w.loading ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />}

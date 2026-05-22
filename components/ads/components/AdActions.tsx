@@ -33,7 +33,7 @@ export function AdActions({ id }: Props): React.JSX.Element {
     <Button
       size="sm"
       variant="ghost"
-      className="h-8 gap-1 text-xs rounded-full px-3 text-[#C2410C] hover:text-[#9A2E07] hover:bg-[#C2410C]/8"
+      className="h-8 gap-1 text-xs rounded-full px-3 text-[#1F40CD] hover:text-[#1F40CD] hover:bg-[#1F40CD]/8"
       disabled={busy}
       onClick={handleDelete}
     >

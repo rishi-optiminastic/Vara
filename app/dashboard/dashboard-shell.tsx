@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { IconRail } from "@/components/dashboard/IconRail"
 import { DashboardNav, NAV_SECTIONS } from "@/components/dashboard/DashboardNav"
+import { DemoTopUpButton } from "@/components/dashboard/DemoTopUpButton"
 
 function initialSection(pathname: string): string {
   if (pathname.startsWith("/dashboard/settings")) return "settings"
@@ -72,36 +73,37 @@ export default function DashboardShell({ user, advertiser, walletBalanceUsdcCent
       {/* Sliding nav panel */}
       <div
         style={{ width: panelOpen ? "12rem" : 0 }}
-        className="overflow-hidden border-r border-[rgba(55,50,47,0.15)] bg-[#ECEAE2] shrink-0 transition-[width] duration-200 ease-in-out"
+        className="overflow-hidden border-r border-dashed border-[rgba(10,10,10,0.15)] bg-[#ECEAE2] shrink-0 transition-[width] duration-200 ease-in-out"
       >
         <DashboardNav sectionId={activeSection} onToggle={() => setPanelOpen(false)} />
       </div>
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-11 shrink-0 items-center gap-2 border-b border-[rgba(55,50,47,0.15)] bg-[#ECEAE2] px-4">
+        <header className="flex h-11 shrink-0 items-center gap-2 border-b border-dashed border-[rgba(10,10,10,0.15)] bg-[#ECEAE2] px-4">
           <div className="relative flex-1 max-w-sm">
-            <SearchIcon className="absolute left-2 top-1/2 size-3 -translate-y-1/2 text-[#1f40cd]/55" />
+            <SearchIcon className="absolute left-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search campaigns, wallets, chains…"
-              className="h-7 pl-7 text-[12px] bg-transparent border-0 border-b border-[#37322F]/25 rounded-none focus-visible:border-[#1f40cd] focus-visible:ring-0 placeholder:text-[#37322F]/40"
+              className="h-8 pl-7 text-[12px] bg-white rounded-full border-[rgba(10,10,10,0.12)] focus-visible:border-[#1F40CD] focus-visible:ring-0 placeholder:text-muted-foreground"
             />
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2">
+            <DemoTopUpButton />
             <Link
               href="/dashboard/settings?tab=wallet"
               title="Ad wallet · USDC"
-              className="flex items-center gap-1.5 border border-[#1f40cd] px-2.5 py-1 text-[#1f40cd] transition-colors hover:bg-[#1f40cd]/5"
+              className="flex items-center gap-1.5 rounded-full border border-[rgba(10,10,10,0.12)] bg-white px-2.5 py-1 text-[#0A0A0A] transition-colors hover:border-[#1F40CD] hover:text-[#1F40CD]"
             >
               <UsdcIcon className="size-3.5" />
               <span className="text-[11px] font-medium tabular-nums">
                 {formatUsdc(walletBalanceUsdcCents)}
               </span>
-              <span className="text-[9px] uppercase tracking-[0.14em] opacity-70">USDC</span>
+              <span className="text-[9px] uppercase tracking-widest text-muted-foreground">USDC</span>
             </Link>
-            <Button variant="ghost" size="icon" className="h-7 w-7 relative hover:bg-[#1f40cd]/8">
-              <BellIcon className="size-3.5 text-[#1f40cd]" />
-              <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-[#c2410c] ring-2 ring-[#ECEAE2]" />
+            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full relative hover:bg-[#0A0A0A]/[0.04]">
+              <BellIcon className="size-3.5 text-[#0A0A0A]" />
+              <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-[#1F40CD] ring-2 ring-[#ECEAE2]" />
             </Button>
           </div>
         </header>

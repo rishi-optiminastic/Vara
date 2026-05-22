@@ -15,7 +15,7 @@ import { selectionCount, type GeoSelection } from "@/lib/geo/encoding"
 const GeoMap = dynamic(() => import("./GeoMap").then((m) => m.GeoMap), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex items-center justify-center rounded-md border border-[rgba(55,50,47,0.12)] bg-[#F0ECE6] text-[11px] text-muted-foreground">
+    <div className="h-full w-full flex items-center justify-center rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] text-[11px] text-muted-foreground">
       Loading map…
     </div>
   ),
@@ -78,21 +78,21 @@ export function GeoTargetingDialog({ value, onChange }: Props): React.JSX.Elemen
       <DialogTrigger asChild>
         <button
           type="button"
-          className="w-full text-left rounded-md border border-dashed border-[rgba(55,50,47,0.24)] bg-white hover:bg-[#FAFAF8] hover:border-[#37322F] transition-colors px-3 py-2.5"
+          className="w-full text-left rounded-md border border-dashed border-[rgba(10,10,10,0.24)] bg-white hover:bg-[#FFFFFF] hover:border-[#0A0A0A] transition-colors px-3 py-2.5"
         >
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <GeoChips selection={value} size="sm" emptyLabel="Click to add regions, countries, or states" />
             </div>
-            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-[#37322F]">
+            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-widest text-[#0A0A0A]">
               {selectionCount(value) > 0 ? "Edit" : "Add"}
             </span>
           </div>
         </button>
       </DialogTrigger>
-      <DialogContent className="!max-w-[1080px] p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-4 py-3 border-b border-[rgba(55,50,47,0.1)]">
-          <DialogTitle className="text-[13px] font-semibold text-[#37322F]">
+      <DialogContent className="!max-w-[1080px] p-0 gap-0 overflow-hidden rounded-xl">
+        <DialogHeader className="px-4 py-3 border-b border-[rgba(10,10,10,0.1)]">
+          <DialogTitle className="text-[13px] font-semibold text-[#0A0A0A]">
             Geo targeting
           </DialogTitle>
           <p className="text-[11px] text-muted-foreground">
@@ -101,7 +101,7 @@ export function GeoTargetingDialog({ value, onChange }: Props): React.JSX.Elemen
         </DialogHeader>
 
         <div className="grid grid-cols-[300px_1fr] h-[560px]">
-          <div className="border-r border-[rgba(55,50,47,0.1)] flex flex-col min-h-0 p-3">
+          <div className="border-r border-[rgba(10,10,10,0.1)] flex flex-col min-h-0 p-3">
             <Tabs current={tab} onChange={setTab} hasStates={!!drillCountry} />
             <div className="mt-3 flex-1 min-h-0">
               {tab === "regions" && (
@@ -134,7 +134,7 @@ export function GeoTargetingDialog({ value, onChange }: Props): React.JSX.Elemen
           </div>
         </div>
 
-        <DialogFooter className="px-4 py-3 border-t border-[rgba(55,50,47,0.1)] flex !flex-row items-center justify-between gap-3">
+        <DialogFooter className="px-4 py-3 border-t border-[rgba(10,10,10,0.1)] flex !flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground shrink-0">
               {summary === 0 ? "Worldwide" : `${summary} selected`}
@@ -143,7 +143,7 @@ export function GeoTargetingDialog({ value, onChange }: Props): React.JSX.Elemen
               <button
                 type="button"
                 onClick={clearAll}
-                className="text-[10px] text-muted-foreground hover:text-[#37322F] underline underline-offset-2"
+                className="text-[10px] text-muted-foreground hover:text-[#0A0A0A] underline underline-offset-2"
               >
                 Clear all
               </button>
@@ -170,7 +170,7 @@ function Tabs({ current, onChange, hasStates }: { current: Tab; onChange: (t: Ta
     { id: "states", label: "States", disabled: !hasStates },
   ]
   return (
-    <div className="flex gap-1 border-b border-[rgba(55,50,47,0.08)]">
+    <div className="flex gap-1 border-b border-[rgba(10,10,10,0.08)]">
       {tabs.map((t) => (
         <button
           key={t.id}
@@ -179,10 +179,10 @@ function Tabs({ current, onChange, hasStates }: { current: Tab; onChange: (t: Ta
           onClick={() => onChange(t.id)}
           className={`px-2.5 py-1.5 text-[11px] font-medium border-b-2 -mb-px transition-colors ${
             current === t.id
-              ? "border-[#37322F] text-[#37322F]"
+              ? "border-[#0A0A0A] text-[#0A0A0A]"
               : t.disabled
                 ? "border-transparent text-muted-foreground/40 cursor-not-allowed"
-                : "border-transparent text-muted-foreground hover:text-[#37322F]"
+                : "border-transparent text-muted-foreground hover:text-[#0A0A0A]"
           }`}
         >
           {t.label}

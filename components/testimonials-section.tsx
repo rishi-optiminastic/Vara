@@ -15,11 +15,18 @@ function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
   )
 }
 
+interface Testimonial {
+  quote: string
+  name: string
+  company: string
+  image: string
+}
+
 export default function TestimonialsSection() {
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  const testimonials = [
+  const testimonials: Testimonial[] = [
     {
       quote:
         "Moving to a centralized, cache-first auction path cut decision latency dramatically while keeping attribution quality high.",
@@ -70,6 +77,9 @@ export default function TestimonialsSection() {
     }, 300)
   }
 
+  const current = testimonials[activeTestimonial] ?? testimonials[0]
+  if (!current) return null
+
   return (
     <div className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
       {/* Header Section */}
@@ -85,8 +95,8 @@ export default function TestimonialsSection() {
                 transform: isTransitioning ? "scale(0.95)" : "scale(1)",
                 transition: "opacity 0.7s ease-in-out, transform 0.7s ease-in-out",
               }}
-              src={testimonials[activeTestimonial].image || "/placeholder.svg"}
-              alt={testimonials[activeTestimonial].name}
+              src={current.image || "/placeholder.svg"}
+              alt={current.name}
             />
             <div className="flex-1 px-6 py-6 shadow-[0px_0px_0px_0.75px_rgba(50,45,43,0.12)] overflow-hidden flex flex-col justify-start items-start gap-6 shadow-none pb-0 pt-0">
               <div
@@ -96,7 +106,7 @@ export default function TestimonialsSection() {
                   transition: "filter 0.7s ease-in-out",
                 }}
               >
-                "{testimonials[activeTestimonial].quote}"
+                "{current.quote}"
               </div>
               <div
                 className="self-stretch flex flex-col justify-start items-start gap-1 transition-all duration-700 ease-in-out"
@@ -106,10 +116,10 @@ export default function TestimonialsSection() {
                 }}
               >
                 <div className="self-stretch justify-center flex flex-col text-[rgba(73,66,61,0.90)] text-lg font-medium leading-[26px] font-sans">
-                  {testimonials[activeTestimonial].name}
+                  {current.name}
                 </div>
                 <div className="self-stretch justify-center flex flex-col text-[rgba(73,66,61,0.70)] text-lg font-medium leading-[26px] font-sans">
-                  {testimonials[activeTestimonial].company}
+                  {current.company}
                 </div>
               </div>
             </div>

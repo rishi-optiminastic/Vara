@@ -16,15 +16,14 @@ const SIZE_CLASS: Record<Size, { wrap: string; logo: string; text: string }> = {
 }
 
 export function ChainBadge({ chain, size = "md", showName = true }: Props): React.JSX.Element {
-  const brand = chainBrand(chain)
-  const Logo = brand.Logo
+  const Logo = chainBrand(chain).Logo
   const cls = SIZE_CLASS[size]
   return (
     <span
-      className={`inline-flex items-center rounded-full border border-[rgba(55,50,47,0.08)] ${brand.bg} ${brand.fg} ${cls.wrap}`}
+      className={`inline-flex items-center rounded-full border border-[rgba(10,10,10,0.12)] bg-white text-[#0A0A0A] ${cls.wrap}`}
       title={chainName(chain)}
     >
-      <Logo className={cls.logo} />
+      <Logo className={`${cls.logo} text-[#0A0A0A]`} />
       {showName && (
         <span className={`font-medium tracking-tight ${cls.text}`}>{chainName(chain)}</span>
       )}

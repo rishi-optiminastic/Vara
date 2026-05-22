@@ -95,9 +95,14 @@ export function CampaignsToolbar({ totalCount, filteredCount, csvData }: Props):
     URL.revokeObjectURL(url)
   }
 
-  const FIELD_W = "w-40"
+  const FIELD_W = "w-36"
+  // h-8 because Radix's SelectTrigger bakes `data-[size=sm]:h-8` as an
+  // attribute selector that out-specifies a plain `h-7` utility — so we
+  // settle on the height the trigger gives us and pass `size="sm"` below.
+  // Button "sm" variant is also h-8, and the Input override picks up h-8
+  // via tailwind-merge from its default h-9. Everything resolves to one row.
   const fieldBase =
-    "h-8 py-0 text-xs leading-none rounded-full border border-[rgba(55,50,47,0.16)] bg-white/60 hover:bg-white transition-colors text-[#37322F] placeholder:text-muted-foreground shadow-[0_1px_0_rgba(255,255,255,0.6)] focus:ring-0 focus-visible:ring-0 focus-visible:border-[rgba(55,50,47,0.3)] md:text-xs"
+    "h-8 py-0 text-[11px] leading-none rounded-full border border-[rgba(10,10,10,0.12)] bg-white hover:border-[#1F40CD] hover:text-[#1F40CD] transition-colors text-[#0A0A0A] placeholder:text-muted-foreground focus:ring-0 focus-visible:ring-0 focus-visible:border-[#1F40CD] md:text-[11px]"
 
   return (
     <>
@@ -113,7 +118,7 @@ export function CampaignsToolbar({ totalCount, filteredCount, csvData }: Props):
       </div>
 
       <Select value={status} onValueChange={(v) => setParam("status", v)}>
-        <SelectTrigger className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
+        <SelectTrigger size="sm" className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -126,7 +131,7 @@ export function CampaignsToolbar({ totalCount, filteredCount, csvData }: Props):
       </Select>
 
       <Select value={vertical} onValueChange={(v) => setParam("vertical", v)}>
-        <SelectTrigger className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
+        <SelectTrigger size="sm" className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -140,7 +145,7 @@ export function CampaignsToolbar({ totalCount, filteredCount, csvData }: Props):
       </Select>
 
       <Select value={sort} onValueChange={(v) => setParam("sort", v)}>
-        <SelectTrigger className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
+        <SelectTrigger size="sm" className={`${fieldBase} ${FIELD_W} pl-3 pr-2 gap-1`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -152,7 +157,7 @@ export function CampaignsToolbar({ totalCount, filteredCount, csvData }: Props):
         </SelectContent>
       </Select>
 
-      <div className="mx-1 h-5 w-px bg-[rgba(55,50,47,0.12)]" aria-hidden />
+      <div className="mx-1 h-5 w-px bg-[rgba(10,10,10,0.12)]" aria-hidden />
 
       <Button
         variant="outline"

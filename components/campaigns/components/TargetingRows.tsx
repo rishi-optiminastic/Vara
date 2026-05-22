@@ -51,7 +51,7 @@ export function ChipRow({ label, items, empty, capitalize }: { label: string; it
   return (
     <RowShell label={label} empty={empty} isEmpty={items.length === 0}>
       {items.map((it) => (
-        <span key={it} className={`rounded-full bg-[#F0ECE6] px-2 py-0.5 text-[10px] font-medium text-[#37322F] ${capitalize ? "capitalize" : ""}`}>
+        <span key={it} className={`rounded-full bg-[#ECEAE2] px-2 py-0.5 text-[10px] font-medium text-[#0A0A0A] ${capitalize ? "capitalize" : ""}`}>
           {it}
         </span>
       ))}

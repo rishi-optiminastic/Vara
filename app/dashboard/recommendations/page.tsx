@@ -36,8 +36,8 @@ export default async function RecommendationsPage(): Promise<React.JSX.Element> 
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+      <div className="border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
           <span className="font-instrument-serif italic font-normal text-[26px]">Recommendations</span>
         </h1>
         <p className="text-[11px] text-muted-foreground mt-1.5">
@@ -47,12 +47,12 @@ export default async function RecommendationsPage(): Promise<React.JSX.Element> 
       </div>
 
       {recs.length === 0 ? (
-        <Card className="border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+        <Card className="border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="flex size-10 items-center justify-center rounded-full bg-[#F0F7E8]">
-              <SquareWandSparkleIcon className="size-5 text-[#3F6212]" />
+            <div className="flex size-10 items-center justify-center rounded-full bg-[#ECEAE2]">
+              <SquareWandSparkleIcon className="size-5 text-[#1F40CD]" />
             </div>
-            <p className="mt-3 text-sm font-medium text-[#37322F]">All clear</p>
+            <p className="mt-3 text-sm font-medium text-[#0A0A0A]">All clear</p>
             <p className="mt-1 text-[11px] text-muted-foreground max-w-sm">
               {campaigns.length === 0
                 ? "Create your first campaign and we'll surface tuning suggestions here."

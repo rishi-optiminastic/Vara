@@ -14,11 +14,6 @@ const SIZE_CLASS: Record<Size, { wrap: string; icon: string; text: string }> = {
   md: { wrap: "h-6 px-2 gap-1.5", icon: "size-3.5", text: "text-[10px]" },
 }
 
-const TINT: Record<DeviceType, string> = {
-  DESKTOP: "bg-[#EAF1FF] text-[#1E40AF]",
-  MOBILE: "bg-[#F0E8FF] text-[#6D28D9]",
-}
-
 const LABEL: Record<DeviceType, string> = {
   DESKTOP: "Desktop",
   MOBILE: "Mobile",
@@ -29,10 +24,10 @@ export function DeviceBadge({ device, size = "md", showLabel = true }: Props): R
   const cls = SIZE_CLASS[size]
   return (
     <span
-      className={`inline-flex items-center rounded-full border border-[rgba(55,50,47,0.08)] ${TINT[device]} ${cls.wrap}`}
+      className={`inline-flex items-center rounded-full border border-[rgba(10,10,10,0.12)] bg-white text-[#0A0A0A] ${cls.wrap}`}
       title={LABEL[device]}
     >
-      <Icon className={cls.icon} />
+      <Icon className={`${cls.icon} text-[#0A0A0A]`} />
       {showLabel && (
         <span className={`font-medium tracking-tight ${cls.text}`}>{LABEL[device]}</span>
       )}

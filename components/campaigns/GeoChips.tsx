@@ -18,9 +18,9 @@ interface ChipProps {
 }
 
 const TONE: Record<ChipProps["tone"], string> = {
-  region: "bg-[#EEF2FF] text-[#3730A3] border-[#C7D2FE]",
-  country: "bg-white text-[#37322F] border-[rgba(55,50,47,0.16)]",
-  state: "bg-[#F5F3FF] text-[#5B21B6] border-[#DDD6FE]",
+  region: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]",
+  country: "bg-white text-[#0A0A0A] border-[rgba(10,10,10,0.16)]",
+  state: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]",
 }
 
 const SIZE_CLASS: Record<Size, string> = {

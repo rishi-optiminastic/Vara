@@ -42,9 +42,9 @@ export function AccountOverview({
   spendCents30d,
 }: Props): React.JSX.Element {
   const stats: Stat[] = [
-    { label: "Campaigns", value: String(totalCampaigns), icon: CampaignsIcon, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
-    { label: "Active", value: String(activeCampaigns), icon: GaugeIcon, tint: "bg-[#E8F5E9] text-[#15803D]" },
-    { label: "Spend (30d)", value: centsToUsd(spendCents30d), icon: SpendIcon, tint: "bg-[#FFF3E8] text-[#C2410C]" },
+    { label: "Campaigns", value: String(totalCampaigns), icon: CampaignsIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Active", value: String(activeCampaigns), icon: GaugeIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Spend (30d)", value: centsToUsd(spendCents30d), icon: SpendIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
   ]
 
   return (
@@ -53,7 +53,7 @@ export function AccountOverview({
         {stats.map((s) => (
           <Card
             key={s.label}
-            className="py-3 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]"
+            className="py-3 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]"
           >
             <CardContent className="px-3">
               <div className="flex items-center justify-between mb-2.5">
@@ -64,7 +64,7 @@ export function AccountOverview({
                   <s.icon className="size-3" />
                 </div>
               </div>
-              <div className="text-[20px] font-medium tracking-tight tabular-nums text-[#37322F] leading-none">
+              <div className="text-[20px] font-medium tracking-tight tabular-nums text-[#0A0A0A] leading-none">
                 {s.value}
               </div>
             </CardContent>

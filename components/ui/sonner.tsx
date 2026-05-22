@@ -11,31 +11,31 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "!bg-[#FFFFFF] !border !border-[rgba(55,50,47,0.12)] !text-[#37322F] !shadow-[0_4px_16px_-4px_rgba(55,50,47,0.14),0_0_0_1px_rgba(55,50,47,0.05)] !rounded-xl !p-3.5",
-          title: "!text-[#37322F] !font-medium !text-xs",
-          description: "!text-[#6B6460] !text-[11px]",
+            "!bg-card !border !border-border !text-foreground !shadow-lg !rounded-xl !p-3.5",
+          title: "!text-foreground !font-medium !text-xs",
+          description: "!text-muted-foreground !text-[11px]",
           icon: "!mt-0",
           closeButton:
-            "!bg-[#F0ECE6] !border-[rgba(55,50,47,0.12)] !text-[#6B6460] hover:!text-[#37322F]",
-          success: "!text-[#15803D]",
-          error: "!text-[#C2410C]",
-          warning: "!text-[#92400E]",
+            "!bg-surface !border-border !text-muted-foreground hover:!text-foreground",
+          success: "!text-primary",
+          error: "!text-primary",
+          warning: "!text-primary",
         },
       }}
       style={
         {
-          '--normal-bg': '#FFFFFF',
-          '--normal-border': 'rgba(55,50,47,0.12)',
-          '--normal-text': '#37322F',
-          '--success-bg': '#F0FDF4',
-          '--success-border': 'rgba(21,128,61,0.2)',
-          '--success-text': '#15803D',
-          '--error-bg': '#FFF3EE',
-          '--error-border': 'rgba(194,65,12,0.2)',
-          '--error-text': '#C2410C',
-          '--warning-bg': '#FFFBEB',
-          '--warning-border': 'rgba(146,64,14,0.2)',
-          '--warning-text': '#92400E',
+          '--normal-bg': 'var(--card)',
+          '--normal-border': 'var(--border)',
+          '--normal-text': 'var(--foreground)',
+          '--success-bg': 'var(--card)',
+          '--success-border': 'var(--border)',
+          '--success-text': 'var(--primary)',
+          '--error-bg': 'var(--card)',
+          '--error-border': 'var(--border)',
+          '--error-text': 'var(--primary)',
+          '--warning-bg': 'var(--card)',
+          '--warning-border': 'var(--border)',
+          '--warning-text': 'var(--primary)',
         } as React.CSSProperties
       }
       {...props}

@@ -22,8 +22,8 @@ export default async function NewAdGroupPage({ searchParams }: Props): Promise<R
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="flex items-baseline justify-between border-b border-[rgba(55,50,47,0.12)] pb-2 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-        <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+      <div className="flex items-baseline justify-between border-b border-[rgba(10,10,10,0.12)] pb-2 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+        <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
           <span className="font-instrument-serif italic font-normal text-[26px]">New </span>
           Ad Group
         </h1>

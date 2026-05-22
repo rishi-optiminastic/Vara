@@ -20,7 +20,7 @@ export function Section({ icon: Icon, tint, title, hint, children }: SectionProp
         <span className={`flex size-5 items-center justify-center rounded-md ${tint}`}>
           <Icon className="size-3" />
         </span>
-        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#37322F]">{title}</h3>
+        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-[#0A0A0A]">{title}</h3>
         {hint && <span className="text-[10px] text-muted-foreground/70">· {hint}</span>}
       </div>
       {children}
@@ -42,8 +42,8 @@ export function Pill({ label, active, onClick, icon }: PillProps): React.JSX.Ele
       onClick={onClick}
       className={`h-7 inline-flex items-center gap-1.5 rounded-full border px-3 text-[11px] font-medium transition-colors ${
         active
-          ? "bg-[#37322F] text-[#FAFAF8] border-[#37322F]"
-          : "bg-white border-[rgba(55,50,47,0.16)] text-[#37322F] hover:bg-[#F0ECE6] hover:border-[rgba(55,50,47,0.3)]"
+          ? "bg-[#1F40CD] text-white border-[#1F40CD]"
+          : "bg-white border-[rgba(10,10,10,0.16)] text-[#0A0A0A] hover:bg-[#ECEAE2] hover:border-[rgba(10,10,10,0.3)]"
       }`}
     >
       {icon}
@@ -94,28 +94,28 @@ interface SegmentListProps {
 export function SegmentList({ segments, selected, onToggle }: SegmentListProps): React.JSX.Element {
   if (segments.length === 0) {
     return (
-      <div className="rounded-md border border-dashed border-[rgba(55,50,47,0.18)] bg-[#FFFFFF] py-3 text-center">
+      <div className="rounded-md border border-dashed border-[rgba(10,10,10,0.18)] bg-[#FFFFFF] py-3 text-center">
         <p className="text-[11px] text-muted-foreground">No segments seeded yet.</p>
       </div>
     )
   }
   return (
-    <div className="grid gap-1 max-h-56 overflow-y-auto rounded-md border border-[rgba(55,50,47,0.1)] bg-white p-1.5">
+    <div className="grid gap-1 max-h-56 overflow-y-auto rounded-md border border-[rgba(10,10,10,0.1)] bg-white p-1.5">
       {segments.map((s) => {
         const active = selected.includes(s.id)
         return (
           <label
             key={s.id}
             className={`flex items-start gap-2 rounded-md p-1.5 cursor-pointer transition-colors ${
-              active ? "bg-[#F5EFFF]" : "hover:bg-[#FFFFFF]"
+              active ? "bg-[#ECEAE2]" : "hover:bg-[#FFFFFF]"
             }`}
           >
             <Checkbox checked={active} onCheckedChange={() => onToggle(s.id)} className="mt-0.5" />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-medium text-[#37322F]">{s.name}</span>
+                <span className="text-xs font-medium text-[#0A0A0A]">{s.name}</span>
                 {s.chain && (
-                  <span className="rounded-full bg-[#EAF1FF] px-1.5 py-px text-[8px] font-semibold uppercase tracking-widest text-[#1E40AF]">
+                  <span className="rounded-full bg-[#ECEAE2] px-1.5 py-px text-[8px] font-semibold uppercase tracking-widest text-[#1F40CD]">
                     {s.chain}
                   </span>
                 )}

@@ -61,23 +61,23 @@ export default async function CampaignDetailPage({ params, searchParams }: PageP
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+      <div className="border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
         <Link
           href="/dashboard/campaigns"
-          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[#37322F] transition-colors"
+          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-[#0A0A0A] transition-colors"
         >
           <ChevronLeftIcon className="size-3" />Campaigns
         </Link>
         <div className="flex items-start justify-between gap-3 mt-1.5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none truncate">
+              <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none truncate">
                 {campaign.name}
               </h1>
               <StatusBadge status={campaign.status} />
               <Badge
                 variant="outline"
-                className="h-4 px-1.5 text-[9px] uppercase tracking-widest bg-white/60 border-[rgba(55,50,47,0.16)]"
+                className="h-4 px-1.5 text-[9px] uppercase tracking-widest bg-white/60 border-[rgba(10,10,10,0.16)]"
               >
                 {campaign.vertical.replace("_", " ")}
               </Badge>

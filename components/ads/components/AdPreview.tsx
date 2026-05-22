@@ -26,7 +26,7 @@ export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = 
 
   return (
     <div
-      className="relative w-full overflow-hidden rounded-md border border-[rgba(55,50,47,0.12)] bg-[#F0ECE6]"
+      className="relative w-full overflow-hidden rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2]"
       style={{ aspectRatio: ratio }}
     >
       {valid ? (
@@ -55,11 +55,11 @@ export function AdPreview({ format, assetUrl, name, walletConnectCta, compact = 
         </div>
       )}
       {walletConnectCta && valid && (
-        <div className="absolute bottom-1.5 right-1.5 rounded-full bg-[#37322F] px-2 py-0.5 text-[9px] font-semibold text-white shadow-sm">
+        <div className="absolute bottom-1.5 right-1.5 rounded-full bg-[#0A0A0A] px-2 py-0.5 text-[9px] font-semibold text-white shadow-sm">
           Connect Wallet
         </div>
       )}
-      <div className="absolute top-1 left-1 rounded-full bg-white/90 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider text-[#37322F] shadow-sm">
+      <div className="absolute top-1 left-1 rounded-full bg-white/90 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider text-[#0A0A0A] shadow-sm">
         {sizeLabel}
       </div>
     </div>

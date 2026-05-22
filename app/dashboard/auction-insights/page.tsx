@@ -48,16 +48,16 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
 
   return (
     <div className="flex flex-col gap-3 p-3">
-      <div className="flex items-end justify-between border-b border-[rgba(55,50,47,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
+      <div className="flex items-end justify-between border-b border-[rgba(10,10,10,0.12)] pb-3 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
         <div>
-          <h1 className="text-[22px] font-medium tracking-tight text-[#37322F] leading-none">
+          <h1 className="text-[22px] font-medium tracking-tight text-[#0A0A0A] leading-none">
             <span className="font-instrument-serif italic font-normal text-[26px]">Auction insights</span>
           </h1>
           <p className="text-[11px] text-muted-foreground mt-1.5">
             How your bids stack up vs. other DSPs · Last 30 days
           </p>
         </div>
-        <Badge variant="outline" className="h-5 px-2 text-[10px] uppercase tracking-widest bg-[#FFF3E8] border-[rgba(194,65,12,0.2)] text-[#C2410C]">
+        <Badge variant="outline" className="h-5 px-2 text-[10px] uppercase tracking-widest bg-[#ECEAE2] border-[rgba(10,10,10,0.12)] text-[#1F40CD]">
           Sample data
         </Badge>
       </div>
@@ -69,8 +69,8 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
         <Kpi label="Outbid rate" value={`${OUTBID_RATE_PCT}%`} sub="lost to higher bidder" />
       </div>
 
-      <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <div className="border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+        <div className="border-b border-[rgba(10,10,10,0.12)] px-3.5 py-2">
           <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
             Competitor landscape
           </h3>
@@ -79,7 +79,7 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[rgba(55,50,47,0.07)] text-[10px] uppercase tracking-widest text-muted-foreground">
+                <tr className="border-b border-[rgba(10,10,10,0.07)] text-[10px] uppercase tracking-widest text-muted-foreground">
                   <Th>DSP</Th>
                   <Th align="right">Impression share</Th>
                   <Th align="right">Overlap rate</Th>
@@ -87,9 +87,9 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
                   <Th align="right">Position vs you</Th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(55,50,47,0.05)]">
+              <tbody className="divide-y divide-[rgba(10,10,10,0.05)]">
                 {COMPETITORS.map((c) => (
-                  <tr key={c.name} className="hover:bg-[rgba(55,50,47,0.02)]">
+                  <tr key={c.name} className="hover:bg-[rgba(10,10,10,0.02)]">
                     <Td>{c.name}</Td>
                     <Td align="right" mono>
                       <ShareBar pct={c.impressionSharePct} />
@@ -99,7 +99,7 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
                     <Td align="right">
                       <Badge
                         variant="outline"
-                        className={`h-4 px-1.5 text-[9px] uppercase tracking-wider ${c.outranked ? "bg-[#FFF3E8] text-[#C2410C] border-[rgba(194,65,12,0.2)]" : "bg-[#F0F7E8] text-[#3F6212] border-[rgba(101,163,13,0.2)]"}`}
+                        className={`h-4 px-1.5 text-[9px] uppercase tracking-wider ${c.outranked ? "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]" : "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]"}`}
                       >
                         {c.outranked ? "Above you" : "Below you"}
                       </Badge>
@@ -112,8 +112,8 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
         </CardContent>
       </Card>
 
-      <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-        <div className="border-b border-[rgba(55,50,47,0.12)] px-3.5 py-2">
+      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+        <div className="border-b border-[rgba(10,10,10,0.12)] px-3.5 py-2">
           <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
             Share by chain
           </h3>
@@ -122,7 +122,7 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-[rgba(55,50,47,0.07)] text-[10px] uppercase tracking-widest text-muted-foreground">
+                <tr className="border-b border-[rgba(10,10,10,0.07)] text-[10px] uppercase tracking-widest text-muted-foreground">
                   <Th>Chain</Th>
                   <Th align="right">Your share</Th>
                   <Th align="right">Market size</Th>
@@ -130,9 +130,9 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
                   <Th align="right">Trend</Th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[rgba(55,50,47,0.05)]">
+              <tbody className="divide-y divide-[rgba(10,10,10,0.05)]">
                 {BY_CHAIN.map((r) => (
-                  <tr key={r.chain} className="hover:bg-[rgba(55,50,47,0.02)]">
+                  <tr key={r.chain} className="hover:bg-[rgba(10,10,10,0.02)]">
                     <Td>{r.chain}</Td>
                     <Td align="right" mono>
                       <ShareBar pct={r.yourSharePct} />
@@ -153,7 +153,7 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
       <p className="text-[10px] text-muted-foreground italic px-1">
         Auction data is anonymized and aggregated across the Vara exchange. Replace with live data once the RTB exchange is wired to write per-auction telemetry.
         {" "}
-        <Link href="/dashboard/recommendations" className="underline underline-offset-2 hover:text-[#37322F]">View tuning suggestions →</Link>
+        <Link href="/dashboard/recommendations" className="underline underline-offset-2 hover:text-[#0A0A0A]">View tuning suggestions →</Link>
       </p>
     </div>
   )
@@ -161,9 +161,9 @@ export default async function AuctionInsightsPage(): Promise<React.JSX.Element> 
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub?: string }): React.JSX.Element {
   return (
-    <div className="rounded-lg border border-[rgba(55,50,47,0.12)] bg-white p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+    <div className="rounded-lg border border-[rgba(10,10,10,0.12)] bg-white p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
       <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{label}</div>
-      <div className="mt-1.5 text-[20px] font-medium text-[#37322F] tabular-nums leading-none">{value}</div>
+      <div className="mt-1.5 text-[20px] font-medium text-[#0A0A0A] tabular-nums leading-none">{value}</div>
       {sub && <div className="mt-1 text-[10px] text-muted-foreground">{sub}</div>}
     </div>
   )
@@ -173,8 +173,8 @@ function ShareBar({ pct }: { pct: number }): React.JSX.Element {
   return (
     <div className="flex items-center gap-2 justify-end">
       <span className="tabular-nums">{pct.toFixed(1)}%</span>
-      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[rgba(55,50,47,0.08)]">
-        <div className="h-full bg-[#37322F]" style={{ width: `${Math.min(pct, 100)}%` }} />
+      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[rgba(10,10,10,0.08)]">
+        <div className="h-full bg-[#0A0A0A]" style={{ width: `${Math.min(pct, 100)}%` }} />
       </div>
     </div>
   )
@@ -182,9 +182,9 @@ function ShareBar({ pct }: { pct: number }): React.JSX.Element {
 
 function TrendPill({ trend }: { trend: "up" | "down" | "flat" }): React.JSX.Element {
   const map = {
-    up: { label: "↑ growing", cls: "bg-[#F0F7E8] text-[#3F6212] border-[rgba(101,163,13,0.2)]" },
-    down: { label: "↓ shrinking", cls: "bg-[#FFF3E8] text-[#C2410C] border-[rgba(194,65,12,0.2)]" },
-    flat: { label: "→ flat", cls: "bg-[rgba(55,50,47,0.06)] text-[#37322F] border-[rgba(55,50,47,0.16)]" },
+    up: { label: "↑ growing", cls: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]" },
+    down: { label: "↓ shrinking", cls: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]" },
+    flat: { label: "→ flat", cls: "bg-[rgba(10,10,10,0.06)] text-[#0A0A0A] border-[rgba(10,10,10,0.16)]" },
   }
   const t = map[trend]
   return <Badge variant="outline" className={`h-4 px-1.5 text-[9px] uppercase tracking-wider ${t.cls}`}>{t.label}</Badge>
@@ -195,5 +195,5 @@ function Th({ children, align }: { children: React.ReactNode; align?: "right" })
 }
 
 function Td({ children, align, mono }: { children: React.ReactNode; align?: "right"; mono?: boolean }): React.JSX.Element {
-  return <td className={`px-3 py-2 text-[#37322F] ${align === "right" ? "text-right" : ""} ${mono ? "tabular-nums" : ""}`}>{children}</td>
+  return <td className={`px-3 py-2 text-[#0A0A0A] ${align === "right" ? "text-right" : ""} ${mono ? "tabular-nums" : ""}`}>{children}</td>
 }

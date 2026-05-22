@@ -22,7 +22,10 @@ import {
   PhoneIcon,
 } from "@/icons"
 import { chainBrand } from "@/lib/chainLogos"
-import { Section, Pill, FieldInput, SegmentList } from "./TargetingFormFields"
+import { Pill, FieldInput, SegmentList } from "./TargetingFormFields"
+import { WizardSection } from "./WizardSection"
+import { GeoTargetingDialog } from "@/components/campaigns/GeoTargetingDialog"
+import { decodeGeos, encodeGeos, type GeoSelection } from "@/lib/geo/encoding"
 
 interface Props {
   campaignId: string
@@ -43,7 +46,7 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
   )
   const [holds, setHolds] = useState<string>((initial?.holdsAnyContract ?? []).join(", "))
   const [excludes, setExcludes] = useState<string>((initial?.excludesContracts ?? []).join(", "))
-  const [geos, setGeos] = useState<string>((initial?.geos ?? []).join(", "))
+  const [geos, setGeos] = useState<GeoSelection>(decodeGeos(initial?.geos ?? []))
   const [error, setError] = useState("")
   const [saving, setSaving] = useState(false)
 
@@ -63,7 +66,7 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
         chains,
         deviceTypes: devices,
         segmentIds,
-        geos: parseAddrs(geos).map((g) => g.toUpperCase()).filter((g) => g.length === 2),
+        geos: encodeGeos(geos),
         minWalletAgeDays: minAge ? Number(minAge) : undefined,
         minPortfolioUsd: minPortfolio ? Number(minPortfolio) : undefined,
         holdsAnyContract: holdsList,
@@ -78,16 +81,20 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
   }
 
   return (
-    <Card className="border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
-      <CardContent className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <Section icon={BoxIcon} tint="bg-[#EAF1FF] text-[#1E40AF]" title="Chains" hint={chains.length ? `${chains.length} selected` : "Any"}>
+    <Card className="border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
+      <CardContent className="p-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <WizardSection
+              icon={BoxIcon}
+              title="Chains"
+              description="Wallets active on these chains will be eligible."
+            >
               <div className="flex flex-wrap gap-1.5">
                 {CHAINS.map((c) => {
                   const active = chains.includes(c.id)
                   const Logo = chainBrand(c.id).Logo
-                  const logoCls = active ? "text-[#FAFAF8]" : chainBrand(c.id).fg
+                  const logoCls = active ? "text-[#FFFFFF]" : chainBrand(c.id).fg
                   return (
                     <Pill
                       key={c.id}
@@ -99,9 +106,13 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
                   )
                 })}
               </div>
-            </Section>
+            </WizardSection>
 
-            <Section icon={HardDriveIcon} tint="bg-[#F0E8FF] text-[#6D28D9]" title="Devices" hint={devices.length ? `${devices.length} selected` : "Any"}>
+            <WizardSection
+              icon={HardDriveIcon}
+              title="Devices"
+              description="Desktop, mobile, or both."
+            >
               <div className="flex gap-1.5">
                 {DEVICES.map((d) => {
                   const Icon = d === "DESKTOP" ? MonitorIcon : PhoneIcon
@@ -116,64 +127,83 @@ export function TargetingForm({ campaignId, initial, segments }: Props): React.J
                   )
                 })}
               </div>
-            </Section>
+            </WizardSection>
           </div>
 
-          <Section
+          <WizardSection
             icon={AudiencesIcon}
-            tint="bg-[#FFE8F0] text-[#BE185D]"
+            title="Geos"
+            description="Region, country, or state — drill in for fine-grained targeting."
+          >
+            <GeoTargetingDialog value={geos} onChange={setGeos} />
+          </WizardSection>
+
+          <WizardSection
+            icon={AudiencesIcon}
             title="Wallet segments"
-            hint={segmentIds.length ? `${segmentIds.length} selected` : undefined}
+            description="Pre-built audience segments to layer on top of chain + geo."
           >
             <SegmentList
               segments={segments}
               selected={segmentIds}
               onToggle={(id) => setSegmentIds((p) => toggle(p, id))}
             />
-          </Section>
+          </WizardSection>
 
-          <div className="grid gap-3 lg:grid-cols-2">
-            <Section icon={HourglassStartIcon} tint="bg-[#FFF3E8] text-[#C2410C]" title="Min wallet age">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <WizardSection
+              icon={HourglassStartIcon}
+              title="Min wallet age"
+              description="Filter wallets newer than this threshold."
+            >
               <FieldInput label="" type="number" value={minAge} onChange={setMinAge} placeholder="0" suffix="days" />
-            </Section>
+            </WizardSection>
 
-            <Section icon={WalletIcon} tint="bg-[#E8F5E9] text-[#15803D]" title="Min portfolio">
+            <WizardSection
+              icon={WalletIcon}
+              title="Min portfolio"
+              description="Only target wallets above this on-chain value."
+            >
               <FieldInput label="" type="number" value={minPortfolio} onChange={setMinPortfolio} placeholder="0" prefix="$" />
-            </Section>
+            </WizardSection>
           </div>
 
-          <Section icon={AudiencesIcon} tint="bg-[#FFF7E0] text-[#A16207]" title="Geos" hint="ISO codes, comma-sep">
-            <FieldInput label="" value={geos} onChange={setGeos} placeholder="US, IN, GB" />
-          </Section>
-
-          <Section icon={FingerprintIcon} tint="bg-[#F0E8FF] text-[#6D28D9]" title="Holds any of" hint="Contract addresses">
+          <WizardSection
+            icon={FingerprintIcon}
+            title="Holds any of"
+            description="Targets wallets currently holding any of these contracts."
+          >
             <Input
               value={holds}
               onChange={(e) => setHolds(e.target.value)}
               placeholder="0x… , So111…"
               className="h-8 text-xs font-mono"
             />
-          </Section>
+          </WizardSection>
 
-          <Section icon={FileBanIcon} tint="bg-[#FFE8E8] text-[#B91C1C]" title="Excludes" hint="Contract addresses">
+          <WizardSection
+            icon={FileBanIcon}
+            title="Excludes"
+            description="Wallets holding any of these contracts will not see the ad."
+          >
             <Input
               value={excludes}
               onChange={(e) => setExcludes(e.target.value)}
               placeholder="0x…"
               className="h-8 text-xs font-mono"
             />
-          </Section>
+          </WizardSection>
 
           {error && (
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>
+            <div className="rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] px-3 py-2 text-xs text-[#1F40CD]">{error}</div>
           )}
 
-          <div className="flex justify-end pt-2 border-t border-[rgba(55,50,47,0.08)]">
+          <div className="flex justify-end pt-2 border-t border-[rgba(10,10,10,0.08)]">
             <Button
               type="submit"
               size="sm"
               disabled={saving}
-              className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]"
+              className="h-8 gap-1.5 text-xs rounded-full px-4 bg-[#1F40CD] text-white hover:bg-[#1A36B0] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]"
             >
               {saving && <Loader2 className="size-3 animate-spin" />}
               Save targeting

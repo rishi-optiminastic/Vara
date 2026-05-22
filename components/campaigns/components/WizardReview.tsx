@@ -14,7 +14,7 @@ function Row({ label, value }: { label: string; value: string }): React.JSX.Elem
   return (
     <div className="flex items-center justify-between py-1">
       <span className="text-[11px] text-muted-foreground">{label}</span>
-      <span className="text-[11px] font-medium text-[#37322F] tabular-nums capitalize">{value}</span>
+      <span className="text-[11px] font-medium text-[#0A0A0A] tabular-nums capitalize">{value}</span>
     </div>
   )
 }
@@ -34,7 +34,7 @@ function BadgeRow({ label, empty, children }: BadgeRowProps): React.JSX.Element 
       {hasItems ? (
         <div className="flex flex-wrap gap-1 justify-end">{children}</div>
       ) : (
-        <span className="text-[11px] font-medium text-[#37322F] italic">{empty}</span>
+        <span className="text-[11px] font-medium text-[#0A0A0A] italic">{empty}</span>
       )}
     </div>
   )
@@ -42,7 +42,7 @@ function BadgeRow({ label, empty, children }: BadgeRowProps): React.JSX.Element 
 
 function Section({ title, children }: { title: string; children: React.ReactNode }): React.JSX.Element {
   return (
-    <div className="space-y-0.5 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
+    <div className="space-y-0.5 border-b border-[rgba(10,10,10,0.07)] pb-3 last:border-0 last:pb-0">
       <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">{title}</div>
       {children}
     </div>
@@ -51,19 +51,19 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function AnalyticsPreview(): React.JSX.Element {
   const kpis = [
-    { label: "Impressions", color: "bg-[#EAF1FF] text-[#1E40AF]" },
-    { label: "Clicks", color: "bg-[#F0E8FF] text-[#6D28D9]" },
-    { label: "CTR", color: "bg-[#FFF3E8] text-[#C2410C]" },
-    { label: "Spend", color: "bg-[#E8F5E9] text-[#15803D]" },
+    { label: "Impressions", color: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Clicks", color: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "CTR", color: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Spend", color: "bg-[#ECEAE2] text-[#1F40CD]" },
   ]
   return (
-    <div className="rounded-xl border border-dashed border-[rgba(55,50,47,0.15)] bg-[#FFFFFF] p-3 space-y-2.5">
+    <div className="rounded-xl border border-dashed border-[rgba(10,10,10,0.15)] bg-[#FFFFFF] p-3 space-y-2.5">
       <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
         Analytics preview · live after launch
       </div>
       <div className="grid grid-cols-4 gap-2">
         {kpis.map((k) => (
-          <div key={k.label} className={`rounded-lg p-2.5 text-center ${k.color}`}>
+          <div key={k.label} className={`rounded-md p-2.5 text-center ${k.color}`}>
             <div className="text-[20px] font-medium leading-none mb-1 opacity-40">—</div>
             <div className="text-[9px] uppercase tracking-wider opacity-60">{k.label}</div>
           </div>
@@ -81,14 +81,14 @@ export function WizardReview({ state }: Props): React.JSX.Element {
   const isActive = state.status === "ACTIVE"
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-[rgba(55,50,47,0.07)]">
-          <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#37322F]">Review & Launch</h3>
+        <div className="flex items-center justify-between pb-2 border-b border-[rgba(10,10,10,0.07)]">
+          <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#0A0A0A]">Review & Launch</h3>
           <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest border ${
             isActive
-              ? "bg-green-50 border-green-200 text-green-700"
-              : "bg-[#F0ECE6] border-[rgba(55,50,47,0.2)] text-[#37322F]"
+              ? "bg-[#ECEAE2] border-[rgba(10,10,10,0.12)] text-[#1F40CD]"
+              : "bg-[#ECEAE2] border-[rgba(10,10,10,0.2)] text-[#0A0A0A]"
           }`}>
             {isActive ? "Going live" : "Draft"}
           </span>
@@ -141,7 +141,7 @@ export function WizardReview({ state }: Props): React.JSX.Element {
             state.ads.map((ad) => (
               <div key={ad.id} className="flex items-center justify-between py-1">
                 <span className="text-[11px] text-muted-foreground">{ad.name}</span>
-                <span className="text-[10px] font-medium text-[#37322F]">{FORMAT_LABELS[ad.format]}</span>
+                <span className="text-[10px] font-medium text-[#0A0A0A]">{FORMAT_LABELS[ad.format]}</span>
               </div>
             ))
           )}

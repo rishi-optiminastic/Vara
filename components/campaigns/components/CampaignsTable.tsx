@@ -1,18 +1,30 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import { centsToUsd, formatCompact } from "@/lib/money"
 import { ChainBadge } from "@/components/ChainBadge"
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
+import { ChevronLeftIcon } from "@/icons"
 import { StatusBadge } from "./StatusBadge"
-import { StatusDot } from "./StatusDot"
-import type { CampaignStatus, Vertical, Chain } from "@prisma/client"
+import { RowStatusToggle } from "@/components/dashboard/RowStatusToggle"
+import type { CampaignStatus, Vertical, Chain, Objective, PricingModel, BidStrategy, Pacing } from "@prisma/client"
 
 export interface CampaignRow {
   id: string
   name: string
+  description: string | null
   status: CampaignStatus
   vertical: Vertical
+  objective: Objective
+  pricingModel: PricingModel
+  bidStrategy: BidStrategy
+  pacing: Pacing
   budgetUsdCents: number
+  dailyCapUsdCents: number | null
   bidUsdCents: number
+  startDate: string
+  endDate: string | null
   chains: Chain[]
   creativesCount: number
   impressions: number
@@ -22,6 +34,7 @@ export interface CampaignRow {
 
 interface Props {
   rows: CampaignRow[]
+  hideFooter?: boolean
 }
 
 function ctr(impressions: number, clicks: number): string {
@@ -29,11 +42,31 @@ function ctr(impressions: number, clicks: number): string {
   return `${((clicks / impressions) * 100).toFixed(2)}%`
 }
 
-const TH = "h-9 text-[10px] uppercase tracking-[0.14em] text-[#37322F]/55 font-medium"
-const THR = `${TH} text-right`
-const TD_NUM = "py-3 text-[12px] tabular-nums text-right text-[#37322F]/85"
+function fmtDate(iso: string | null): string {
+  if (!iso) return "—"
+  return new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })
+}
 
-export function CampaignsTable({ rows }: Props): React.JSX.Element {
+const HEADER_CELL =
+  "px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#0A0A0A]/55 align-middle"
+const BODY_CELL = "px-2.5 py-1.5 text-[12px] text-[#0A0A0A] align-middle"
+
+function HeaderLabel({ label, align }: { label: string; align?: "right" }): React.JSX.Element {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 ${align === "right" ? "justify-end w-full" : ""}`}
+    >
+      {label}
+      <ChevronLeftIcon className="size-3 -rotate-90 text-[#0A0A0A]/35" />
+    </span>
+  )
+}
+
+export function CampaignsTable({ rows, hideFooter }: Props): React.JSX.Element {
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const allSelected = rows.length > 0 && selected.size === rows.length
+  const someSelected = selected.size > 0 && !allSelected
+
   const totals = rows.reduce(
     (acc, r) => {
       acc.impressions += r.impressions
@@ -45,90 +78,146 @@ export function CampaignsTable({ rows }: Props): React.JSX.Element {
     { impressions: 0, clicks: 0, spend: 0, budget: 0 },
   )
 
+  const toggleOne = (id: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleAll = (): void => {
+    setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)))
+  }
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="h-9 hover:bg-transparent border-b border-[#37322F]/15">
-          <TableHead className={TH}>CAMPAIGN</TableHead>
-          <TableHead className={TH}>VERTICAL</TableHead>
-          <TableHead className={TH}>CHAINS</TableHead>
-          <TableHead className={TH}>STATUS</TableHead>
-          <TableHead className={THR}>BUDGET</TableHead>
-          <TableHead className={THR}>BID (CPM)</TableHead>
-          <TableHead className={THR}>IMPR.</TableHead>
-          <TableHead className={THR}>CLICKS</TableHead>
-          <TableHead className={THR}>CTR</TableHead>
-          <TableHead className={THR}>SPEND</TableHead>
-          <TableHead className={THR}>CREATIVES</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((c) => (
-          <TableRow
-            key={c.id}
-            className="border-b border-dashed border-[#37322F]/20 hover:bg-[#1f40cd]/4 transition-colors"
-          >
-            <TableCell className="py-3 text-[13px] font-medium">
-              <Link
-                href={`/dashboard/campaigns/${c.id}`}
-                className="flex items-center gap-2 text-[#1f40cd] hover:underline underline-offset-4"
+    <div className="overflow-x-auto">
+      <table
+        className="w-full text-left"
+        style={{ borderCollapse: "separate", borderSpacing: "0 2px" }}
+      >
+        <thead className="bg-white">
+          <tr>
+            <th className={`${HEADER_CELL} w-8`}>
+              <Checkbox
+                checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                onCheckedChange={toggleAll}
+                aria-label="Select all campaigns"
+              />
+            </th>
+            <th className={`${HEADER_CELL} w-12`}>Off/On</th>
+            <th className={HEADER_CELL}><HeaderLabel label="Campaign" /></th>
+            <th className={HEADER_CELL}><HeaderLabel label="Status" /></th>
+            <th className={HEADER_CELL}><HeaderLabel label="Chains" /></th>
+            <th className={HEADER_CELL}><HeaderLabel label="Starts" /></th>
+            <th className={HEADER_CELL}><HeaderLabel label="Ends" /></th>
+            <th className={`${HEADER_CELL} text-right`}><HeaderLabel label="Budget" align="right" /></th>
+            <th className={`${HEADER_CELL} text-right`}><HeaderLabel label="Spend" align="right" /></th>
+            <th className={`${HEADER_CELL} text-right`}><HeaderLabel label="Impr." align="right" /></th>
+            <th className={`${HEADER_CELL} text-right`}><HeaderLabel label="CTR" align="right" /></th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const isSelected = selected.has(row.id)
+            return (
+              <tr
+                key={row.id}
+                className={`transition-colors ${
+                  isSelected ? "bg-[#1F40CD]/5" : "bg-white hover:bg-[#0A0A0A]/2.5"
+                }`}
               >
-                <StatusDot status={c.status} />
-                <span className="truncate max-w-[220px]">{c.name}</span>
-              </Link>
-            </TableCell>
-            <TableCell className="py-3">
-              <span className="inline-flex h-5 items-center px-1.5 border border-[#37322F]/20 text-[10px] tracking-[0.14em] text-[#37322F]/75 uppercase">
-                {c.vertical.replace("_", " ")}
-              </span>
-            </TableCell>
-            <TableCell className="py-3 text-xs text-muted-foreground">
-              {c.chains.length === 0 ? (
-                <span className="text-[#37322F]/35">—</span>
-              ) : (
-                <div className="flex flex-wrap gap-1.5">
-                  {c.chains.slice(0, 3).map((ch) => (
-                    <ChainBadge key={ch} chain={ch} size="sm" showName={false} />
-                  ))}
-                  {c.chains.length > 3 && (
-                    <span className="text-[10px] text-[#1f40cd] self-center">+{c.chains.length - 3}</span>
+                <td className={BODY_CELL}>
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => toggleOne(row.id)}
+                    aria-label={`Select ${row.name}`}
+                  />
+                </td>
+                <td className={BODY_CELL}>
+                  <RowStatusToggle
+                    endpoint={`/api/campaigns/${row.id}/toggle-status`}
+                    status={row.status}
+                  />
+                </td>
+                <td className={`${BODY_CELL} min-w-44`}>
+                  <Link
+                    href={`/dashboard/campaigns/${row.id}`}
+                    className="flex flex-col min-w-0 group leading-tight"
+                  >
+                    <span className="text-[9.5px] font-semibold uppercase tracking-widest text-[#0A0A0A]/45">
+                      {row.vertical.replace(/_/g, " ").toLowerCase()}
+                    </span>
+                    <span className="text-[12.5px] font-medium text-[#1F40CD] group-hover:underline underline-offset-4 truncate mt-0.5">
+                      {row.name}
+                    </span>
+                  </Link>
+                </td>
+                <td className={BODY_CELL}>
+                  <StatusBadge status={row.status} />
+                </td>
+                <td className={BODY_CELL}>
+                  {row.chains.length === 0 ? (
+                    <span className="text-[11px] text-[#0A0A0A]/45">—</span>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <ChainBadge chain={row.chains[0] as Chain} size="sm" />
+                      {row.chains.length > 1 && (
+                        <span className="text-[10px] font-medium text-[#0A0A0A]/55 tabular-nums">
+                          +{row.chains.length - 1}
+                        </span>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
-            </TableCell>
-            <TableCell className="py-3"><StatusBadge status={c.status} /></TableCell>
-            <TableCell className={TD_NUM}>{centsToUsd(c.budgetUsdCents)}</TableCell>
-            <TableCell className={TD_NUM}>{centsToUsd(c.bidUsdCents)}</TableCell>
-            <TableCell className={TD_NUM}>
-              {c.impressions > 0 ? formatCompact(c.impressions) : <span className="text-[#37322F]/35">—</span>}
-            </TableCell>
-            <TableCell className={TD_NUM}>
-              {c.clicks > 0 ? formatCompact(c.clicks) : <span className="text-[#37322F]/35">—</span>}
-            </TableCell>
-            <TableCell className={TD_NUM}>{ctr(c.impressions, c.clicks)}</TableCell>
-            <TableCell className={TD_NUM}>
-              {c.spendUsdCents > 0 ? centsToUsd(c.spendUsdCents) : <span className="text-[#37322F]/35">—</span>}
-            </TableCell>
-            <TableCell className={TD_NUM}>{c.creativesCount}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-      {rows.length > 1 && (
-        <TableFooter className="bg-[#1f40cd]/4">
-          <TableRow className="border-t border-[#37322F]/15 hover:bg-transparent">
-            <TableCell className="py-3 text-[10px] uppercase tracking-[0.14em] text-[#1f40cd] font-medium" colSpan={4}>
-              TOTAL · {rows.length} {rows.length === 1 ? "CAMPAIGN" : "CAMPAIGNS"}
-            </TableCell>
-            <TableCell className={TD_NUM}>{centsToUsd(totals.budget)}</TableCell>
-            <TableCell className={TD_NUM}>—</TableCell>
-            <TableCell className={TD_NUM}>{totals.impressions > 0 ? formatCompact(totals.impressions) : "—"}</TableCell>
-            <TableCell className={TD_NUM}>{totals.clicks > 0 ? formatCompact(totals.clicks) : "—"}</TableCell>
-            <TableCell className={TD_NUM}>{ctr(totals.impressions, totals.clicks)}</TableCell>
-            <TableCell className={TD_NUM}>{totals.spend > 0 ? centsToUsd(totals.spend) : "—"}</TableCell>
-            <TableCell className={TD_NUM}>—</TableCell>
-          </TableRow>
-        </TableFooter>
-      )}
-    </Table>
+                </td>
+                <td className={`${BODY_CELL} text-[#0A0A0A]/75 tabular-nums`}>{fmtDate(row.startDate)}</td>
+                <td className={`${BODY_CELL} text-[#0A0A0A]/75 tabular-nums`}>{fmtDate(row.endDate)}</td>
+                <td className={`${BODY_CELL} text-right tabular-nums`}>{centsToUsd(row.budgetUsdCents)}</td>
+                <td className={`${BODY_CELL} text-right tabular-nums`}>
+                  {row.spendUsdCents > 0 ? centsToUsd(row.spendUsdCents) : <span className="text-[#0A0A0A]/45">—</span>}
+                </td>
+                <td className={`${BODY_CELL} text-right tabular-nums`}>
+                  {row.impressions > 0 ? formatCompact(row.impressions) : <span className="text-[#0A0A0A]/45">—</span>}
+                </td>
+                <td className={`${BODY_CELL} text-right tabular-nums`}>
+                  {ctr(row.impressions, row.clicks)}
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+        {!hideFooter && rows.length > 0 && (
+          <tfoot>
+            <tr className="bg-white">
+              <td className={BODY_CELL} colSpan={2} />
+              <td className={`${BODY_CELL} text-[11px] font-semibold uppercase tracking-widest text-[#0A0A0A]/55`} colSpan={5}>
+                Results from {rows.length} {rows.length === 1 ? "campaign" : "campaigns"}
+                {selected.size > 0 && (
+                  <span className="ml-2 text-[#1F40CD] normal-case tracking-normal">
+                    · {selected.size} selected
+                  </span>
+                )}
+              </td>
+              <td className={`${BODY_CELL} text-right tabular-nums font-medium`}>{centsToUsd(totals.budget)}</td>
+              <td className={`${BODY_CELL} text-right tabular-nums font-medium`}>
+                {totals.spend > 0 ? centsToUsd(totals.spend) : "—"}
+              </td>
+              <td className={`${BODY_CELL} text-right tabular-nums font-medium`}>
+                {totals.impressions > 0 ? formatCompact(totals.impressions) : "—"}
+              </td>
+              <td className={`${BODY_CELL} text-right tabular-nums font-medium`}>
+                {ctr(totals.impressions, totals.clicks)}
+              </td>
+            </tr>
+            <tr>
+              <td className="px-2.5 py-1 text-[9px] uppercase tracking-widest text-[#0A0A0A]/45" colSpan={11}>
+                Excludes deleted items · Last 30 days
+              </td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
+    </div>
   )
 }

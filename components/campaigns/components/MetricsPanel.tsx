@@ -88,7 +88,7 @@ export function MetricsPanel({ campaignId, days = 30 }: Props): React.JSX.Elemen
   }, [metrics, campaignId, days])
 
   if (error) {
-    return <Card><CardContent className="p-4 text-xs text-red-600">{error}</CardContent></Card>
+    return <Card><CardContent className="p-4 text-xs text-[#1F40CD]">{error}</CardContent></Card>
   }
   if (!metrics) {
     return (
@@ -112,19 +112,19 @@ export function MetricsPanel({ campaignId, days = 30 }: Props): React.JSX.Elemen
   const ctr = sum.impressions > 0 ? (sum.clicks / sum.impressions) * 100 : 0
 
   const kpis = [
-    { label: "Spend", value: centsToUsd(sum.spend), tint: "text-[#C2410C]" },
-    { label: "Impressions", value: formatCompact(sum.impressions), tint: "text-[#1E40AF]" },
-    { label: "Clicks", value: formatCompact(sum.clicks), tint: "text-[#6D28D9]" },
-    { label: "CTR", value: `${ctr.toFixed(2)}%`, tint: "text-[#37322F]" },
-    { label: "Wallet conn.", value: formatCompact(sum.walletConnects), tint: "text-[#15803D]" },
-    { label: "On-chain conv.", value: formatCompact(sum.onChainConvs), tint: "text-[#A16207]" },
+    { label: "Spend", value: centsToUsd(sum.spend), tint: "text-[#1F40CD]" },
+    { label: "Impressions", value: formatCompact(sum.impressions), tint: "text-[#1F40CD]" },
+    { label: "Clicks", value: formatCompact(sum.clicks), tint: "text-[#1F40CD]" },
+    { label: "CTR", value: `${ctr.toFixed(2)}%`, tint: "text-[#0A0A0A]" },
+    { label: "Wallet conn.", value: formatCompact(sum.walletConnects), tint: "text-[#1F40CD]" },
+    { label: "On-chain conv.", value: formatCompact(sum.onChainConvs), tint: "text-[#1F40CD]" },
   ]
 
   return (
     <div className="flex flex-col gap-3">
       {isPreview && (
-        <div className="flex items-center gap-2 rounded-full border border-dashed border-[rgba(55,50,47,0.18)] bg-white/50 px-3 py-1.5">
-          <span className="size-1.5 rounded-full bg-[#A16207] shadow-[0_0_0_2px_rgba(161,98,7,0.18)]" />
+        <div className="flex items-center gap-2 rounded-full border border-dashed border-[rgba(10,10,10,0.18)] bg-white/50 px-3 py-1.5">
+          <span className="size-1.5 rounded-full bg-[#1F40CD] shadow-[0_0_0_2px_rgba(161,98,7,0.18)]" />
           <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
             Preview data
           </span>
@@ -136,7 +136,7 @@ export function MetricsPanel({ campaignId, days = 30 }: Props): React.JSX.Elemen
 
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-6">
         {kpis.map((k) => (
-          <Card key={k.label} className="py-3 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+          <Card key={k.label} className="py-3 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
             <CardContent className="px-3">
               <div className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5">
                 {k.label}

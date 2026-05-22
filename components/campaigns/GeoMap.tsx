@@ -44,7 +44,7 @@ function fillLayer(selected: string[]): FillLayerSpecification {
       "fill-color": [
         "case",
         ["in", ["get", "ISO_A2"], ["literal", selected]],
-        "#37322F",
+        "#0A0A0A",
         "#FFFFFF",
       ],
       "fill-opacity": [
@@ -63,7 +63,7 @@ const HOVER_LAYER: FillLayerSpecification = {
   source: "countries",
   filter: ["==", ["get", "ISO_A2"], ""],
   paint: {
-    "fill-color": "#37322F",
+    "fill-color": "#0A0A0A",
     "fill-opacity": 0.18,
   },
 }
@@ -73,7 +73,7 @@ const BORDER_LAYER: LineLayerSpecification = {
   type: "line",
   source: "countries",
   paint: {
-    "line-color": "rgba(55,50,47,0.35)",
+    "line-color": "rgba(10,10,10,0.35)",
     "line-width": 0.5,
   },
 }
@@ -127,7 +127,7 @@ export function GeoMap({ selection, onToggleCountry, focus }: Props): React.JSX.
   }, [])
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-md border border-[rgba(55,50,47,0.12)] bg-[#F0ECE6]">
+    <div className="relative h-full w-full overflow-hidden rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2]">
       <MapLibreMap
         ref={mapRef}
         initialViewState={INITIAL_VIEW}
@@ -158,8 +158,8 @@ function MapBadge({ children, tone }: { children: React.ReactNode; tone?: "error
     <div
       className={`absolute top-2 left-2 rounded-md border px-2 py-1 text-[10px] font-medium shadow-sm ${
         tone === "error"
-          ? "bg-red-50 border-red-200 text-red-700"
-          : "bg-white/95 border-[rgba(55,50,47,0.16)] text-[#37322F]"
+          ? "bg-[#ECEAE2] border-[rgba(10,10,10,0.12)] text-[#1F40CD]"
+          : "bg-white/95 border-[rgba(10,10,10,0.16)] text-[#0A0A0A]"
       }`}
     >
       {children}
@@ -169,9 +169,9 @@ function MapBadge({ children, tone }: { children: React.ReactNode; tone?: "error
 
 function Legend({ selectedCount }: { selectedCount: number }): React.JSX.Element {
   return (
-    <div className="absolute bottom-2 right-2 rounded-md border border-[rgba(55,50,47,0.16)] bg-white/95 px-2.5 py-1.5 text-[10px] text-[#37322F] shadow-sm">
+    <div className="absolute bottom-2 right-2 rounded-md border border-[rgba(10,10,10,0.16)] bg-white/95 px-2.5 py-1.5 text-[10px] text-[#0A0A0A] shadow-sm">
       <div className="flex items-center gap-1.5">
-        <span className="inline-block size-2 rounded-sm bg-[#37322F]/55" />
+        <span className="inline-block size-2 rounded-sm bg-[#0A0A0A]/55" />
         <span>{selectedCount === 0 ? "Click a country to target" : `${selectedCount} ${selectedCount === 1 ? "country" : "countries"} targeted`}</span>
       </div>
     </div>

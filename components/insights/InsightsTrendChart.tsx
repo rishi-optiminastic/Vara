@@ -34,20 +34,20 @@ export function InsightsTrendChart({ series }: Props): React.JSX.Element {
       <AreaChart data={series} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
         <defs>
           <linearGradient id="insightsSpendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#37322F" stopOpacity={0.18} />
-            <stop offset="100%" stopColor="#37322F" stopOpacity={0} />
+            <stop offset="0%" stopColor="#0A0A0A" stopOpacity={0.18} />
+            <stop offset="100%" stopColor="#0A0A0A" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid stroke="rgba(55,50,47,0.06)" vertical={false} />
+        <CartesianGrid stroke="rgba(10,10,10,0.06)" vertical={false} />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 10, fill: "rgba(55,50,47,0.55)" }}
+          tick={{ fontSize: 10, fill: "rgba(10,10,10,0.55)" }}
           tickLine={false}
-          axisLine={{ stroke: "rgba(55,50,47,0.12)" }}
+          axisLine={{ stroke: "rgba(10,10,10,0.12)" }}
           tickFormatter={(d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
         />
         <YAxis
-          tick={{ fontSize: 10, fill: "rgba(55,50,47,0.55)" }}
+          tick={{ fontSize: 10, fill: "rgba(10,10,10,0.55)" }}
           tickLine={false}
           axisLine={false}
           tickFormatter={(v) => `$${centsToUsd(v)}`}
@@ -56,7 +56,7 @@ export function InsightsTrendChart({ series }: Props): React.JSX.Element {
         <Tooltip
           contentStyle={{
             background: "white",
-            border: "1px solid rgba(55,50,47,0.12)",
+            border: "1px solid rgba(10,10,10,0.12)",
             borderRadius: 8,
             fontSize: 11,
           }}
@@ -69,7 +69,7 @@ export function InsightsTrendChart({ series }: Props): React.JSX.Element {
         <Area
           type="monotone"
           dataKey="spendUsdCents"
-          stroke="#37322F"
+          stroke="#0A0A0A"
           strokeWidth={1.5}
           fill="url(#insightsSpendFill)"
         />

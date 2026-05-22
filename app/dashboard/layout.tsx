@@ -13,6 +13,7 @@ export default async function DashboardLayout({
   const session = await getCachedSession()
   if (!session) redirect("/dsp/sign-in")
   const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
+  if (!advertiser.onboardedAt) redirect("/onboarding")
   const wallet = await getOrCreateWallet(advertiser.id)
   return (
     <Web3Provider>

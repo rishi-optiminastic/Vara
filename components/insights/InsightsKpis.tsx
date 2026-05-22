@@ -26,10 +26,10 @@ export function InsightsKpis({ spendUsdCents, impressions, clicks, walletConnect
       {kpis.map((k) => (
         <div
           key={k.label}
-          className="rounded-lg border border-[rgba(55,50,47,0.12)] bg-white p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]"
+          className="rounded-lg border border-[rgba(10,10,10,0.12)] bg-white p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]"
         >
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{k.label}</div>
-          <div className="mt-1.5 text-[20px] font-medium text-[#37322F] tabular-nums leading-none">{k.value}</div>
+          <div className="mt-1.5 text-[20px] font-medium text-[#0A0A0A] tabular-nums leading-none">{k.value}</div>
           {k.sub && <div className="mt-1 text-[10px] text-muted-foreground tabular-nums">{k.sub}</div>}
         </div>
       ))}

@@ -21,7 +21,7 @@ function Row({ label, meta, flag, active, onClick, onSecondary, secondaryLabel }
   return (
     <div
       className={`group flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-[11px] cursor-pointer ${
-        active ? "bg-[#37322F] text-[#FAFAF8]" : "hover:bg-[#F0ECE6] text-[#37322F]"
+        active ? "bg-[#1F40CD] text-white" : "hover:bg-[#ECEAE2] text-[#0A0A0A]"
       }`}
       onClick={onClick}
     >
@@ -31,7 +31,7 @@ function Row({ label, meta, flag, active, onClick, onSecondary, secondaryLabel }
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         {meta && (
-          <span className={`text-[10px] tabular-nums ${active ? "text-[#FAFAF8]/70" : "text-muted-foreground"}`}>
+          <span className={`text-[10px] tabular-nums ${active ? "text-[#FFFFFF]/70" : "text-muted-foreground"}`}>
             {meta}
           </span>
         )}
@@ -42,10 +42,10 @@ function Row({ label, meta, flag, active, onClick, onSecondary, secondaryLabel }
               e.stopPropagation()
               onSecondary()
             }}
-            className={`opacity-0 group-hover:opacity-100 rounded px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide border ${
+            className={`opacity-0 group-hover:opacity-100 rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide border ${
               active
-                ? "border-white/30 text-[#FAFAF8] hover:bg-white/10"
-                : "border-[rgba(55,50,47,0.2)] text-[#37322F] hover:bg-white"
+                ? "border-white/30 text-[#FFFFFF] hover:bg-white/10"
+                : "border-[rgba(10,10,10,0.2)] text-[#0A0A0A] hover:bg-white"
             }`}
           >
             {secondaryLabel ?? "Open"}
@@ -98,7 +98,7 @@ export function CountryList({
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search countries…"
-        className="mb-2 h-7 w-full rounded-md border border-[rgba(55,50,47,0.16)] bg-white px-2 text-[11px] placeholder:text-muted-foreground/60 focus:outline-none focus:border-[#37322F]"
+        className="mb-2 h-7 w-full rounded-md border border-[rgba(10,10,10,0.16)] bg-white px-2 text-[11px] placeholder:text-muted-foreground/60 focus:outline-none focus:border-[#0A0A0A]"
       />
       <div className="flex-1 overflow-y-auto pr-1 space-y-0.5">
         {list.map((c) => {
@@ -138,7 +138,7 @@ export function StateList({ selection, country, onToggleState, onBack }: StateLi
       <button
         type="button"
         onClick={onBack}
-        className="mb-2 h-7 inline-flex items-center gap-1.5 self-start rounded-md px-2 text-[11px] text-[#37322F] hover:bg-[#F0ECE6]"
+        className="mb-2 h-7 inline-flex items-center gap-1.5 self-start rounded-md px-2 text-[11px] text-[#0A0A0A] hover:bg-[#ECEAE2]"
       >
         <span aria-hidden>←</span> Back to countries
       </button>

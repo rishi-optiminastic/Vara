@@ -29,11 +29,16 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Everything under /api/* goes to the Rust backend EXCEPT /api/auth/*,
-        // which Better Auth's catch-all route handles inside Next.js. The
-        // negative lookahead in the source pattern is what excludes `auth/…`.
+        // Everything under /api/* goes to the Rust backend EXCEPT:
+        //  - /api/auth/* — Better Auth's catch-all route in Next.js.
+        //  - /api/onboarding — owned by the Next.js route at app/api/onboarding/
+        //    because the BE's own handler references a `user.activeAdvertiserId`
+        //    column that doesn't exist in the current schema.
+        //  - /api/wallet/demo-topup — dev-only ledger top-up handled by Next.js
+        //    so we don't need a BE endpoint for it. Hard-gated to non-prod.
+        // The negative lookahead in the source pattern is what excludes them.
         {
-          source: '/api/:path((?!auth(?:/|$)).*)',
+          source: '/api/:path((?!auth(?:/|$)|onboarding(?:/|$)|wallet/demo-topup(?:/|$)|campaigns/[^/]+/toggle-status(?:/|$)|ad-groups/[^/]+/toggle-status(?:/|$)).*)',
           destination: `${BACKEND_URL}/api/:path`,
         },
       ],

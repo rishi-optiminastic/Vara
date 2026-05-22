@@ -39,8 +39,8 @@ function Pill({ label, active, onClick }: { label: string; active: boolean; onCl
       onClick={onClick}
       className={`h-7 rounded-full border px-3 text-[11px] font-medium transition-colors ${
         active
-          ? "bg-[#37322F] text-[#FAFAF8] border-[#37322F]"
-          : "bg-white border-[rgba(55,50,47,0.16)] text-[#37322F] hover:bg-[#F0ECE6] hover:border-[rgba(55,50,47,0.3)]"
+          ? "bg-[#0A0A0A] text-[#FFFFFF] border-[#0A0A0A]"
+          : "bg-white border-[rgba(10,10,10,0.16)] text-[#0A0A0A] hover:bg-[#ECEAE2] hover:border-[rgba(10,10,10,0.3)]"
       }`}
     >
       {label}
@@ -50,7 +50,7 @@ function Pill({ label, active, onClick }: { label: string; active: boolean; onCl
 
 function Section({ title, desc, children }: { title: string; desc?: string; children: React.ReactNode }): React.JSX.Element {
   return (
-    <div className="space-y-1.5 border-b border-[rgba(55,50,47,0.07)] pb-3 last:border-0 last:pb-0">
+    <div className="space-y-1.5 border-b border-[rgba(10,10,10,0.07)] pb-3 last:border-0 last:pb-0">
       <div>
         <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{title}</div>
         {desc && <p className="text-[10px] text-muted-foreground/70 mt-0.5">{desc}</p>}
@@ -62,7 +62,7 @@ function Section({ title, desc, children }: { title: string; desc?: string; chil
 
 export function AdGroupStepSettings({ state, update }: Props): React.JSX.Element {
   return (
-    <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
       <CardContent className="p-4 space-y-3">
         <Section title="Bidding" desc="Set your bid and strategy for this ad group.">
           <div className="grid grid-cols-2 gap-3">

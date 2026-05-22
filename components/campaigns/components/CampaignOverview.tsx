@@ -62,11 +62,11 @@ export function CampaignOverview({ campaign, metrics, segments, rangeDays = 30 }
     .filter(Boolean) as string[]
 
   const KPIS = [
-    { label: "Spend", value: centsToUsd(spent), icon: SpendIcon, tint: "bg-[#FFF3E8] text-[#C2410C]" },
-    { label: "Impressions", value: formatCompact(metrics.impressions), icon: EyeScannerIcon, tint: "bg-[#EAF1FF] text-[#1E40AF]" },
-    { label: "Clicks", value: formatCompact(metrics.clicks), icon: ClicksIcon, tint: "bg-[#F0E8FF] text-[#6D28D9]" },
-    { label: "Wallet Conn.", value: formatCompact(metrics.walletConnects), icon: WalletIcon, tint: "bg-[#E8F5E9] text-[#15803D]" },
-    { label: "On-chain Conv.", value: formatCompact(metrics.onChainConvs), icon: OnChainIcon, tint: "bg-[#FFF7E0] text-[#A16207]" },
+    { label: "Spend", value: centsToUsd(spent), icon: SpendIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Impressions", value: formatCompact(metrics.impressions), icon: EyeScannerIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Clicks", value: formatCompact(metrics.clicks), icon: ClicksIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "Wallet Conn.", value: formatCompact(metrics.walletConnects), icon: WalletIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
+    { label: "On-chain Conv.", value: formatCompact(metrics.onChainConvs), icon: OnChainIcon, tint: "bg-[#ECEAE2] text-[#1F40CD]" },
   ]
 
   return (
@@ -148,9 +148,9 @@ export function CampaignOverview({ campaign, metrics, segments, rangeDays = 30 }
           />
         </div>
         {campaign.description && (
-          <div className="mt-4 pt-3 border-t border-dashed border-[rgba(55,50,47,0.1)]">
+          <div className="mt-4 pt-3 border-t border-dashed border-[rgba(10,10,10,0.1)]">
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Description</div>
-            <p className="text-xs text-[#37322F] leading-relaxed">{campaign.description}</p>
+            <p className="text-xs text-[#0A0A0A] leading-relaxed">{campaign.description}</p>
           </div>
         )}
       </SectionCard>

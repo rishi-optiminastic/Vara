@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { auth } from '@/lib/auth'
 import { getOrCreateAdvertiser } from '@/lib/advertiser'
 import { OnboardingFlow } from '@/components/onboarding/OnboardingFlow'
@@ -12,32 +13,32 @@ export default async function OnboardingPage(): Promise<React.JSX.Element> {
   if (advertiser.onboardedAt) redirect('/dashboard')
 
   return (
-    <div className="min-h-screen bg-[#FBF9F6] font-sans relative">
-      <div className="relative z-10 max-w-[640px] mx-auto px-4 py-10 sm:py-14">
-        <Link href="/" className="flex items-center gap-2 group w-fit mb-10">
-          <span className="text-xl font-medium text-[#2F3037] tracking-tight group-hover:opacity-70 transition-opacity">
-            Vara
-          </span>
-        </Link>
-
-        <header className="mb-10 flex items-start gap-5">
-          <div className="hidden sm:flex shrink-0 size-12 items-center justify-center rounded-xl bg-white border border-foreground/[0.08] shadow-[0_2px_6px_-1px_rgba(55,50,47,0.06)]">
-            <span className="text-[18px]"></span>
-          </div>
-          <div>
-            <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-foreground/50">
-              Step 1 of 2 · Workspace
+    <div className="min-h-screen bg-[#ECEAE2] font-sans">
+      <header className="border-b border-[rgba(10,10,10,0.08)] bg-[#ECEAE2]/85 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-275 mx-auto px-4 sm:px-8 h-14 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 group">
+            <Image
+              src="/VaraAd.png"
+              alt="Vara"
+              width={1080}
+              height={1080}
+              className="h-7 w-7 group-hover:opacity-75 transition-opacity"
+              priority
+            />
+            <span className="text-[15px] font-medium text-[#0A0A0A] tracking-tight">
+              Vara <span className="text-[#0A0A0A]/45">Ads</span>
             </span>
-            <h1 className="text-[32px] sm:text-[36px] font-normal font-serif text-foreground tracking-tight leading-[1.1] mt-1.5 mb-2">
-              Set up your workspace
-            </h1>
-            <p className="text-sm text-foreground/60 leading-relaxed max-w-[480px]">
-              A couple of details so we can target the right wallets, attribute conversions
-              on-chain, and keep your campaigns clean.
-            </p>
-          </div>
-        </header>
+          </Link>
+          <Link
+            href="/"
+            className="text-[12px] text-[#0A0A0A]/55 hover:text-[#1F40CD] transition-colors"
+          >
+            Save &amp; exit
+          </Link>
+        </div>
+      </header>
 
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
         <OnboardingFlow
           initial={{
             projectName: advertiser.projectName,

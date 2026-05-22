@@ -73,7 +73,7 @@ export function AdForm({ campaigns, defaultCampaignId = "" }: Props): React.JSX.
 
   return (
     <div className="flex flex-col gap-3 max-w-2xl">
-      <Card className="py-0 gap-0 border-[rgba(55,50,47,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(55,50,47,0.08)]">
+      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
         <CardContent className="p-4 grid grid-cols-1 md:grid-cols-[1fr_220px] gap-5">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 space-y-1">
@@ -117,7 +117,7 @@ export function AdForm({ campaigns, defaultCampaignId = "" }: Props): React.JSX.
                 role="switch"
                 aria-checked={state.walletConnectCta}
                 onClick={() => update({ walletConnectCta: !state.walletConnectCta })}
-                className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${state.walletConnectCta ? "bg-[#37322F]" : "bg-[rgba(55,50,47,0.2)]"}`}
+                className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${state.walletConnectCta ? "bg-[#0A0A0A]" : "bg-[rgba(10,10,10,0.2)]"}`}
               >
                 <span className={`pointer-events-none inline-block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${state.walletConnectCta ? "translate-x-3" : "translate-x-0"}`} />
               </button>
@@ -132,14 +132,14 @@ export function AdForm({ campaigns, defaultCampaignId = "" }: Props): React.JSX.
       </Card>
 
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">{error}</div>
+        <div className="rounded-md border border-[rgba(10,10,10,0.12)] bg-[#ECEAE2] px-3 py-2 text-xs text-[#1F40CD]">{error}</div>
       )}
 
-      <div className="flex items-center justify-between border-t border-[rgba(55,50,47,0.08)] pt-2.5">
+      <div className="flex items-center justify-between border-t border-[rgba(10,10,10,0.08)] pt-2.5">
         <Button type="button" variant="ghost" size="sm" className="h-8 text-xs rounded-full px-4" onClick={() => router.back()}>
           Cancel
         </Button>
-        <Button size="sm" disabled={loading} className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]" onClick={submit}>
+        <Button size="sm" disabled={loading} className="h-8 gap-1.5 text-xs rounded-full px-5 bg-[#0A0A0A] text-[#FFFFFF] hover:bg-[#0A0A0A] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]" onClick={submit}>
           {loading ? <HourglassStartIcon className="size-3" /> : <SquareWandSparkleIcon className="size-3" />}
           Save ad
         </Button>

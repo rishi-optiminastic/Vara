@@ -54,18 +54,18 @@ export function CampaignActions({ id, status }: Props): React.JSX.Element {
   return (
     <div className="flex items-center gap-1.5">
       {isPaused && (
-        <Button size="sm" className="h-8 gap-1 text-xs rounded-full px-3.5 bg-[#37322F] text-[#FAFAF8] hover:bg-[#2A2520] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(55,50,47,0.18)]" disabled={busy} onClick={() => setStatus("ACTIVE")}>
+        <Button size="sm" className="h-8 gap-1 text-xs rounded-full px-3.5 bg-[#1F40CD] text-white hover:bg-[#1A36B0] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]" disabled={busy} onClick={() => setStatus("ACTIVE")}>
           {busy ? <HourglassStartIcon className="size-3" /> : <PlayIcon className="size-3" />}
           Activate
         </Button>
       )}
       {isActive && (
-        <Button size="sm" variant="outline" className="h-8 gap-1 text-xs rounded-full px-3.5 bg-white border-[rgba(55,50,47,0.16)]" disabled={busy} onClick={() => setStatus("PAUSED")}>
+        <Button size="sm" variant="outline" className="h-8 gap-1 text-xs rounded-full px-3.5 bg-white border-[rgba(10,10,10,0.16)]" disabled={busy} onClick={() => setStatus("PAUSED")}>
           {busy ? <HourglassStartIcon className="size-3" /> : <PauseIcon className="size-3" />}
           Pause
         </Button>
       )}
-      <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs rounded-full px-3 text-[#C2410C] hover:text-[#9A2E07] hover:bg-[#C2410C]/8" disabled={busy} onClick={handleDelete}>
+      <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs rounded-full px-3 text-[#1F40CD] hover:text-[#1F40CD] hover:bg-[#1F40CD]/8" disabled={busy} onClick={handleDelete}>
         <TrashIcon className="size-3" />
         Delete
       </Button>

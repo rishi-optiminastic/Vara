@@ -10,7 +10,7 @@ interface Props {
 }
 
 const FIELD =
-  "h-8 py-0 text-xs leading-none rounded-full border border-[rgba(55,50,47,0.16)] bg-white/60 hover:bg-white transition-colors text-[#37322F] placeholder:text-muted-foreground shadow-[0_1px_0_rgba(255,255,255,0.6)] focus:ring-0 focus-visible:ring-0 focus-visible:border-[rgba(55,50,47,0.3)] md:text-xs"
+  "h-8 py-0 text-xs leading-none rounded-full border border-[rgba(10,10,10,0.12)] bg-white hover:bg-white transition-colors text-[#0A0A0A] placeholder:text-muted-foreground focus:ring-0 focus-visible:ring-0 focus-visible:border-[#1F40CD] md:text-xs"
 
 export function DateRangeSelector({ className }: Props): React.JSX.Element {
   const router = useRouter()
