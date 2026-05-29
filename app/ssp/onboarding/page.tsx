@@ -2,11 +2,28 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { SspOnboardingFlow } from '@/components/ssp/onboarding/SspOnboardingFlow'
 
 export default async function SspOnboardingPage(): Promise<React.JSX.Element> {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect('/ssp/sign-in')
+
+  // Resume the wizard at step 3 if the publisher has already submitted steps
+  // 1 + 2 (we keyed off primaryUrl, since it's the only required field that
+  // step 2 fills in) and has a starter placement. Otherwise start fresh.
+  const publisher = await prisma.publisher.findUnique({
+    where: { userId: session.user.id },
+    include: {
+      placements: {
+        orderBy: { createdAt: 'asc' },
+        take: 1,
+        select: { id: true, width: true, height: true, format: true },
+      },
+    },
+  })
+  const resumePlacement =
+    publisher?.primaryUrl && publisher.placements[0] ? publisher.placements[0] : null
 
   return (
     <div className="min-h-screen bg-[#FBF9F6] font-sans relative">
@@ -26,23 +43,24 @@ export default async function SspOnboardingPage(): Promise<React.JSX.Element> {
           </div>
           <div>
             <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-foreground/50">
-              Step 1 of 2 · Inventory
+              Publisher onboarding
             </span>
             <h1 className="text-[32px] sm:text-[36px] font-normal font-serif text-foreground tracking-tight leading-[1.1] mt-1.5 mb-2">
               List your inventory
             </h1>
             <p className="text-sm text-foreground/60 leading-relaxed max-w-[480px]">
-              A couple of details so we can match Web3 demand to your placements and route on-chain
-              payouts to the right wallet.
+              A couple of details so we can match Web3 demand to your placements, route on-chain
+              payouts, and drop the SDK into your site.
             </p>
           </div>
         </header>
 
         <SspOnboardingFlow
           initial={{
-            siteName: session.user.name ?? '',
-            primaryUrl: '',
+            siteName: publisher?.siteName ?? session.user.name ?? '',
+            primaryUrl: publisher?.primaryUrl ?? '',
           }}
+          resumePlacement={resumePlacement}
         />
       </div>
     </div>

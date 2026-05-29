@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowRight, ArrowLeft, Loader2, Check } from 'lucide-react'
+import type { Placement } from '@prisma/client'
 import {
   SspOnboardingStep1Schema,
   SspOnboardingStep2Schema,
@@ -11,22 +11,38 @@ import {
 } from './types'
 import { StepSite } from './StepSite'
 import { StepInventory } from './StepInventory'
+import { StepIntegration } from './StepIntegration'
+import { Stepper, type StepNum } from './Stepper'
+import { FooterButtons } from './FooterButtons'
+
+type SerializedPlacement = Pick<Placement, 'id' | 'width' | 'height' | 'format'>
 
 interface Props {
   initial: {
     siteName: string
     primaryUrl: string
   }
+  // Server-provided placement from a prior submit. When present we boot the
+  // wizard straight into step 3 so the publisher sees the SDK snippet without
+  // having to refill steps 1 + 2.
+  resumePlacement?: SerializedPlacement | null
 }
 
 type Errors = Record<string, string>
 
-export function SspOnboardingFlow({ initial }: Props): React.JSX.Element {
+interface SubmitResponse {
+  placement: SerializedPlacement
+}
+
+export function SspOnboardingFlow({ initial, resumePlacement }: Props): React.JSX.Element {
   const router = useRouter()
-  const [step, setStep] = useState<1 | 2>(1)
+  const [step, setStep] = useState<StepNum>(resumePlacement ? 3 : 1)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [errors, setErrors] = useState<Errors>({})
+  const [placement, setPlacement] = useState<SerializedPlacement | null>(
+    resumePlacement ?? null,
+  )
 
   const [s1, setS1] = useState<SspOnboardingStep1Input>({
     siteName: initial.siteName,
@@ -55,7 +71,7 @@ export function SspOnboardingFlow({ initial }: Props): React.JSX.Element {
     setStep(2)
   }
 
-  const handleSubmit = async (): Promise<void> => {
+  const persistAndAdvance = async (): Promise<void> => {
     const result = SspOnboardingStep2Schema.safeParse(s2)
     if (!result.success) {
       setErrors(flatten(result.error.flatten().fieldErrors))
@@ -76,12 +92,19 @@ export function SspOnboardingFlow({ initial }: Props): React.JSX.Element {
         setSubmitting(false)
         return
       }
-      router.push('/ssp/dashboard')
-      router.refresh()
+      const body = (await res.json()) as SubmitResponse
+      setPlacement(body.placement)
+      setSubmitting(false)
+      setStep(3)
     } catch {
       setError('Network error. Please try again.')
       setSubmitting(false)
     }
+  }
+
+  const handleFinish = (): void => {
+    router.push('/ssp/dashboard')
+    router.refresh()
   }
 
   return (
@@ -94,98 +117,41 @@ export function SspOnboardingFlow({ initial }: Props): React.JSX.Element {
         </div>
       )}
 
-      {step === 1 ? (
+      {step === 1 && (
         <StepSite
           values={s1}
           errors={errors as Partial<Record<keyof SspOnboardingStep1Input, string>>}
           onChange={p => setS1(prev => ({ ...prev, ...p }))}
         />
-      ) : (
+      )}
+      {step === 2 && (
         <StepInventory
           values={s2}
           errors={errors as Partial<Record<keyof SspOnboardingStep2Input, string>>}
           onChange={p => setS2(prev => ({ ...prev, ...p }))}
         />
       )}
+      {step === 3 && placement && (
+        <StepIntegration placement={placement} primaryUrl={s1.primaryUrl} />
+      )}
+      {step === 3 && !placement && (
+        <div className="rounded-md border border-[#E0DEDB] bg-white px-4 py-3 text-sm text-[rgba(55,50,47,0.7)]">
+          We couldn't find your placement. Go back to step 1 and resubmit to regenerate the SDK
+          snippet.
+        </div>
+      )}
 
-      <div className="flex items-center justify-between gap-3 pt-2">
-        {step === 2 ? (
-          <button
-            type="button"
-            onClick={() => {
-              setErrors({})
-              setStep(1)
-            }}
-            disabled={submitting}
-            className="h-11 px-5 rounded-full border border-[#E0DEDB] bg-white text-sm font-medium text-[#37322F] hover:bg-[#FAFAF9] inline-flex items-center gap-2 disabled:opacity-50"
-          >
-            <ArrowLeft size={14} /> Back
-          </button>
-        ) : (
-          <span />
-        )}
-
-        {step === 1 ? (
-          <button
-            type="button"
-            onClick={handleNext}
-            className="h-11 px-6 rounded-full bg-[#37322F] text-white text-sm font-medium inline-flex items-center gap-2 shadow-[0px_0px_0px_2.5px_rgba(255,255,255,0.08)_inset,0_8px_20px_-6px_rgba(55,50,47,0.4)] hover:bg-[#2A2520] transition-all hover:-translate-y-px"
-          >
-            Continue <ArrowRight size={14} />
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="h-11 px-6 rounded-full bg-[#37322F] text-white text-sm font-medium inline-flex items-center gap-2 shadow-[0px_0px_0px_2.5px_rgba(255,255,255,0.08)_inset,0_8px_20px_-6px_rgba(55,50,47,0.4)] hover:bg-[#2A2520] disabled:opacity-50 transition-all hover:-translate-y-px"
-          >
-            {submitting ? (
-              <>
-                <Loader2 size={14} className="animate-spin" /> Finishing…
-              </>
-            ) : (
-              <>
-                Finish setup <Check size={14} />
-              </>
-            )}
-          </button>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function Stepper({ step }: { step: 1 | 2 }): React.JSX.Element {
-  const items = [
-    { n: 1, label: 'Site & contact' },
-    { n: 2, label: 'Inventory & payouts' },
-  ]
-  return (
-    <div className="flex items-center gap-3">
-      {items.map((it, i) => {
-        const active = step === it.n
-        const done = step > it.n
-        return (
-          <div key={it.n} className="flex items-center gap-3 flex-1">
-            <div
-              className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold shrink-0 ${
-                active || done
-                  ? 'bg-[#37322F] text-white'
-                  : 'bg-white border border-[#E0DEDB] text-[rgba(55,50,47,0.5)]'
-              }`}
-            >
-              {done ? <Check size={12} /> : it.n}
-            </div>
-            <span
-              className={`text-xs font-medium ${active || done ? 'text-[#37322F]' : 'text-[rgba(55,50,47,0.5)]'}`}
-            >
-              {it.label}
-            </span>
-            {i === 0 && <div className="flex-1 h-px bg-[rgba(55,50,47,0.12)]" />}
-          </div>
-        )
-      })}
+      <FooterButtons
+        step={step}
+        submitting={submitting}
+        onBack={() => {
+          setErrors({})
+          setStep((prev) => (prev > 1 ? ((prev - 1) as StepNum) : prev))
+        }}
+        onNext={handleNext}
+        onPersist={persistAndAdvance}
+        onFinish={handleFinish}
+      />
     </div>
   )
 }

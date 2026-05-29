@@ -1,6 +1,5 @@
 import type { Chain } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { FORMAT_LABELS } from "@/lib/creatives"
 import { ChainBadge } from "@/components/ChainBadge"
 import { DeviceBadge } from "@/components/DeviceBadge"
@@ -57,15 +56,15 @@ function AnalyticsPreview(): React.JSX.Element {
     { label: "Spend", color: "bg-[#ECEAE2] text-[#1F40CD]" },
   ]
   return (
-    <div className="rounded-xl border border-dashed border-[rgba(10,10,10,0.15)] bg-[#FFFFFF] p-3 space-y-2.5">
+    <div className="border border-dashed border-[rgba(10,10,10,0.18)] bg-white p-3 space-y-2.5">
       <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
         Analytics preview · live after launch
       </div>
-      <div className="grid grid-cols-4 gap-2">
-        {kpis.map((k) => (
-          <div key={k.label} className={`rounded-md p-2.5 text-center ${k.color}`}>
-            <div className="text-[20px] font-medium leading-none mb-1 opacity-40">—</div>
-            <div className="text-[9px] uppercase tracking-wider opacity-60">{k.label}</div>
+      <div className="grid grid-cols-4 border border-dashed border-[rgba(10,10,10,0.12)]">
+        {kpis.map((k, i) => (
+          <div key={k.label} className={`p-2.5 text-center bg-white ${i > 0 ? "border-l border-dashed border-[rgba(10,10,10,0.12)]" : ""}`}>
+            <div className="text-[20px] font-medium leading-none mb-1 text-[#0A0A0A]/30">—</div>
+            <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{k.label}</div>
           </div>
         ))}
       </div>
@@ -81,8 +80,8 @@ export function WizardReview({ state }: Props): React.JSX.Element {
   const isActive = state.status === "ACTIVE"
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-      <CardContent className="p-4 space-y-3">
+    <div className="bg-white">
+      <div className="p-4 space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-[rgba(10,10,10,0.07)]">
           <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#0A0A0A]">Review & Launch</h3>
           <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest border ${
@@ -148,7 +147,7 @@ export function WizardReview({ state }: Props): React.JSX.Element {
         </Section>
 
         <AnalyticsPreview />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

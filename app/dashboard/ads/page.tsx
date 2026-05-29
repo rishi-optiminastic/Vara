@@ -38,6 +38,9 @@ export default async function AdsPage({ searchParams }: PageProps): Promise<Reac
     : null
 
   const newHref = campaignFilter ? `/dashboard/ads/new?campaign=${campaignFilter}` : "/dashboard/ads/new"
+  const newResponsiveHref = campaignFilter
+    ? `/dashboard/ads/new/responsive?campaign=${campaignFilter}`
+    : "/dashboard/ads/new/responsive"
 
   const rows: AdRow[] = creatives.map((cr) => ({
     id: cr.id,
@@ -85,16 +88,29 @@ export default async function AdsPage({ searchParams }: PageProps): Promise<Reac
               </span>
             )}
           </div>
-          <Button
-            asChild
-            size="sm"
-            className="h-8 rounded-full gap-1.5 text-[11px] px-3.5 bg-[#1F40CD] text-white hover:bg-[#1A36B0]"
-          >
-            <Link href={newHref}>
-              <BoxPlusIcon className="size-3" />
-              New ad
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-8 rounded-full gap-1.5 text-[11px] px-3.5 border-[rgba(10,10,10,0.2)]"
+            >
+              <Link href={newResponsiveHref}>
+                <BoxPlusIcon className="size-3" />
+                Responsive ad
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className="h-8 rounded-full gap-1.5 text-[11px] px-3.5 bg-[#1F40CD] text-white hover:bg-[#1A36B0]"
+            >
+              <Link href={newHref}>
+                <BoxPlusIcon className="size-3" />
+                New ad
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {creatives.length === 0 ? (

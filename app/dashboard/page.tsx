@@ -4,7 +4,6 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { getOrCreateAdvertiser } from "@/lib/advertiser"
 import { parseRange, rangeSinceDate } from "@/lib/dateRange"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CampaignsTable } from "@/components/campaigns/components/CampaignsTable"
 import type { CampaignRow } from "@/components/campaigns/components/CampaignsTable"
@@ -86,9 +85,19 @@ export default async function DashboardPage({ searchParams }: PageProps): Promis
         </div>
       </div>
 
-      <Card className="py-0 gap-0 border-[#ececec] overflow-hidden">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-baseline gap-2.5">
+            <h2 className="text-[#0A0A0A] tracking-[-0.015em] text-[15px] font-medium">
+              <span className="font-instrument-serif italic font-normal text-[18px] text-[#1F40CD]">Daily</span> performance
+            </h2>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Last {rangeDays} days
+            </span>
+          </div>
+        </div>
         <PerformanceChart series={dailySeries} rangeDays={rangeDays} />
-      </Card>
+      </div>
 
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
@@ -99,6 +108,16 @@ export default async function DashboardPage({ searchParams }: PageProps): Promis
             <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               {recent.length} total
             </span>
+            <Button
+              asChild
+              size="sm"
+              className="h-6 gap-1 text-[10px] uppercase tracking-[0.08em] font-semibold rounded-full px-2.5 bg-[#1F40CD]/[0.06] text-[#1F40CD] hover:bg-[#1F40CD]/[0.12] shadow-none"
+            >
+              <Link href="/dashboard/campaigns/new">
+                <BoxPlusIcon className="size-2.5" />
+                Create campaign
+              </Link>
+            </Button>
           </div>
           <Button
             asChild

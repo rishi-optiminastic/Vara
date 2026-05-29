@@ -3,7 +3,6 @@
 import { CircleXmarkIcon, BoxPlusIcon, ImageSparkleIcon, CircleOpenArrowRight } from "@/icons"
 import type { CreativeFormat } from "@prisma/client"
 import type { WizardState, AdDraftForm } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -107,7 +106,7 @@ interface CardProps {
 
 function AdCard({ ad, onUpdate, onRemove }: CardProps): React.JSX.Element {
   return (
-    <div className="relative rounded-xl border border-[rgba(10,10,10,0.12)] bg-[#FFFFFF] p-4">
+    <div className="relative border border-dashed border-[rgba(10,10,10,0.18)] bg-[#FFFFFF] p-4">
       <button
         type="button"
         onClick={onRemove}
@@ -178,8 +177,8 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
   const canAdd = state.ads.length < 3
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-      <CardContent className="p-4 space-y-3">
+    <div className="bg-white">
+      <div className="p-4 space-y-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-1.5">
             <span className="flex size-4 items-center justify-center rounded-md bg-[#ECEAE2] text-[#1F40CD]">
@@ -200,7 +199,7 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
         </div>
 
         {state.ads.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[rgba(10,10,10,0.18)] bg-white/50 py-6 text-center">
+          <div className="border border-dashed border-[rgba(10,10,10,0.18)] bg-white py-6 text-center">
             <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-[#ECEAE2]">
               <ImageSparkleIcon className="size-3.5 text-muted-foreground" />
             </div>
@@ -222,7 +221,7 @@ export function WizardStepAds({ state, handlers }: Props): React.JSX.Element {
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

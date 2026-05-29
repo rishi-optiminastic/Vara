@@ -46,27 +46,32 @@ function StepDot({ step, index, current, furthest, onClick }: DotProps): React.J
   const active = index === current
   const reachable = index <= furthest
   const Icon = step.icon
+  const num = String(index + 1).padStart(2, "0")
 
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={!reachable}
-      className={`group flex flex-1 items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-colors ${
-        active ? "bg-[#1F40CD] text-white" :
-        done ? "text-[#0A0A0A] hover:bg-[#1F40CD]/[0.06]" :
-        reachable ? "text-muted-foreground hover:bg-[#1F40CD]/[0.04]" :
+      className={`group relative flex flex-1 items-center gap-2 border-l border-dashed border-[rgba(10,10,10,0.12)] bg-white px-3 py-2 text-left transition-colors first:border-l-0 ${
+        active ? "text-[#0A0A0A]" :
+        done ? "text-[#0A0A0A] hover:bg-[#0A0A0A]/[0.02]" :
+        reachable ? "text-muted-foreground hover:bg-[#0A0A0A]/[0.02]" :
         "text-muted-foreground/50 cursor-not-allowed"
       }`}
     >
-      <div className={`size-5 shrink-0 rounded-full flex items-center justify-center text-[9px] font-semibold ${
-        active ? "bg-[#ECEAE2]/15 text-[#FFFFFF]" :
-        done ? "bg-[#1F40CD] text-white" :
-        "bg-[rgba(10,10,10,0.06)] text-current"
+      {active && (
+        <span aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-[#1F40CD]" />
+      )}
+      <span className={`text-[9px] font-semibold tabular-nums tracking-widest ${
+        active ? "text-[#1F40CD]" : done ? "text-[#0A0A0A]/55" : "text-current"
       }`}>
-        {done ? <Check className="size-3" strokeWidth={3} /> : <Icon className="size-3" />}
-      </div>
-      <span className={`text-[11px] truncate ${active || done ? "font-semibold" : "font-medium"}`}>
+        {done ? <Check className="size-2.5" strokeWidth={3} /> : num}
+      </span>
+      <Icon className={`size-3 shrink-0 ${active ? "text-[#1F40CD]" : "opacity-70"}`} />
+      <span className={`text-[11px] truncate uppercase tracking-widest ${
+        active ? "font-semibold text-[#1F40CD]" : done ? "font-semibold text-[#0A0A0A]" : "font-medium"
+      }`}>
         {step.label}
       </span>
     </button>
@@ -81,7 +86,7 @@ interface ProgressProps {
 
 function StepProgress({ current, furthest, goTo }: ProgressProps): React.JSX.Element {
   return (
-    <div className="flex items-stretch gap-0.5">
+    <div className="flex items-stretch border-y border-dashed border-[rgba(10,10,10,0.12)] bg-white">
       {STEPS.map((s, i) => (
         <StepDot
           key={s.label}
@@ -155,9 +160,7 @@ export function CampaignForm(): React.JSX.Element {
     <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="flex flex-col gap-3 min-w-0">
         {showDraftBanner && <DraftBanner onRestore={handleRestore} onDiscard={handleDiscard} />}
-        <div className="rounded-xl border border-[rgba(10,10,10,0.12)] bg-white/60 p-1 shadow-[0_1px_0_rgba(255,255,255,0.6)]">
-          <StepProgress current={w.step} furthest={w.furthestStep} goTo={w.goTo} />
-        </div>
+        <StepProgress current={w.step} furthest={w.furthestStep} goTo={w.goTo} />
 
         {w.step === 1 && (
           <WizardStepCampaign

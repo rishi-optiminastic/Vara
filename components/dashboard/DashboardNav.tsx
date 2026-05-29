@@ -5,13 +5,9 @@ import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
 import {
   CampaignsIcon,
-  InsightsIcon,
   AssetsIcon,
-  ProductsIcon,
   AudiencesIcon,
-  GoalsIcon,
   GearIcon,
-  ReceiptIcon,
   NavOverviewIcon,
   NavRecommendationsIcon,
   NavInsightsIcon,
@@ -27,7 +23,6 @@ import {
   NavExperimentsIcon,
   NavConversionsIcon,
   NavMeasurementSetupIcon,
-  NavAssetsItemIcon,
   NavProductsItemIcon,
   NavFeedsIcon,
   NavAudiencesItemIcon,
@@ -39,15 +34,19 @@ import {
   NavAccessSecurityIcon,
   NavPreferencesIcon,
   NavChangeHistoryIcon,
+  BoxPlusIcon,
 } from "@/icons"
 
 type NavItem = { label: string; href: string; icon: React.ElementType }
 type NavGroup = { label?: string; items: NavItem[] }
 
+type NavCta = { label: string; href: string }
+
 export type NavSection = {
   id: string
   label: string
   icon: React.ElementType
+  cta?: NavCta
   groups: NavGroup[]
 }
 
@@ -56,23 +55,13 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "campaigns",
     label: "Campaigns",
     icon: CampaignsIcon,
+    // cta: { label: "New campaign", href: "/dashboard/campaigns/new" },
     groups: [
       {
         items: [
           { label: "Overview", href: "/dashboard", icon: NavOverviewIcon },
           { label: "Recommendations", href: "/dashboard/recommendations", icon: NavRecommendationsIcon },
-        ],
-      },
-      {
-        label: "Insights & reports",
-        items: [
-          { label: "Insights", href: "/dashboard/analytics", icon: NavInsightsIcon },
-          { label: "Auction insights", href: "/dashboard/auction-insights", icon: NavAuctionInsightsIcon },
-          { label: "Search terms", href: "/dashboard/search-terms", icon: NavSearchTermsIcon },
-          { label: "Channel performance", href: "#", icon: NavChannelPerformanceIcon },
-          { label: "Landing pages", href: "#", icon: NavLandingPagesIcon },
-          { label: "Report editor", href: "#", icon: NavReportEditorIcon },
-          { label: "Dashboards", href: "#", icon: NavDashboardsIcon },
+          { label: "Assets", href:"/dashboard/assets",icon:AssetsIcon}
         ],
       },
       {
@@ -85,45 +74,13 @@ export const NAV_SECTIONS: NavSection[] = [
         ],
       },
       {
-        label: "Goals",
-        items: [
-          { label: "Conversions", href: "#", icon: NavConversionsIcon },
-          { label: "Measurement setup", href: "#", icon: NavMeasurementSetupIcon },
-        ],
-      },
-    ],
-  },
-  {
-    id: "assets",
-    label: "Assets",
-    icon: AssetsIcon,
-    groups: [{ items: [{ label: "Assets", href: "#", icon: NavAssetsItemIcon }] }],
-  },
-  {
-    id: "products",
-    label: "Products",
-    icon: ProductsIcon,
-    groups: [
-      {
-        items: [
-          { label: "Products", href: "#", icon: NavProductsItemIcon },
-          { label: "Feeds", href: "#", icon: NavFeedsIcon },
-        ],
-      },
-    ],
-  },
-  {
-    id: "insights",
-    label: "Insights & reports",
-    icon: InsightsIcon,
-    groups: [
-      {
+        label: "Insights & reports",
         items: [
           { label: "Insights", href: "/dashboard/analytics", icon: NavInsightsIcon },
           { label: "Auction insights", href: "/dashboard/auction-insights", icon: NavAuctionInsightsIcon },
           { label: "Search terms", href: "/dashboard/search-terms", icon: NavSearchTermsIcon },
-          { label: "Channel performance", href: "#", icon: NavChannelPerformanceIcon },
-          { label: "Landing pages", href: "#", icon: NavLandingPagesIcon },
+          { label: "Channel performance", href: "/dashboard/channels", icon: NavChannelPerformanceIcon },
+          { label: "Landing pages", href: "/dashboard/landing-pages", icon: NavLandingPagesIcon },
           { label: "Report editor", href: "#", icon: NavReportEditorIcon },
           { label: "Dashboards", href: "#", icon: NavDashboardsIcon },
         ],
@@ -132,40 +89,30 @@ export const NAV_SECTIONS: NavSection[] = [
   },
   {
     id: "audiences",
-    label: "Audiences & content",
+    label: "Audiences & products",
     icon: AudiencesIcon,
+    cta: { label: "New audience", href: "/dashboard/segments" },
     groups: [
       {
+        label: "Audiences",
         items: [
           { label: "Audiences", href: "/dashboard/segments", icon: NavAudiencesItemIcon },
           { label: "Keywords", href: "#", icon: NavKeywordsIcon },
           { label: "Content / Placements", href: "/dashboard/chains", icon: NavPlacementsIcon },
         ],
       },
-    ],
-  },
-  {
-    id: "goals",
-    label: "Goals",
-    icon: GoalsIcon,
-    groups: [
       {
+        label: "Products",
+        items: [
+          { label: "Products", href: "#", icon: NavProductsItemIcon },
+          { label: "Feeds", href: "#", icon: NavFeedsIcon },
+        ],
+      },
+      {
+        label: "Goals",
         items: [
           { label: "Conversions", href: "#", icon: NavConversionsIcon },
           { label: "Measurement setup", href: "#", icon: NavMeasurementSetupIcon },
-        ],
-      },
-    ],
-  },
-  {
-    id: "billing",
-    label: "Billing",
-    icon: ReceiptIcon,
-    groups: [
-      {
-        items: [
-          { label: "Billing summary", href: "#", icon: NavBillingSummaryIcon },
-          { label: "Transactions", href: "#", icon: NavTransactionsIcon },
         ],
       },
     ],
@@ -181,6 +128,13 @@ export const NAV_SECTIONS: NavSection[] = [
           { label: "Account settings", href: "/dashboard/settings", icon: NavAccountSettingsIcon },
           { label: "Access & security", href: "#", icon: NavAccessSecurityIcon },
           { label: "Preferences", href: "#", icon: NavPreferencesIcon },
+        ],
+      },
+      {
+        label: "Billing",
+        items: [
+          { label: "Billing summary", href: "/dashboard/settings?tab=wallet", icon: NavBillingSummaryIcon },
+          { label: "Transactions", href: "/dashboard/settings?tab=wallet", icon: NavTransactionsIcon },
         ],
       },
       { label: "Change history", items: [{ label: "Change history", href: "#", icon: NavChangeHistoryIcon }] },
@@ -205,7 +159,7 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
   return (
     <div className="flex h-full w-48 flex-col overflow-hidden">
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-dashed border-[rgba(10,10,10,0.15)] px-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0A0A0A]">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#0A0A0A]/55">
           {section.label}
         </span>
         <button
@@ -217,6 +171,17 @@ export function DashboardNav({ sectionId, onToggle }: Props): React.JSX.Element 
           <ChevronLeft className="size-3" />
         </button>
       </div>
+      {section.cta && (
+        <div className="border-b border-dashed border-[rgba(10,10,10,0.12)] p-2">
+          <Link
+            href={section.cta.href}
+            className="group flex h-8 w-full items-center justify-center gap-1.5 rounded-md bg-[#1F40CD] text-[11px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(31,64,205,0.25)] hover:bg-[#1A36B0] transition-colors"
+          >
+            <BoxPlusIcon className="size-3" />
+            <span>{section.cta.label}</span>
+          </Link>
+        </div>
+      )}
       <div className="flex-1 overflow-y-auto px-1.5 py-2">
         {section.groups.map((group, gi) => (
           <div

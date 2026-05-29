@@ -4,7 +4,7 @@ import {
   injectedWallet,
 } from "@rainbow-me/rainbowkit/wallets"
 import { createConfig, http } from "wagmi"
-import { sepolia } from "wagmi/chains"
+import { sepolia, polygon, polygonAmoy } from "wagmi/chains"
 
 // We deliberately exclude `metaMaskWallet` and `walletConnectWallet`:
 //  - `metaMaskWallet` (RainbowKit's bundled connector) routes through
@@ -33,8 +33,10 @@ const connectors = connectorsForWallets(
 
 export const wagmiConfig = createConfig({
   connectors,
-  chains: [sepolia],
+  chains: [polygon, polygonAmoy, sepolia],
   transports: {
+    [polygon.id]: http(process.env.NEXT_PUBLIC_POLYGON_RPC_URL ?? undefined),
+    [polygonAmoy.id]: http(process.env.NEXT_PUBLIC_POLYGON_AMOY_RPC_URL ?? undefined),
     [sepolia.id]: http(),
   },
   ssr: true,

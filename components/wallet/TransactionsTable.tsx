@@ -40,6 +40,7 @@ const TYPE_LABEL: Record<WalletTransaction["type"], string> = {
   AD_SPEND: "Ad spend",
   REFUND: "Refund",
   WITHDRAWAL: "Withdrawal",
+  PERMIT2_RECHARGE: "Auto-recharge",
 }
 
 const TYPE_TINT: Record<WalletTransaction["type"], string> = {
@@ -47,6 +48,7 @@ const TYPE_TINT: Record<WalletTransaction["type"], string> = {
   AD_SPEND: "bg-[#EAF1FF] text-[#1E40AF] border-[rgba(30,64,175,0.2)]",
   REFUND: "bg-[#F3E8FF] text-[#6B21A8] border-[rgba(107,33,168,0.2)]",
   WITHDRAWAL: "bg-[#FFF3E8] text-[#C2410C] border-[rgba(194,65,12,0.2)]",
+  PERMIT2_RECHARGE: "bg-[#E8F5E9] text-[#15803D] border-[rgba(21,128,61,0.2)]",
 }
 
 export function TransactionsTable({ transactions }: Props): React.JSX.Element {

@@ -1,58 +1,47 @@
 import Link from "next/link"
 import type { Recommendation } from "@/lib/recommendations"
-import { Button } from "@/components/ui/button"
 
 interface Props {
   rec: Recommendation
 }
 
-const SEVERITY_STYLE: Record<Recommendation["severity"], { dot: string; pill: string; label: string }> = {
-  warning: {
-    dot: "bg-[#1F40CD]",
-    pill: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]",
-    label: "Action needed",
-  },
-  info: {
-    dot: "bg-[#1F40CD]",
-    pill: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]",
-    label: "Heads up",
-  },
-  opportunity: {
-    dot: "bg-[#1F40CD]",
-    pill: "bg-[#ECEAE2] text-[#1F40CD] border-[rgba(10,10,10,0.12)]",
-    label: "Optimization",
-  },
+const SEVERITY_LABEL: Record<Recommendation["severity"], string> = {
+  warning: "Action needed",
+  info: "Heads up",
+  opportunity: "Optimization",
 }
 
-export function RecommendationCard({ rec }: Props): React.JSX.Element {
-  const sev = SEVERITY_STYLE[rec.severity]
+export function RecommendationRow({ rec }: Props): React.JSX.Element {
+  const label = SEVERITY_LABEL[rec.severity]
   return (
-    <div className="rounded-lg border border-[rgba(10,10,10,0.12)] bg-white p-3.5 shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)] hover:border-[rgba(10,10,10,0.32)] transition-colors">
-      <div className="flex items-start gap-2.5">
-        <div className={`mt-1 size-1.5 rounded-full shrink-0 ${sev.dot}`} />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider ${sev.pill}`}>
-              {sev.label}
-            </span>
-            {rec.campaignName && (
+    <div className="group relative flex items-start gap-3 bg-white px-3 py-2.5 transition-colors hover:bg-[#0A0A0A]/[0.015]">
+      <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-[#1F40CD]" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-[#1F40CD]">
+            {label}
+          </span>
+          {rec.campaignName && (
+            <>
+              <span className="text-[#0A0A0A]/25 text-[10px]" aria-hidden>·</span>
               <Link
                 href={`/dashboard/campaigns/${rec.campaignId}`}
                 className="text-[10px] text-muted-foreground hover:text-[#0A0A0A] hover:underline truncate"
               >
                 {rec.campaignName}
               </Link>
-            )}
-          </div>
-          <h3 className="mt-1.5 text-[13px] font-medium text-[#0A0A0A] leading-snug">{rec.title}</h3>
-          <p className="mt-1 text-[11px] text-muted-foreground leading-relaxed">{rec.body}</p>
-          <div className="mt-2.5">
-            <Button asChild size="sm" variant="outline" className="h-7 text-[11px] border-[rgba(10,10,10,0.2)] bg-white">
-              <Link href={rec.ctaHref}>{rec.ctaLabel} →</Link>
-            </Button>
-          </div>
+            </>
+          )}
         </div>
+        <h3 className="mt-1 text-[12.5px] font-medium text-[#0A0A0A] leading-snug">{rec.title}</h3>
+        <p className="mt-0.5 text-[11px] text-muted-foreground leading-relaxed">{rec.body}</p>
       </div>
+      <Link
+        href={rec.ctaHref}
+        className="shrink-0 self-center rounded-full border border-[rgba(10,10,10,0.18)] bg-white px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#0A0A0A] hover:border-[#1F40CD] hover:text-[#1F40CD] transition-colors"
+      >
+        {rec.ctaLabel} →
+      </Link>
     </div>
   )
 }

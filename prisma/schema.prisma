@@ -107,6 +107,7 @@ model Advertiser {
   activeForUser        User?      @relation("UserActiveAdvertiser")
   campaigns            Campaign[]
   wallet               Wallet?
+  assets               Asset[]
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 
@@ -114,20 +115,56 @@ model Advertiser {
 }
 
 model Wallet {
-  id                      String              @id @default(cuid())
-  advertiserId            String              @unique
-  balanceUsdcCents        Int                 @default(0)
-  pendingUsdcCents        Int                 @default(0)
-  reservedUsdcCents       Int                 @default(0)
-  totalDepositedUsdcCents Int                 @default(0)
-  totalSpentUsdcCents     Int                 @default(0)
-  advertiser              Advertiser          @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
-  deposits                Deposit[]
-  transactions            WalletTransaction[]
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
+  id                          String               @id @default(cuid())
+  advertiserId                String               @unique
+  balanceUsdcCents            Int                  @default(0)
+  pendingUsdcCents            Int                  @default(0)
+  reservedUsdcCents           Int                  @default(0)
+  totalDepositedUsdcCents     Int                  @default(0)
+  totalSpentUsdcCents         Int                  @default(0)
+  // Permit2 / auto-recharge settings
+  autoRechargeEnabled         Boolean              @default(false)
+  rechargeThresholdCents      Int                  @default(1000)
+  preferredRechargeAmountCents Int                 @default(2500)
+  advertiser                  Advertiser           @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  deposits                    Deposit[]
+  transactions                WalletTransaction[]
+  permit2Auth                 Permit2Authorization?
+  createdAt                   DateTime             @default(now())
+  updatedAt                   DateTime             @updatedAt
 
   @@map("wallet")
+}
+
+model Permit2Authorization {
+  id               String            @id @default(cuid())
+  walletId         String            @unique
+  userWallet       String
+  tokenAddress     String
+  spenderAddress   String
+  authorizedAmount BigInt
+  expiresAt        DateTime
+  nonce            Int
+  sigDeadline      DateTime
+  signature        String
+  status           Permit2AuthStatus @default(ACTIVE)
+  amountPulled     BigInt            @default(0)
+  lastPullAt       DateTime?
+  revokedAt        DateTime?
+  revokeReason     String?
+  chainId          Int               @default(137)
+  wallet           Wallet            @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@map("permit2_authorization")
+}
+
+enum Permit2AuthStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  CEILING_REACHED
 }
 
 model Deposit {
@@ -182,6 +219,7 @@ enum WalletTxType {
   AD_SPEND
   REFUND
   WITHDRAWAL
+  PERMIT2_RECHARGE
 }
 
 enum WalletTxStatus {
@@ -217,6 +255,10 @@ model Placement {
   width               Int?
   height              Int?
   floorPriceUsdcCents Int                @default(0)
+  // First time the RTB engine saw a bid request for this placement. Stamped
+  // once by the auction handler and used by the SSP onboarding wizard to
+  // confirm the publisher has dropped in the SDK.
+  firstSeenAt         DateTime?
   publisher           Publisher          @relation(fields: [publisherId], references: [id], onDelete: Cascade)
   earnings            PublisherEarning[]
   createdAt           DateTime           @default(now())
@@ -409,6 +451,7 @@ model AdGroup {
   endDate          DateTime?
   campaign         Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   targeting        AdGroupTargeting?
+  ads              Ad[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
@@ -445,6 +488,175 @@ model Creative {
 
   @@index([campaignId])
   @@map("creative")
+}
+
+// ===================== Multi-format Ads (Google-Ads-style) =====================
+//
+// `Asset` is the reusable media/text primitive (image, video, headline, etc.)
+// scoped to an advertiser. `Ad` is a composition of assets attached to an
+// AdGroup with a specific `AdType`. `AdAssetLink` is the pivot that names the
+// role each asset plays in the ad (PRIMARY_IMAGE, HEADLINE_1, etc.). The
+// legacy `Creative` model is kept alongside for backward compatibility while
+// we migrate; the RTB engine prefers `Ad` rows when present.
+
+model Asset {
+  id              String         @id @default(cuid())
+  advertiserId    String
+  type            AssetType
+  status          AssetStatus    @default(PENDING_REVIEW)
+  // Polymorphic payload: exactly one of textValue / fileUrl is non-null per
+  // asset, depending on `type`. Headlines/descriptions/CTAs/clickUrls use
+  // textValue; images/videos/logos/html-bundles use fileUrl.
+  textValue       String?
+  fileUrl         String?
+  fileMimeType    String?
+  fileBytes       Int?
+  width           Int?
+  height          Int?
+  durationMs      Int?
+  aspectRatio     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+  // Web3-specific: if non-null, the asset is shown only to wallets holding
+  // this contract (and optionally at least `gatedByMinHold` tokens of it).
+  gatedByContract String?
+  gatedByMinHold  Decimal?
+  advertiser      Advertiser     @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+  links           AdAssetLink[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([advertiserId, type, status])
+  @@map("asset")
+}
+
+model Ad {
+  id              String         @id @default(cuid())
+  adGroupId       String
+  name            String
+  type            AdType
+  status          AdStatus       @default(DRAFT)
+  trafficShare    Int            @default(100)
+  clickUrl        String
+  finalUrlSuffix  String?
+  // Denormalized eligibility flag: refreshed on save. RESPONSIVE_DISPLAY needs
+  // a minimum asset mix (≥3 images, ≥2 headlines, ≥2 descriptions, etc.) —
+  // ads failing the bar can save but not serve.
+  hasMinAssets    Boolean        @default(false)
+  adGroup         AdGroup        @relation(fields: [adGroupId], references: [id], onDelete: Cascade)
+  links           AdAssetLink[]
+  metrics         AdMetricDaily[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([adGroupId, status])
+  @@map("ad")
+}
+
+model AdAssetLink {
+  id      String     @id @default(cuid())
+  adId    String
+  assetId String
+  role    AssetRole
+  // Pinning weight, Google-Ads-style. 0 = let optimizer pick. Higher numbers
+  // bias the rotation toward this asset within its role bucket.
+  weight  Int        @default(1)
+  ad      Ad         @relation(fields: [adId], references: [id], onDelete: Cascade)
+  asset   Asset      @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([adId, assetId, role])
+  @@index([adId])
+  @@index([assetId])
+  @@map("ad_asset_link")
+}
+
+model AdMetricDaily {
+  id               String   @id @default(cuid())
+  adId             String
+  date             DateTime @db.Date
+  impressions      Int      @default(0)
+  clicks           Int      @default(0)
+  viewableImps     Int      @default(0)
+  videoStarts      Int      @default(0)
+  videoCompletes   Int      @default(0)
+  walletConnects   Int      @default(0)
+  onChainConvs     Int      @default(0)
+  spendUsdcCents   Int      @default(0)
+  revenueUsdcCents Int      @default(0)
+  ad               Ad       @relation(fields: [adId], references: [id], onDelete: Cascade)
+
+  @@unique([adId, date])
+  @@index([date])
+  @@map("ad_metric_daily")
+}
+
+enum AdType {
+  STATIC_DISPLAY
+  RESPONSIVE_DISPLAY
+  VIDEO_IN_STREAM
+  VIDEO_OUTSTREAM
+  VIDEO_REWARDED
+  NATIVE
+  APP_INSTALL
+  INTERSTITIAL
+  HTML5
+  WALLET_CONTEXTUAL
+  TOKEN_GATED
+  CATALOG_NFT
+}
+
+enum AdStatus {
+  DRAFT
+  IN_REVIEW
+  ACTIVE
+  PAUSED
+  REJECTED
+  ARCHIVED
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  HEADLINE
+  LONG_HEADLINE
+  DESCRIPTION
+  LOGO
+  HTML_BUNDLE
+  CALL_TO_ACTION
+  CLICK_URL
+  PRODUCT_FEED_ITEM
+}
+
+enum AssetStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+// AssetRole names the slot an asset fills inside an Ad. Slots are
+// format-specific — RESPONSIVE_DISPLAY uses PRIMARY_IMAGE / SQUARE_IMAGE /
+// LOGO + headline/description slots; VIDEO_* uses VIDEO_FILE + COMPANION_BANNER
+// and a couple of text slots; NATIVE uses headline + description + image + cta.
+enum AssetRole {
+  PRIMARY_IMAGE
+  SQUARE_IMAGE
+  PORTRAIT_IMAGE
+  LOGO
+  VIDEO_FILE
+  COMPANION_BANNER
+  HEADLINE_1
+  HEADLINE_2
+  HEADLINE_3
+  HEADLINE_4
+  HEADLINE_5
+  LONG_HEADLINE
+  DESCRIPTION_1
+  DESCRIPTION_2
+  DESCRIPTION_3
+  CTA
+  HTML_BUNDLE
 }
 
 model Targeting {

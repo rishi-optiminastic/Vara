@@ -2,7 +2,6 @@
 
 import type { Chain } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { chainName } from "@/lib/chains"
 import {
   CampaignsIcon,
@@ -29,7 +28,7 @@ interface RowProps {
 
 function Row({ label, value, muted }: RowProps): React.JSX.Element {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3 py-1">
       <span className="text-[10px] uppercase tracking-widest text-muted-foreground shrink-0">{label}</span>
       <span className={`text-[11px] text-right tabular-nums truncate ${muted ? "text-muted-foreground/70 italic" : "text-[#0A0A0A] font-medium"}`}>
         {value}
@@ -43,30 +42,30 @@ interface SectionProps {
   title: string
   active: boolean
   done: boolean
-  tint: string
   children: React.ReactNode
 }
 
-function Section({ icon: Icon, title, active, done, tint, children }: SectionProps): React.JSX.Element {
+function Section({ icon: Icon, title, active, done, children }: SectionProps): React.JSX.Element {
   return (
-    <Card className={`py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)] overflow-hidden transition-all ${
-      active ? "ring-1 ring-[#0A0A0A]/20" : !done ? "opacity-70" : ""
-    }`}>
-      <div className="flex items-center justify-between border-b border-[rgba(10,10,10,0.1)] bg-[#FFFFFF] px-2.5 py-1.5">
+    <div className={`bg-white transition-opacity ${!active && !done ? "opacity-60" : ""}`}>
+      <div className="relative flex items-center justify-between border-b border-dashed border-[rgba(10,10,10,0.12)] px-3 py-1.5">
+        {active && (
+          <span aria-hidden className="absolute inset-y-0 left-0 w-px bg-[#1F40CD]" />
+        )}
         <div className="flex items-center gap-1.5">
-          <span className={`flex size-4 items-center justify-center rounded-md ${tint}`}>
-            <Icon className="size-2.5" />
-          </span>
-          <h3 className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">{title}</h3>
+          <Icon className={`size-3 ${active ? "text-[#1F40CD]" : "text-muted-foreground"}`} />
+          <h3 className={`text-[10px] font-semibold uppercase tracking-widest ${active ? "text-[#1F40CD]" : "text-muted-foreground"}`}>
+            {title}
+          </h3>
         </div>
         {active ? (
-          <span className="text-[8px] uppercase tracking-widest font-semibold text-[#0A0A0A]">Now</span>
+          <span className="text-[8px] uppercase tracking-widest font-semibold text-[#1F40CD]">Now</span>
         ) : done ? (
-          <span className="text-[10px] text-[#1F40CD] leading-none">✓</span>
+          <span className="text-[10px] text-muted-foreground leading-none">✓</span>
         ) : null}
       </div>
-      <CardContent className="px-3 py-2 space-y-1">{children}</CardContent>
-    </Card>
+      <div className="px-3 py-1.5">{children}</div>
+    </div>
   )
 }
 
@@ -85,8 +84,8 @@ export function WizardSummary({ state, step, score, savedLabel }: Props): React.
   const geoCount = state.geos.regions.length + state.geos.countries.length + state.geos.states.length
 
   return (
-    <div className="sticky top-3 space-y-2">
-      <div className="flex items-center gap-2 rounded-xl border border-[rgba(10,10,10,0.1)] bg-gradient-to-br from-[#ECEAE2] to-[#FFFFFF] px-2 py-1.5">
+    <div className="sticky top-3 flex flex-col gap-2.5">
+      <div className="flex items-center gap-2 border border-dashed border-[rgba(10,10,10,0.18)] bg-white px-3 py-2">
         <SetupScoreRing score={score} />
         <div className="min-w-0">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-[#0A0A0A]">Setup</div>
@@ -98,19 +97,19 @@ export function WizardSummary({ state, step, score, savedLabel }: Props): React.
 
       <ForecastPanel state={state} />
 
-      <Section icon={CampaignsIcon} title="Campaign" active={step === 1} done={step > 1} tint="bg-[#ECEAE2] text-[#1F40CD]">
+      <Section icon={CampaignsIcon} title="Campaign" active={step === 1} done={step > 1}>
         <Row label="Name" value={state.name || "Untitled"} muted={!state.name} />
         <Row label="Objective" value={readable(state.objective)} />
         <Row label="Vertical" value={readable(state.vertical)} />
       </Section>
 
-      <Section icon={SpendIcon} title="Budget" active={step === 2} done={step > 2} tint="bg-[#ECEAE2] text-[#1F40CD]">
+      <Section icon={SpendIcon} title="Budget" active={step === 2} done={step > 2}>
         <Row label="Total" value={fmtMoney(state.budgetUsd)} muted={!state.budgetUsd} />
         <Row label={`Bid · ${state.pricingModel}`} value={fmtMoney(state.bidUsd)} muted={!state.bidUsd} />
         {state.dailyCapUsd && <Row label="Daily cap" value={fmtMoney(state.dailyCapUsd)} />}
       </Section>
 
-      <Section icon={CalendarCheckIcon} title="Schedule" active={step === 2} done={step > 2} tint="bg-[#ECEAE2] text-[#1F40CD]">
+      <Section icon={CalendarCheckIcon} title="Schedule" active={step === 2} done={step > 2}>
         <Row
           label="Runs"
           value={state.endDate ? `${state.startDate} → ${state.endDate}` : `${state.startDate || "—"} · open`}
@@ -119,14 +118,14 @@ export function WizardSummary({ state, step, score, savedLabel }: Props): React.
         <Row label="Pacing" value={readable(state.pacing)} />
       </Section>
 
-      <Section icon={GaugeIcon} title="Ad Group" active={step === 3} done={step > 3} tint="bg-[#ECEAE2] text-[#1F40CD]">
+      <Section icon={GaugeIcon} title="Ad Group" active={step === 3} done={step > 3}>
         <Row label="Chains" value={chainList.length ? `${chainList.length} selected` : "All"} muted={chainList.length === 0} />
         <Row label="Geos" value={geoCount ? `${geoCount} countries` : "Worldwide"} muted={geoCount === 0} />
         <Row label="Devices" value={state.deviceTypes.length ? `${state.deviceTypes.length} type(s)` : "All"} muted={state.deviceTypes.length === 0} />
         <Row label="Frequency" value={state.freqCap ? `${state.freqCap}/${state.freqHours}h` : "—"} muted={!state.freqCap} />
       </Section>
 
-      <Section icon={ImageSparkleIcon} title="Creatives" active={step === 4} done={step > 4} tint="bg-[#ECEAE2] text-[#1F40CD]">
+      <Section icon={ImageSparkleIcon} title="Creatives" active={step === 4} done={step > 4}>
         {state.ads.length === 0 ? (
           <Row label="Ads" value="None — add later" muted />
         ) : (

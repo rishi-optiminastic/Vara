@@ -2,7 +2,6 @@
 
 import type { Chain, DeviceType } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { TextField } from "./form-fields"
 import { CHAINS } from "@/lib/chains"
 import { chainBrand } from "@/lib/chainLogos"
@@ -71,8 +70,8 @@ function ChainPill({ chain, label, active, onClick }: ChainPillProps): React.JSX
 
 export function WizardStepTargeting({ state, update }: Props): React.JSX.Element {
   return (
-    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-      <CardContent className="p-5 space-y-5">
+    <div className="bg-white">
+      <div className="p-5 space-y-5">
 
         <WizardSection
           icon={BoxIcon}
@@ -174,7 +173,7 @@ export function WizardStepTargeting({ state, update }: Props): React.JSX.Element
             span={2}
           />
         </WizardSection>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

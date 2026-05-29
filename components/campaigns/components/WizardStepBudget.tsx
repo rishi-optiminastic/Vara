@@ -2,7 +2,6 @@
 
 import type { BidStrategy, Pacing, PricingModel } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { TextField, SelectField, DatePickerField } from "./form-fields"
 import { RecommendedBadge } from "./RecommendedBadge"
@@ -98,8 +97,8 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
     })
 
   return (
-    <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-      <CardContent className="p-5 space-y-5">
+    <div className="bg-white">
+      <div className="p-5 space-y-5">
         <WizardSection
           icon={SpendIcon}
           title="Budget"
@@ -195,7 +194,7 @@ export function WizardStepBudget({ state, update }: Props): React.JSX.Element {
             />
           </div>
         </WizardSection>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }

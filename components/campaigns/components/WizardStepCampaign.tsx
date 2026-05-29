@@ -2,7 +2,6 @@
 
 import type { Objective, Vertical } from "@prisma/client"
 import type { WizardState } from "@/hooks/useCampaignWizard"
-import { Card, CardContent } from "@/components/ui/card"
 import { TextField, SelectField, TextareaField } from "./form-fields"
 import { QuickstartTemplates } from "./QuickstartTemplates"
 import { RecommendedBadge } from "./RecommendedBadge"
@@ -56,81 +55,76 @@ export function WizardStepCampaign({ state, templateId, applyTemplate, update }:
   const recs = recommendationsFor(state.objective)
 
   return (
-    <div className="space-y-3">
-      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-        <CardContent className="p-4">
-          <QuickstartTemplates selectedId={templateId} onSelect={applyTemplate} />
-        </CardContent>
-      </Card>
+    <div className="flex flex-col gap-2.5">
+      <QuickstartTemplates selectedId={templateId} onSelect={applyTemplate} />
 
-      <Card className="py-0 gap-0 border-[rgba(10,10,10,0.12)] shadow-[0_1px_0_rgba(255,255,255,0.6),0_4px_12px_-8px_rgba(10,10,10,0.08)]">
-        <CardContent className="p-5 space-y-5">
-          <WizardSection
-            icon={IdBadgeIcon}
-            title="Identity"
-            description="Name your campaign and tell us what you're optimizing for."
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <TextField
-                label="Campaign name"
-                value={state.name}
-                onChange={(v) => update({ name: v })}
-                placeholder="Q4 Token Launch"
-                required
-                span={2}
-              />
-              <SelectField
-                label="Objective"
-                value={state.objective}
-                onChange={(v) => update({ objective: v as Objective })}
-                options={OBJECTIVES}
-              />
-              <SelectField
-                label="Vertical"
-                value={state.vertical}
-                onChange={(v) => update({ vertical: v as Vertical })}
-                options={VERTICALS}
-              />
-              <ObjectiveTip rationale={recs.rationale} />
-              <TextareaField
-                label="Description"
-                value={state.description}
-                onChange={(v) => update({ description: v })}
-                placeholder="Internal note (optional)"
-                rows={2}
-              />
-            </div>
-          </WizardSection>
+      <div className="bg-white p-4 space-y-5">
+        <WizardSection
+          icon={IdBadgeIcon}
+          title="Identity"
+          description="Name your campaign and tell us what you're optimizing for."
+        >
+          <div className="grid grid-cols-2 gap-3">
+            <TextField
+              label="Campaign name"
+              value={state.name}
+              onChange={(v) => update({ name: v })}
+              placeholder="Q4 Token Launch"
+              required
+              span={2}
+            />
+            <SelectField
+              label="Objective"
+              value={state.objective}
+              onChange={(v) => update({ objective: v as Objective })}
+              options={OBJECTIVES}
+            />
+            <SelectField
+              label="Vertical"
+              value={state.vertical}
+              onChange={(v) => update({ vertical: v as Vertical })}
+              options={VERTICALS}
+            />
+            <ObjectiveTip rationale={recs.rationale} />
+            <TextareaField
+              label="Description"
+              value={state.description}
+              onChange={(v) => update({ description: v })}
+              placeholder="Internal note (optional)"
+              rows={2}
+            />
+          </div>
+        </WizardSection>
 
-          <WizardSection
-            icon={PlayIcon}
-            title="Launch"
-            description="Save as a draft to review later, or push it live immediately."
-            badge={<RecommendedBadge label="Draft" tone="subtle" />}
-          >
-            <div className="grid grid-cols-2 gap-2">
-              {STATUS_OPTIONS.map((opt) => {
-                const active = state.status === opt.value
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => update({ status: opt.value })}
-                    className={`rounded-md border p-2.5 text-left transition-all ${
-                      active
-                        ? "border-[#0A0A0A] bg-[#0A0A0A] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(10,10,10,0.18)]"
-                        : "border-[rgba(10,10,10,0.15)] bg-white hover:bg-[#ECEAE2] hover:border-[rgba(10,10,10,0.25)]"
-                    }`}
-                  >
-                    <div className={`text-xs font-semibold ${active ? "text-white" : "text-[#0A0A0A]"}`}>{opt.label}</div>
-                    <div className={`text-[10px] mt-0.5 leading-tight ${active ? "text-white/65" : "text-muted-foreground"}`}>{opt.desc}</div>
-                  </button>
-                )
-              })}
-            </div>
-          </WizardSection>
-        </CardContent>
-      </Card>
+        <WizardSection
+          icon={PlayIcon}
+          title="Launch"
+          description="Save as a draft to review later, or push it live immediately."
+          badge={<RecommendedBadge label="Draft" tone="subtle" />}
+        >
+          <div className="grid grid-cols-2 border border-dashed border-[rgba(10,10,10,0.12)]">
+            {STATUS_OPTIONS.map((opt, i) => {
+              const active = state.status === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => update({ status: opt.value })}
+                  className={`relative px-3 py-2.5 text-left transition-colors ${
+                    i > 0 ? "border-l border-dashed border-[rgba(10,10,10,0.12)]" : ""
+                  } ${active ? "bg-[#1F40CD]/[0.04]" : "bg-white hover:bg-[#0A0A0A]/[0.02]"}`}
+                >
+                  {active && (
+                    <span aria-hidden className="absolute inset-y-0 left-0 w-px bg-[#1F40CD]" />
+                  )}
+                  <div className={`text-xs font-semibold ${active ? "text-[#1F40CD]" : "text-[#0A0A0A]"}`}>{opt.label}</div>
+                  <div className="text-[10px] mt-0.5 leading-tight text-muted-foreground">{opt.desc}</div>
+                </button>
+              )
+            })}
+          </div>
+        </WizardSection>
+      </div>
     </div>
   )
 }
