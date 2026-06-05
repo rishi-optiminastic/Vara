@@ -22,7 +22,7 @@ export interface CampaignRow {
   pacing: Pacing
   budgetUsdCents: number
   dailyCapUsdCents: number | null
-  bidUsdCents: number
+  bidUsdCents: number | null
   startDate: string
   endDate: string | null
   chains: Chain[]

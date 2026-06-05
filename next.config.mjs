@@ -5,6 +5,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  eslint: {
+    // Lint is enforced via `pnpm lint` and the lint-staged pre-commit hook,
+    // not the production build (mirrors the typescript.ignoreBuildErrors choice).
+    ignoreDuringBuilds: true,
+  },
   images: {
     unoptimized: true,
   },
@@ -30,15 +35,15 @@ const nextConfig = {
     return {
       beforeFiles: [
         // Everything under /api/* goes to the Rust backend EXCEPT:
-        //  - /api/auth/* — Better Auth's catch-all route in Next.js.
-        //  - /api/onboarding — owned by the Next.js route at app/api/onboarding/
-        //    because the BE's own handler references a `user.activeAdvertiserId`
-        //    column that doesn't exist in the current schema.
-        //  - /api/wallet/demo-topup — dev-only ledger top-up handled by Next.js
-        //    so we don't need a BE endpoint for it. Hard-gated to non-prod.
-        // The negative lookahead in the source pattern is what excludes them.
+        //  - /api/wallet/demo-topup — dev-only ledger top-up handled by Next.js.
+        //    Hard-gated to non-prod; no BE endpoint needed.
+        //  - /api/wallet/permit2 — Permit2 setup still served by Next.js until the
+        //    EIP-712 signature verification is ported to Rust (alloy).
+        // Everything else — auth, campaigns (incl. toggle-status), ad-groups
+        // (incl. toggle-status), ads, assets, creatives, segments, onboarding,
+        // wallet, ssp/* (incl. integration-status) — is served by the Rust backend.
         {
-          source: '/api/:path((?!auth(?:/|$)|onboarding(?:/|$)|wallet/demo-topup(?:/|$)|campaigns/[^/]+/toggle-status(?:/|$)|ad-groups/[^/]+/toggle-status(?:/|$)).*)',
+          source: '/api/:path((?!wallet/demo-topup(?:/|$)|wallet/permit2(?:/|$)).*)',
           destination: `${BACKEND_URL}/api/:path`,
         },
       ],

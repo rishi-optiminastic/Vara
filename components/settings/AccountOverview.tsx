@@ -18,7 +18,7 @@ interface Props {
     email: string | null
     image: string | null
     emailVerified: boolean
-    createdAt: Date
+    createdAt: Date | string
   }
   advertiser: {
     id: string
@@ -26,8 +26,8 @@ interface Props {
     websiteUrl: string | null
     chain: string
     contractAddrs: string[]
-    createdAt: Date
-    updatedAt: Date
+    createdAt: Date | string
+    updatedAt: Date | string
   }
   totalCampaigns: number
   activeCampaigns: number

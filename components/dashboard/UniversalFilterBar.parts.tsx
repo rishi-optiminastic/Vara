@@ -42,7 +42,7 @@ export function ScopeDropdown({ label, value, placeholder, items, onChange, disa
     : "border-[rgba(10,10,10,0.18)] bg-white text-[#0A0A0A] hover:border-[rgba(10,10,10,0.32)]"
   const activeItem = items.find((it) => it.id === value)
   return (
-    <Select value={value ?? ALL} onValueChange={onChange} disabled={disabled}>
+    <Select value={value ?? ALL} onValueChange={onChange} disabled={disabled ?? false}>
       <SelectTrigger className={`h-7 max-w-[220px] rounded-full px-3 gap-1.5 border text-[11px] font-medium focus:ring-0 focus:outline-none ${triggerClass}`}>
         <span className="text-[9.5px] font-semibold uppercase tracking-widest opacity-70">{label}</span>
         <SelectValue placeholder={placeholder}>

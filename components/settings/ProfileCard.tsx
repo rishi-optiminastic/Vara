@@ -1,13 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CircleCheckIcon, CircleXmarkIcon, IdBadgeIcon } from "@/icons"
+import { formatDate } from "@/lib/formatDate"
 
 interface Props {
   name: string
   email: string
   image: string | null
   emailVerified: boolean
-  createdAt: Date
+  createdAt: Date | string
 }
 
 function initials(name: string): string {
@@ -17,10 +18,6 @@ function initials(name: string): string {
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
     .join("")
-}
-
-function dateLabel(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
 }
 
 export function ProfileCard({ name, email, image, emailVerified, createdAt }: Props): React.JSX.Element {
@@ -72,7 +69,7 @@ export function ProfileCard({ name, email, image, emailVerified, createdAt }: Pr
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-3 border-t border-dashed border-[rgba(10,10,10,0.1)] pt-3">
-          <Field label="Member since" value={dateLabel(createdAt)} />
+          <Field label="Member since" value={formatDate(createdAt)} />
           <Field label="Login method" value="Email" />
         </div>
       </CardContent>

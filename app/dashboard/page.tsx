@@ -1,15 +1,13 @@
 import Link from "next/link"
 import { getCachedSession } from "@/lib/session"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
-import { getOrCreateAdvertiser } from "@/lib/advertiser"
-import { parseRange, rangeSinceDate } from "@/lib/dateRange"
+import { serverApi } from "@/lib/serverApi"
+import { parseRange } from "@/lib/dateRange"
 import { Button } from "@/components/ui/button"
 import { CampaignsTable } from "@/components/campaigns/components/CampaignsTable"
 import type { CampaignRow } from "@/components/campaigns/components/CampaignsTable"
 import { DateRangeSelector } from "@/components/DateRangeSelector"
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart"
-import { fetchAdvertiserDailySeries } from "@/lib/dashboardMetrics"
 import { sampleDailySeries } from "@/lib/sampleSeries"
 import { CircleOpenArrowRight, BoxPlusIcon } from "@/icons"
 
@@ -17,24 +15,48 @@ interface PageProps {
   searchParams: Promise<Record<string, string | undefined>>
 }
 
+interface DailyPoint {
+  date: string
+  spendUsdCents: number
+  impressions: number
+  clicks: number
+  walletConnects: number
+}
+
+interface RecentCampaign {
+  id: string
+  name: string
+  description: string | null
+  status: CampaignRow["status"]
+  vertical: CampaignRow["vertical"]
+  objective: CampaignRow["objective"]
+  pricingModel: CampaignRow["pricingModel"]
+  bidStrategy: CampaignRow["bidStrategy"]
+  pacing: CampaignRow["pacing"]
+  budgetUsdCents: number
+  dailyCapUsdCents: number | null
+  bidUsdCents: number | null
+  startDate: string
+  endDate: string | null
+  targeting: { chains: CampaignRow["chains"] } | null
+  _count: { creatives: number }
+}
+
+interface DashboardData {
+  recent: RecentCampaign[]
+  dailySeries: DailyPoint[]
+}
+
 export default async function DashboardPage({ searchParams }: PageProps): Promise<React.JSX.Element> {
   const session = await getCachedSession()
   if (!session) redirect("/dsp/sign-in")
-  const advertiser = await getOrCreateAdvertiser(session.user.id, session.user.name)
 
   const params = await searchParams
   const rangeDays = parseRange(params["range"])
-  const since = rangeSinceDate(rangeDays)
 
-  const [recent, dailySeriesRaw] = await Promise.all([
-    prisma.campaign.findMany({
-      where: { advertiserId: advertiser.id },
-      orderBy: { updatedAt: "desc" },
-      take: 5,
-      include: { targeting: true, _count: { select: { creatives: true } } },
-    }),
-    fetchAdvertiserDailySeries(advertiser.id, since),
-  ])
+  const data = await serverApi<DashboardData>(`/api/page/dsp/dashboard?range=${rangeDays}`)
+  const recent = data?.recent ?? []
+  const dailySeriesRaw = data?.dailySeries ?? []
 
   const hasRealSeries = dailySeriesRaw.some(
     (p) => p.impressions > 0 || p.spendUsdCents > 0 || p.clicks > 0,
@@ -54,8 +76,8 @@ export default async function DashboardPage({ searchParams }: PageProps): Promis
     budgetUsdCents: c.budgetUsdCents,
     dailyCapUsdCents: c.dailyCapUsdCents,
     bidUsdCents: c.bidUsdCents,
-    startDate: c.startDate.toISOString(),
-    endDate: c.endDate ? c.endDate.toISOString() : null,
+    startDate: c.startDate,
+    endDate: c.endDate,
     chains: c.targeting?.chains ?? [],
     creativesCount: c._count.creatives,
     impressions: 0,

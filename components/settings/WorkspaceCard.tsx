@@ -1,17 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { GearIcon, CircleOpenArrowRight } from "@/icons"
+import { formatDate } from "@/lib/formatDate"
 
 interface Props {
   advertiserId: string
   projectName: string
   websiteUrl: string | null
   primaryChain: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-function dateLabel(d: Date): string {
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  createdAt: Date | string
+  updatedAt: Date | string
 }
 
 function hostFromUrl(url: string | null): string {
@@ -67,8 +64,8 @@ export function WorkspaceCard({
         <div className="mt-4 grid grid-cols-2 gap-3 border-t border-dashed border-[rgba(10,10,10,0.1)] pt-3 lg:grid-cols-4">
           <Field label="Workspace ID" value={advertiserId.slice(0, 12)} mono />
           <Field label="Primary chain" value={primaryChain} />
-          <Field label="Created" value={dateLabel(createdAt)} />
-          <Field label="Last updated" value={dateLabel(updatedAt)} />
+          <Field label="Created" value={formatDate(createdAt)} />
+          <Field label="Last updated" value={formatDate(updatedAt)} />
         </div>
       </CardContent>
     </Card>
