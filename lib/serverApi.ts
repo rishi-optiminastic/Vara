@@ -4,10 +4,9 @@
 // caller has one) to the Rust backend, so server components can read data from
 // the single backend instead of querying the database directly. Pairs with the
 // `/api/*` rewrite proxy used on the client side.
-
 import { headers } from 'next/headers'
 
-const BACKEND_URL = process.env.BACKEND_URL ?? 'http://127.0.0.1:8000'
+import { BACKEND_URL } from '@/lib/backendUrl'
 
 interface ServerFetchOptions {
   method?: string

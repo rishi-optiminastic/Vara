@@ -5,8 +5,7 @@
 // a thin compatibility shim that preserves the `auth.api.getSession({ headers })`
 // interface the rest of the app already calls, so server components and route
 // handlers need no changes.
-
-const BACKEND_URL = process.env.BACKEND_URL ?? 'http://127.0.0.1:8000'
+import { BACKEND_URL } from '@/lib/backendUrl'
 
 export interface SessionUser {
   id: string

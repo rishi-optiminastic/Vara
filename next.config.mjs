@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const BACKEND_URL = process.env.BACKEND_URL ?? 'http://127.0.0.1:8000'
 
+// On Vercel the localhost fallback would silently break every /api/* call and
+// server-side fetch, so fail the build instead.
+if (process.env.VERCEL && !process.env.BACKEND_URL) {
+  throw new Error('BACKEND_URL must be set on Vercel (e.g. https://vara-be.fly.dev)')
+}
+
 const nextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   eslint: {
     // Lint is enforced via `pnpm lint` and the lint-staged pre-commit hook,
-    // not the production build (mirrors the typescript.ignoreBuildErrors choice).
+    // not the production build.
     ignoreDuringBuilds: true,
   },
   images: {
@@ -22,13 +25,13 @@ const nextConfig = {
     },
     // Tree-shake heavy barrel imports — speeds up dev compile and prod bundle.
     optimizePackageImports: [
-      "@rainbow-me/rainbowkit",
-      "wagmi",
-      "viem",
-      "@tanstack/react-query",
-      "react-hook-form",
-      "date-fns",
-      "lodash",
+      '@rainbow-me/rainbowkit',
+      'wagmi',
+      'viem',
+      '@tanstack/react-query',
+      'react-hook-form',
+      'date-fns',
+      'lodash',
     ],
   },
   async rewrites() {
